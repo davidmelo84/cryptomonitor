@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import PriceChart from '../dashboard/PriceChart';
 import { 
   TrendingUp, 
   User, 
   RefreshCw, 
-  LogOut, 
-  Activity, 
+  LogOut,
+  Activity,
   XCircle,
   BarChart3,
   Bell,
@@ -37,11 +38,21 @@ function DashboardPage({
   onToggleCryptoSelection,
   onClearSelection
 }) {
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('marketCap');
   const [hoveredCrypto, setHoveredCrypto] = useState(null);
+  const [selectedCryptoForChart, setSelectedCryptoForChart] = useState(null);
+
+  // Auto-selecionar primeira crypto para o gráfico
+  useEffect(() => {
+    if (selectedCryptos.length > 0 && !selectedCryptoForChart) {
+      setSelectedCryptoForChart(selectedCryptos[0]);
+    } else if (selectedCryptos.length === 0) {
+      setSelectedCryptoForChart(null);
+    }
+  }, [selectedCryptos, selectedCryptoForChart]);
 
   const copyEmailToClipboard = () => {
     navigator.clipboard.writeText(monitoringEmail);
@@ -97,19 +108,6 @@ function DashboardPage({
       padding: '12px',
       borderRadius: '12px'
     },
-    headerTitle: {
-      margin: 0,
-      fontSize: '24px',
-      fontWeight: 'bold',
-      color: colors.text,
-      transition: 'color 0.3s ease'
-    },
-    headerSubtitle: {
-      margin: 0,
-      color: colors.textSecondary,
-      fontSize: '13px',
-      transition: 'color 0.3s ease'
-    },
     headerButtons: {
       display: 'flex',
       gap: '12px',
@@ -125,8 +123,7 @@ function DashboardPage({
       display: 'flex',
       alignItems: 'center',
       gap: '8px',
-      color: colors.text,
-      transition: 'all 0.3s ease'
+      color: colors.text
     },
     button: {
       padding: '8px 16px',
@@ -140,14 +137,6 @@ function DashboardPage({
       border: 'none',
       transition: 'transform 0.2s'
     },
-    refreshButton: {
-      background: '#667eea',
-      color: 'white'
-    },
-    logoutButton: {
-      background: '#ff4444',
-      color: 'white'
-    },
     content: {
       maxWidth: '1400px',
       margin: '30px auto',
@@ -158,43 +147,20 @@ function DashboardPage({
       borderRadius: '20px',
       marginBottom: '30px',
       color: 'white',
-      boxShadow: isDark ? '0 10px 30px rgba(0,0,0,0.4)' : '0 10px 30px rgba(0,0,0,0.2)',
+      boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
       position: 'relative',
       overflow: 'hidden',
-      transition: 'box-shadow 0.3s ease'
+      background: isMonitoring
+        ? 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'
+        : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
     },
-    statusCardBg: {
-      position: 'absolute',
-      top: '-50px',
-      right: '-50px',
-      width: '200px',
-      height: '200px',
-      background: 'rgba(255,255,255,0.1)',
-      borderRadius: '50%'
-    },
-    statusContent: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      flexWrap: 'wrap',
-      gap: '20px',
-      position: 'relative'
-    },
-    statusIcon: {
-      background: 'rgba(255,255,255,0.2)',
-      padding: '15px',
-      borderRadius: '15px'
-    },
-    statusButton: {
-      background: 'white',
-      padding: '18px 45px',
-      borderRadius: '12px',
-      fontSize: '18px',
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-      transition: 'transform 0.2s',
-      border: 'none'
+    card: {
+      background: colors.cardBg,
+      padding: '30px',
+      borderRadius: '20px',
+      marginBottom: '30px',
+      boxShadow: `0 4px 15px ${colors.shadowColor}`,
+      color: colors.text
     },
     statsGrid: {
       display: 'grid',
@@ -206,98 +172,52 @@ function DashboardPage({
       background: colors.cardBg,
       padding: '20px',
       borderRadius: '15px',
-      boxShadow: `0 4px 15px ${colors.shadowColor}`,
-      transition: 'all 0.5s ease'
-    },
-    statLabel: {
-      fontSize: '14px',
-      color: colors.textSecondary,
-      transition: 'color 0.3s ease'
-    },
-    statValue: {
-      margin: 0,
-      fontSize: '32px',
-      fontWeight: 'bold',
-      color: colors.text,
-      transition: 'color 0.3s ease'
-    },
-    card: {
-      background: colors.cardBg,
-      padding: '30px',
-      borderRadius: '20px',
-      marginBottom: '30px',
-      boxShadow: `0 4px 15px ${colors.shadowColor}`,
-      transition: 'all 0.5s ease'
-    },
-    cardTitle: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-      marginBottom: '25px',
-      fontSize: '22px',
-      fontWeight: 'bold',
-      color: colors.text,
-      transition: 'color 0.3s ease'
-    },
-    settingsGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-      gap: '20px'
-    },
-    label: {
-      display: 'block',
-      marginBottom: '10px',
-      fontWeight: 'bold',
-      fontSize: '14px',
-      color: colors.text,
-      transition: 'color 0.3s ease'
+      boxShadow: `0 4px 15px ${colors.shadowColor}`
     },
     input: {
       width: '100%',
       padding: '12px',
-      border: `2px solid ${colors.inputBorder}`,
+      border: '2px solid #e0e0e0',
       borderRadius: '10px',
       fontSize: '14px',
       boxSizing: 'border-box',
-      background: colors.inputBg,
-      color: colors.inputText,
-      transition: 'all 0.3s ease'
+      transition: 'border-color 0.3s',
+      background: colors.cardBg,
+      color: colors.text
     },
     select: {
       width: '100%',
       padding: '12px',
-      border: `2px solid ${colors.inputBorder}`,
+      border: '2px solid #e0e0e0',
       borderRadius: '10px',
       fontSize: '14px',
       cursor: 'pointer',
       boxSizing: 'border-box',
-      background: colors.inputBg,
-      color: colors.inputText,
-      transition: 'all 0.3s ease'
+      background: colors.cardBg,
+      color: colors.text
     },
     cryptoGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
       gap: '20px'
     },
-    cryptoCard: {
+    cryptoCard: (isSelected, isHovered) => ({
       padding: '20px',
       borderRadius: '15px',
       cursor: 'pointer',
       transition: 'all 0.3s',
-      userSelect: 'none'
-    },
-    searchBar: {
-      display: 'flex',
-      gap: '10px',
-      flexWrap: 'wrap'
-    },
-    emptyState: {
-      textAlign: 'center',
-      padding: '60px 20px',
-      color: colors.textTertiary,
-      transition: 'color 0.3s ease'
-    }
+      userSelect: 'none',
+      border: isSelected ? '3px solid #667eea' : '2px solid #e0e0e0',
+      background: isSelected 
+        ? 'linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%)' 
+        : colors.cardBg,
+      boxShadow: isSelected 
+        ? '0 8px 20px rgba(102, 126, 234, 0.2)' 
+        : isHovered 
+        ? '0 8px 20px rgba(0,0,0,0.1)' 
+        : `0 2px 8px ${colors.shadowColor}`,
+      transform: !isSelected && isHovered ? 'translateY(-5px)' : 'translateY(0)'
+    })
   };
 
   return (
@@ -310,8 +230,10 @@ function DashboardPage({
               <TrendingUp size={32} color="white" />
             </div>
             <div>
-              <h1 style={styles.headerTitle}>Crypto Monitor</h1>
-              <p style={styles.headerSubtitle}>
+              <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 'bold', color: colors.text }}>
+                Crypto Monitor
+              </h1>
+              <p style={{ margin: 0, color: colors.textSecondary, fontSize: '13px' }}>
                 {lastUpdate && `Atualizado ${lastUpdate.toLocaleTimeString()}`}
               </p>
             </div>
@@ -319,7 +241,6 @@ function DashboardPage({
           
           <div style={styles.headerButtons}>
             <ThemeToggle />
-            
             <div style={styles.userBadge}>
               <User size={18} color="#667eea" />
               {user?.username}
@@ -328,22 +249,27 @@ function DashboardPage({
             <button
               onClick={onRefresh}
               disabled={isRefreshing}
-              style={{...styles.button, ...styles.refreshButton, opacity: isRefreshing ? 0.5 : 1}}
-              onMouseOver={(e) => !isRefreshing && (e.currentTarget.style.transform = 'scale(1.05)')}
-              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              style={{
+                ...styles.button,
+                background: '#667eea',
+                color: 'white',
+                opacity: isRefreshing ? 0.5 : 1
+              }}
             >
               <RefreshCw 
                 size={16} 
-                style={{animation: isRefreshing ? 'spin 1s linear infinite' : 'none'}} 
+                style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} 
               />
               Atualizar
             </button>
             
             <button
               onClick={onLogout}
-              style={{...styles.button, ...styles.logoutButton}}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              style={{
+                ...styles.button,
+                background: '#ff4444',
+                color: 'white'
+              }}
             >
               <LogOut size={16} />
               Sair
@@ -354,26 +280,38 @@ function DashboardPage({
 
       <div style={styles.content}>
         {/* Status Card */}
-        <div
-          style={{
-            ...styles.statusCard,
-            background: isMonitoring
-              ? 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)'
-              : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
-          }}
-        >
-          <div style={styles.statusCardBg} />
+        <div style={styles.statusCard}>
+          <div style={{
+            position: 'absolute',
+            top: '-50px',
+            right: '-50px',
+            width: '200px',
+            height: '200px',
+            background: 'rgba(255,255,255,0.1)',
+            borderRadius: '50%'
+          }} />
           
-          <div style={styles.statusContent}>
-            <div style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
-              <div style={styles.statusIcon}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '20px',
+            position: 'relative'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+              <div style={{
+                background: 'rgba(255,255,255,0.2)',
+                padding: '15px',
+                borderRadius: '15px'
+              }}>
                 {isMonitoring ? <Activity size={40} /> : <XCircle size={40} />}
               </div>
               <div>
-                <h2 style={{margin: 0, fontSize: '28px', fontWeight: 'bold'}}>
+                <h2 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold' }}>
                   {isMonitoring ? '✓ Monitoramento Ativo' : '○ Monitoramento Inativo'}
                 </h2>
-                <p style={{margin: '8px 0 0 0', fontSize: '16px', opacity: 0.9}}>
+                <p style={{ margin: '8px 0 0 0', fontSize: '16px', opacity: 0.9 }}>
                   {isMonitoring
                     ? `${selectedCryptos.length} moeda(s) • Verificação a cada ${monitoringInterval} min`
                     : 'Configure e inicie para receber alertas em tempo real'}
@@ -384,11 +322,17 @@ function DashboardPage({
             <button
               onClick={onStartStopMonitoring}
               style={{
-                ...styles.statusButton,
+                background: 'white',
+                padding: '18px 45px',
+                borderRadius: '12px',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+                transition: 'transform 0.2s',
+                border: 'none',
                 color: isMonitoring ? '#f5576c' : '#11998e'
               }}
-              onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-              onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
             >
               {isMonitoring ? '■ Parar' : '▶ Iniciar'}
             </button>
@@ -399,22 +343,24 @@ function DashboardPage({
         {selectedCryptos.length > 0 && (
           <div style={styles.statsGrid}>
             <div style={styles.statCard}>
-              <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px'}}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                 <BarChart3 size={24} color="#667eea" />
-                <span style={styles.statLabel}>Selecionadas</span>
+                <span style={{ fontSize: '14px', color: colors.textSecondary }}>Selecionadas</span>
               </div>
-              <p style={styles.statValue}>
+              <p style={{ margin: 0, fontSize: '32px', fontWeight: 'bold', color: colors.text }}>
                 {selectedCryptos.length}
               </p>
             </div>
             
             <div style={styles.statCard}>
-              <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px'}}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                 <TrendingUp size={24} color="#667eea" />
-                <span style={styles.statLabel}>Variação Média</span>
+                <span style={{ fontSize: '14px', color: colors.textSecondary }}>Variação Média</span>
               </div>
               <p style={{
-                ...styles.statValue,
+                margin: 0,
+                fontSize: '32px',
+                fontWeight: 'bold',
                 color: averageChange >= 0 ? '#10b981' : '#ef4444'
               }}>
                 {averageChange >= 0 ? '+' : ''}{averageChange.toFixed(2)}%
@@ -422,35 +368,122 @@ function DashboardPage({
             </div>
             
             <div style={styles.statCard}>
-              <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px'}}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                 <Bell size={24} color="#667eea" />
-                <span style={styles.statLabel}>Alertas Ativos</span>
+                <span style={{ fontSize: '14px', color: colors.textSecondary }}>Alertas Ativos</span>
               </div>
-              <p style={styles.statValue}>
+              <p style={{ margin: 0, fontSize: '32px', fontWeight: 'bold', color: colors.text }}>
                 {isMonitoring ? selectedCryptos.length * 2 : 0}
               </p>
             </div>
           </div>
         )}
 
+        {/* Seção de Gráfico */}
+        {selectedCryptos.length > 0 && (
+          <div style={styles.card}>
+            <h2 style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px', 
+              marginBottom: '20px', 
+              fontSize: '22px', 
+              fontWeight: 'bold',
+              color: colors.text
+            }}>
+              📊 Análise de Preços
+            </h2>
+
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              marginBottom: '20px',
+              overflowX: 'auto',
+              paddingBottom: '8px'
+            }}>
+              {selectedCryptos.map((crypto) => {
+                const isSelected = selectedCryptoForChart?.coinId === crypto.coinId;
+                return (
+                  <button
+                    key={crypto.coinId || crypto.symbol}
+                    onClick={() => setSelectedCryptoForChart(crypto)}
+                    style={{
+                      padding: '12px 20px',
+                      borderRadius: '10px',
+                      fontWeight: 'bold',
+                      whiteSpace: 'nowrap',
+                      cursor: 'pointer',
+                      border: isSelected ? 'none' : '2px solid #ddd',
+                      background: isSelected ? '#667eea' : '#ffffff',
+                      color: isSelected ? '#ffffff' : '#333333',
+                      boxShadow: isSelected ? '0 4px 10px rgba(102, 126, 234, 0.5)' : 'none',
+                      transition: 'all 0.25s ease'
+                    }}
+                  >
+                    {crypto.name} ({crypto.symbol?.toUpperCase()})
+                  </button>
+                );
+              })}
+            </div>
+
+            {selectedCryptoForChart ? (
+              <PriceChart
+                coinId={selectedCryptoForChart.coinId || selectedCryptoForChart.name?.toLowerCase()}
+                coinName={selectedCryptoForChart.name}
+                coinSymbol={selectedCryptoForChart.symbol}
+              />
+            ) : (
+              <div style={{
+                background: '#ffffff',
+                padding: '60px',
+                borderRadius: '20px',
+                boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
+                textAlign: 'center',
+                color: '#999999',
+                fontSize: '16px'
+              }}>
+                📊 Selecione uma criptomoeda acima para ver o gráfico
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Settings Card */}
         <div style={styles.card}>
-          <h2 style={styles.cardTitle}>
+          <h2 style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '25px',
+            fontSize: '22px',
+            fontWeight: 'bold',
+            color: colors.text
+          }}>
             <Settings size={28} color="#667eea" />
             Configurações de Monitoramento
           </h2>
           
-          <div style={styles.settingsGrid}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+            gap: '20px'
+          }}>
             <div>
-              <label style={styles.label}>
+              <label style={{
+                display: 'block',
+                marginBottom: '10px',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                color: colors.text
+              }}>
                 📧 Email para Alertas
               </label>
-              <div style={{display: 'flex', gap: '10px'}}>
+              <div style={{ display: 'flex', gap: '10px' }}>
                 <input
                   type="email"
                   value={monitoringEmail}
                   onChange={(e) => setMonitoringEmail(e.target.value)}
-                  style={{...styles.input, flex: 1}}
+                  style={{ ...styles.input, flex: 1 }}
                   placeholder="seu@email.com"
                 />
                 {monitoringEmail && (
@@ -472,7 +505,13 @@ function DashboardPage({
             </div>
             
             <div>
-              <label style={styles.label}>
+              <label style={{
+                display: 'block',
+                marginBottom: '10px',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                color: colors.text
+              }}>
                 ⏱️ Intervalo de Verificação
               </label>
               <select
@@ -490,7 +529,13 @@ function DashboardPage({
             </div>
             
             <div>
-              <label style={styles.label}>
+              <label style={{
+                display: 'block',
+                marginBottom: '10px',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                color: colors.text
+              }}>
                 📉 Alerta de Compra
               </label>
               <input
@@ -505,7 +550,13 @@ function DashboardPage({
             </div>
             
             <div>
-              <label style={styles.label}>
+              <label style={{
+                display: 'block',
+                marginBottom: '10px',
+                fontWeight: 'bold',
+                fontSize: '14px',
+                color: colors.text
+              }}>
                 📈 Alerta de Venda
               </label>
               <input
@@ -523,23 +574,42 @@ function DashboardPage({
 
         {/* Cryptocurrencies Card */}
         <div style={styles.card}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', flexWrap: 'wrap', gap: '15px'}}>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '25px',
+            flexWrap: 'wrap',
+            gap: '15px'
+          }}>
             <div>
-              <h2 style={styles.cardTitle}>
+              <h2 style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                margin: 0,
+                fontSize: '22px',
+                fontWeight: 'bold',
+                color: colors.text
+              }}>
                 <Zap size={28} color="#667eea" />
                 Criptomoedas Disponíveis
               </h2>
-              <p style={{margin: '8px 0 0 0', color: colors.textSecondary, fontSize: '14px', transition: 'color 0.3s ease'}}>
+              <p style={{
+                margin: '8px 0 0 0',
+                color: colors.textSecondary,
+                fontSize: '14px'
+              }}>
                 {selectedCryptos.length} de {filteredCryptos.length} selecionadas
               </p>
             </div>
             
-            <div style={styles.searchBar}>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                style={{...styles.input, minWidth: '200px', margin: 0}}
+                style={{ ...styles.input, minWidth: '200px', margin: 0 }}
                 placeholder="🔍 Buscar moeda..."
               />
               <select
@@ -564,8 +634,6 @@ function DashboardPage({
                     fontWeight: 'bold',
                     fontSize: '14px'
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.background = '#cc0000'}
-                  onMouseOut={(e) => e.currentTarget.style.background = '#ff4444'}
                 >
                   ✕ Limpar
                 </button>
@@ -589,26 +657,29 @@ function DashboardPage({
                   onClick={() => onToggleCryptoSelection(crypto)}
                   onMouseEnter={() => setHoveredCrypto(identifier)}
                   onMouseLeave={() => setHoveredCrypto(null)}
-                  style={{
-                    ...styles.cryptoCard,
-                    border: isSelected ? '3px solid #667eea' : `2px solid ${colors.border}`,
-                    background: isSelected 
-                      ? (isDark ? 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)' : 'linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%)')
-                      : colors.cardBg,
-                    boxShadow: isSelected 
-                      ? '0 8px 20px rgba(102, 126, 234, 0.3)' 
-                      : isHovered 
-                      ? `0 8px 20px ${colors.shadowColor}` 
-                      : `0 2px 8px ${colors.shadowColor}`,
-                    transform: !isSelected && isHovered ? 'translateY(-5px)' : 'translateY(0)'
-                  }}
+                  style={styles.cryptoCard(isSelected, isHovered)}
                 >
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '15px'}}>
-                    <div style={{flex: 1}}>
-                      <h3 style={{margin: 0, fontSize: '18px', fontWeight: 'bold', color: colors.text, transition: 'color 0.3s ease'}}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '15px'
+                  }}>
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{
+                        margin: 0,
+                        fontSize: '18px',
+                        fontWeight: 'bold',
+                        color: colors.text
+                      }}>
                         {crypto.name}
                       </h3>
-                      <p style={{margin: '5px 0 0 0', color: colors.textSecondary, fontSize: '13px', fontWeight: '600', transition: 'color 0.3s ease'}}>
+                      <p style={{
+                        margin: '5px 0 0 0',
+                        color: colors.textSecondary,
+                        fontSize: '13px',
+                        fontWeight: '600'
+                      }}>
                         {(crypto.symbol || '').toUpperCase()}
                       </p>
                     </div>
@@ -616,23 +687,27 @@ function DashboardPage({
                       width: '28px',
                       height: '28px',
                       borderRadius: '8px',
-                      border: `2px solid ${isSelected ? '#667eea' : colors.border}`,
-                      background: isSelected ? '#667eea' : colors.inputBg,
+                      border: `2px solid ${isSelected ? '#667eea' : '#ccc'}`,
+                      background: isSelected ? '#667eea' : 'white',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       color: 'white',
                       fontWeight: 'bold',
                       fontSize: '16px',
-                      flexShrink: 0,
-                      transition: 'all 0.3s ease'
+                      flexShrink: 0
                     }}>
                       {isSelected && '✓'}
                     </div>
                   </div>
                   
-                  <div style={{marginBottom: '12px'}}>
-                    <p style={{margin: 0, fontSize: '28px', fontWeight: 'bold', color: colors.text, transition: 'color 0.3s ease'}}>
+                  <div style={{ marginBottom: '12px' }}>
+                    <p style={{
+                      margin: 0,
+                      fontSize: '28px',
+                      fontWeight: 'bold',
+                      color: colors.text
+                    }}>
                       ${(crypto.currentPrice || 0).toLocaleString('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
@@ -640,29 +715,32 @@ function DashboardPage({
                     </p>
                   </div>
                   
-                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
                     <div style={{
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px',
                       padding: '6px 12px',
                       borderRadius: '8px',
-                      background: isPriceUp 
-                        ? (isDark ? '#065f46' : '#dcfce7') 
-                        : (isDark ? '#7f1d1d' : '#fee2e2'),
-                      color: isPriceUp 
-                        ? (isDark ? '#10b981' : '#166534') 
-                        : (isDark ? '#ef4444' : '#991b1b'),
+                      background: isPriceUp ? '#dcfce7' : '#fee2e2',
+                      color: isPriceUp ? '#166534' : '#991b1b',
                       fontSize: '14px',
-                      fontWeight: 'bold',
-                      transition: 'all 0.3s ease'
+                      fontWeight: 'bold'
                     }}>
-                      <span style={{fontSize: '16px'}}>{isPriceUp ? '▲' : '▼'}</span>
+                      <span style={{ fontSize: '16px' }}>{isPriceUp ? '▲' : '▼'}</span>
                       <span>{Math.abs(crypto.priceChange24h || 0).toFixed(2)}%</span>
                     </div>
                     
                     {crypto.marketCap && (
-                      <div style={{fontSize: '11px', color: colors.textTertiary, fontWeight: '600', transition: 'color 0.3s ease'}}>
+                      <div style={{
+                        fontSize: '11px',
+                        color: colors.textSecondary,
+                        fontWeight: '600'
+                      }}>
                         ${(crypto.marketCap / 1000000000).toFixed(1)}B
                       </div>
                     )}
@@ -673,9 +751,15 @@ function DashboardPage({
           </div>
           
           {filteredCryptos.length === 0 && (
-            <div style={styles.emptyState}>
-              <p style={{fontSize: '18px', marginBottom: '10px'}}>Nenhuma criptomoeda encontrada</p>
-              <p style={{fontSize: '14px'}}>Tente buscar por outro termo</p>
+            <div style={{
+              textAlign: 'center',
+              padding: '60px 20px',
+              color: colors.textSecondary
+            }}>
+              <p style={{ fontSize: '18px', marginBottom: '10px' }}>
+                Nenhuma criptomoeda encontrada
+              </p>
+              <p style={{ fontSize: '14px' }}>Tente buscar por outro termo</p>
             </div>
           )}
         </div>
