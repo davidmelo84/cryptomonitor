@@ -57,8 +57,9 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME:andremendoncaolv@gmail.com}
-    password: ${MAIL_PASSWORD:vjaljbffpdgpcscx}
+    username: ${MAIL_USERNAME:ddevnordeste@gmail.com}
+    password: ${MAIL_PASSWORD:zubnnuqrgxjwuhth}
+
     properties:
       mail:
         smtp:
@@ -101,7 +102,7 @@ notification:
   email:
     enabled: true
     from-name: Crypto Monitoring System
-    from: ${MAIL_USERNAME:andremendoncaolv@gmail.com}
+    from: ${MAIL_USERNAME:ddevnordeste@gmail.com}
     cooldown-minutes: 30
 
   telegram:

@@ -1,3 +1,5 @@
+// back/src/main/java/com/crypto/controller/MonitoringController.java
+
 package com.crypto.controller;
 
 import com.crypto.model.AlertRule;
@@ -21,7 +23,7 @@ import java.util.Map;
 public class MonitoringController {
 
     private final MonitoringControlService monitoringControlService;
-    private final AlertService alertService; // ⬅️ ADICIONADO
+    private final AlertService alertService;
 
     /**
      * Inicia o monitoramento para o usuário autenticado
@@ -46,6 +48,7 @@ public class MonitoringController {
                     ? authentication.getName()
                     : "guest";
 
+            // ✅ VALIDAÇÕES
             if (email == null || email.isEmpty()) {
                 return ResponseEntity.badRequest()
                         .body(Map.of("error", "Email é obrigatório"));
@@ -56,27 +59,43 @@ public class MonitoringController {
                         .body(Map.of("error", "Selecione pelo menos uma criptomoeda"));
             }
 
-            log.info("📥 Requisição para iniciar monitoramento:");
-            log.info("   - Usuário: {}", username);
-            log.info("   - Email: {}", email);
-            log.info("   - Criptomoedas: {}", cryptocurrencies);
-            log.info("   - Intervalo: {} minutos", checkIntervalMinutes);
-            log.info("   - Threshold compra: -{}%", buyThreshold);
-            log.info("   - Threshold venda: +{}%", sellThreshold);
+            // ✅ LOGS DETALHADOS PARA DEBUG
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            log.info("📥 REQUISIÇÃO PARA INICIAR MONITORAMENTO");
+            log.info("   👤 Usuário: {}", username);
+            log.info("   📧 Email: {}", email);
+            log.info("   📊 Criptomoedas recebidas: {}", cryptocurrencies);
+            log.info("   📊 Quantidade: {}", cryptocurrencies.size());
+            log.info("   ⏱️  Intervalo: {} minutos", checkIntervalMinutes);
+            log.info("   📉 Threshold compra: -{}%", buyThreshold);
+            log.info("   📈 Threshold venda: +{}%", sellThreshold);
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-            // ⬇️ NOVO: Criar regras de alerta automaticamente
+            // ✅ DELETAR ALERTAS ANTIGOS DO USUÁRIO (EVITAR DUPLICAÇÃO)
+            try {
+                log.info("🗑️  Deletando alertas antigos do email: {}", email);
+                alertService.deactivateAllAlertsForUser(email);
+            } catch (Exception e) {
+                log.warn("⚠️  Erro ao deletar alertas antigos: {}", e.getMessage());
+            }
+
+            // ✅ CRIAR NOVOS ALERTAS **APENAS** PARA AS CRYPTOS SELECIONADAS
             int rulesCreated = createAlertRulesForUser(email, cryptocurrencies, buyThreshold, sellThreshold);
-            log.info("📋 Criadas {} regras de alerta", rulesCreated);
+            log.info("📋 TOTAL DE REGRAS CRIADAS: {}", rulesCreated);
 
+            // ✅ INICIAR O MONITORAMENTO
             boolean started = monitoringControlService.startMonitoring(username, email);
 
             if (started) {
+                log.info("✅ MONITORAMENTO INICIADO COM SUCESSO!");
+                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
                 return ResponseEntity.ok(Map.of(
                         "message", "Monitoramento iniciado com sucesso",
                         "username", username,
                         "email", email,
                         "cryptocurrencies", cryptocurrencies,
-                        "alertRulesCreated", rulesCreated, // ⬅️ ADICIONADO
+                        "alertRulesCreated", rulesCreated,
                         "interval", checkIntervalMinutes,
                         "active", true
                 ));
@@ -89,7 +108,7 @@ public class MonitoringController {
             }
 
         } catch (Exception e) {
-            log.error("❌ Erro ao iniciar monitoramento: {}", e.getMessage(), e);
+            log.error("❌ ERRO AO INICIAR MONITORAMENTO: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError()
                     .body(Map.of(
                             "error", "Erro ao iniciar monitoramento",
@@ -98,48 +117,67 @@ public class MonitoringController {
         }
     }
 
-    // ⬇️ NOVO MÉTODO AUXILIAR
+    /**
+     * Cria alertas apenas para as criptomoedas selecionadas
+     */
     private int createAlertRulesForUser(String email, List<String> cryptos, Double buyThreshold, Double sellThreshold) {
         int count = 0;
 
+        log.info("🔧 Iniciando criação de alertas para {} cryptos", cryptos.size());
+
         for (String cryptoId : cryptos) {
             try {
-                // Mapear coinId para símbolo
                 String symbol = mapCoinIdToSymbol(cryptoId);
 
-                // Criar regra de QUEDA (oportunidade de compra)
+                log.info("   🔹 Criando alertas para:");
+                log.info("      - CoinId recebido: {}", cryptoId);
+                log.info("      - Símbolo mapeado: {}", symbol);
+
+                // CRIAR REGRA DE QUEDA (Oportunidade de COMPRA)
                 AlertRule buyRule = new AlertRule();
                 buyRule.setCoinSymbol(symbol);
                 buyRule.setNotificationEmail(email);
                 buyRule.setAlertType(AlertRule.AlertType.PERCENT_CHANGE_24H);
-                buyRule.setThresholdValue(BigDecimal.valueOf(-buyThreshold)); // Negativo = queda
+                buyRule.setThresholdValue(BigDecimal.valueOf(-buyThreshold));
                 buyRule.setActive(true);
+
                 alertService.createAlertRule(buyRule);
                 count++;
 
-                log.info("   ✅ Criada regra de COMPRA: {} com threshold -{}%", symbol, buyThreshold);
+                log.info("   ✅ Regra de COMPRA criada:");
+                log.info("      - Símbolo: {}", symbol);
+                log.info("      - Email: {}", email);
+                log.info("      - Threshold: -{}%", buyThreshold);
 
-                // Criar regra de ALTA (oportunidade de venda)
+                // CRIAR REGRA DE ALTA (Oportunidade de VENDA)
                 AlertRule sellRule = new AlertRule();
                 sellRule.setCoinSymbol(symbol);
                 sellRule.setNotificationEmail(email);
                 sellRule.setAlertType(AlertRule.AlertType.PERCENT_CHANGE_24H);
-                sellRule.setThresholdValue(BigDecimal.valueOf(sellThreshold)); // Positivo = alta
+                sellRule.setThresholdValue(BigDecimal.valueOf(sellThreshold));
                 sellRule.setActive(true);
+
                 alertService.createAlertRule(sellRule);
                 count++;
 
-                log.info("   ✅ Criada regra de VENDA: {} com threshold +{}%", symbol, sellThreshold);
+                log.info("   ✅ Regra de VENDA criada:");
+                log.info("      - Símbolo: {}", symbol);
+                log.info("      - Email: {}", email);
+                log.info("      - Threshold: +{}%", sellThreshold);
 
             } catch (Exception e) {
-                log.error("   ❌ Erro ao criar regras para {}: {}", cryptoId, e.getMessage());
+                log.error("   ❌ ERRO ao criar regras para {}: {}", cryptoId, e.getMessage());
+                e.printStackTrace();
             }
         }
 
+        log.info("🎯 Total de alertas criados: {}", count);
         return count;
     }
 
-    // ⬇️ MÉTODO PARA MAPEAR COIN ID PARA SÍMBOLO
+    /**
+     * Mapeia coinId para símbolo
+     */
     private String mapCoinIdToSymbol(String coinId) {
         return switch (coinId.toLowerCase()) {
             case "bitcoin" -> "BTC";
@@ -169,17 +207,26 @@ public class MonitoringController {
                     ? authentication.getName()
                     : "guest";
 
-            log.info("📥 Requisição para parar monitoramento: user={}", username);
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            log.info("🛑 REQUISIÇÃO PARA PARAR MONITORAMENTO");
+            log.info("   👤 Usuário: {}", username);
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
             boolean stopped = monitoringControlService.stopMonitoring(username);
 
             if (stopped) {
+                log.info("✅ MONITORAMENTO PARADO COM SUCESSO!");
+                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
                 return ResponseEntity.ok(Map.of(
                         "message", "Monitoramento parado com sucesso",
                         "username", username,
                         "active", false
                 ));
             } else {
+                log.warn("⚠️  NENHUM MONITORAMENTO ATIVO ENCONTRADO PARA PARAR");
+                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
                 return ResponseEntity.badRequest()
                         .body(Map.of(
                                 "error", "Nenhum monitoramento ativo",
@@ -188,7 +235,9 @@ public class MonitoringController {
             }
 
         } catch (Exception e) {
-            log.error("❌ Erro ao parar monitoramento: {}", e.getMessage(), e);
+            log.error("❌ ERRO AO PARAR MONITORAMENTO: {}", e.getMessage(), e);
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
             return ResponseEntity.internalServerError()
                     .body(Map.of(
                             "error", "Erro ao parar monitoramento",
@@ -231,7 +280,6 @@ public class MonitoringController {
                     "message", "Endpoint em desenvolvimento",
                     "totalActive", 0
             ));
-
         } catch (Exception e) {
             log.error("❌ Erro ao listar monitoramentos: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError()

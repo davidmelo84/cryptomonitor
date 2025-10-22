@@ -30,6 +30,9 @@ public class NotificationService {
     @Value("${notification.email.from:crypto-monitor@exemplo.com}")
     private String emailFrom;
 
+    @Value("${notification.email.from-name:Crypto Monitoring System}")
+    private String emailFromName;
+
     @Value("${notification.email.to:seu-email@gmail.com}")
     private String defaultEmailTo;
 
@@ -84,10 +87,11 @@ public class NotificationService {
     /**
      * Envio de notificação por email
      */
+
     private void sendEmailNotification(NotificationMessage message) {
         try {
             SimpleMailMessage email = new SimpleMailMessage();
-            email.setFrom(emailFrom);
+            email.setFrom(emailFromName + " <" + emailFrom + ">");
             email.setTo(message.getRecipient() != null ? message.getRecipient() : defaultEmailTo);
             email.setSubject(String.format("🚨 Alerta Crypto: %s (%s)",
                     message.getCoinName(), message.getCoinSymbol()));

@@ -10,7 +10,6 @@ import TradingBotsPage from './components/pages/TradingBotsPage';
 import { API_BASE_URL } from './utils/constants';
 
 function App() {
-  // ✅ CORREÇÃO: Estado inicial sempre 'login' para evitar acesso direto
   const [currentPage, setCurrentPage] = useState('login');
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -26,28 +25,26 @@ function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
 
-  // ✅ CORREÇÃO: Função de validação de token melhorada
   const validateToken = useCallback(async (savedToken, savedUser) => {
     try {
       const response = await fetch(`${API_BASE_URL}/user/me`, {
         headers: { 'Authorization': `Bearer ${savedToken}` }
       });
-      
+
       if (response.ok) {
+        console.log('✅ Token válido, restaurando sessão');
         setToken(savedToken);
         setUser(JSON.parse(savedUser));
         setCurrentPage('dashboard');
       } else {
-        // Token inválido - forçar novo login
-        console.warn('Token inválido, redirecionando para login');
+        console.warn('⚠️ Token inválido, redirecionando para login');
         localStorage.clear();
         setCurrentPage('login');
         setToken(null);
         setUser(null);
       }
     } catch (error) {
-      // Erro na validação - forçar novo login
-      console.error('Erro ao validar token:', error);
+      console.error('❌ Erro ao validar token:', error);
       localStorage.clear();
       setCurrentPage('login');
       setToken(null);
@@ -55,55 +52,63 @@ function App() {
     }
   }, []);
 
-  // ✅ CORREÇÃO: useEffect de inicialização com validação robusta
+  // ✅ USEEFFECT CORRIGIDO - Validação robusta
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
-    
-    if (savedToken && savedUser) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        
-        // Validar AMBOS os tipos de token
-        if (savedToken === 'demo-token') {
-          // Demo token - validar se tem dados válidos
-          if (parsedUser && parsedUser.username) {
-            console.log('✅ Restaurando sessão demo:', parsedUser.username);
-            setToken(savedToken);
-            setUser(parsedUser);
-            setCurrentPage('dashboard');
-          } else {
-            // Token demo inválido
-            console.warn('⚠️ Token demo inválido');
-            localStorage.clear();
-            setCurrentPage('login');
-          }
-        } else {
-          // Token real - validar com backend
-          console.log('🔍 Validando token real...');
-          validateToken(savedToken, savedUser);
-        }
-      } catch (error) {
-        // Erro ao parsear savedUser
-        console.error('❌ Erro ao validar sessão:', error);
-        localStorage.clear();
-        setCurrentPage('login');
-      }
-    } else {
-      // Sem token armazenado - forçar login
-      console.log('🔐 Sem token armazenado, redirecionando para login');
+
+    // ✅ SE NÃO HOUVER TOKEN OU USER, VAI DIRETO PARA LOGIN
+    if (!savedToken || !savedUser) {
+      console.log('🔐 Sem credenciais armazenadas, redirecionando para login');
       setCurrentPage('login');
+      setToken(null);
+      setUser(null);
+      return; // ✅ IMPORTANTE: Parar aqui
+    }
+
+    // ✅ SE HOUVER TOKEN, VALIDAR ANTES DE RESTAURAR SESSÃO
+    try {
+      const parsedUser = JSON.parse(savedUser);
+
+      if (savedToken === 'demo-token') {
+        // ═══════════════════════════════════════════════════
+        // DEMO TOKEN - Validação simplificada
+        // ═══════════════════════════════════════════════════
+        if (parsedUser && parsedUser.username) {
+          console.log('✅ Restaurando sessão demo:', parsedUser.username);
+          setToken(savedToken);
+          setUser(parsedUser);
+          setCurrentPage('dashboard');
+        } else {
+          console.warn('⚠️ Token demo inválido, redirecionando para login');
+          localStorage.clear();
+          setCurrentPage('login');
+          setToken(null);
+          setUser(null);
+        }
+      } else {
+        // ═══════════════════════════════════════════════════
+        // TOKEN REAL - Validação com backend
+        // ═══════════════════════════════════════════════════
+        console.log('🔍 Validando token JWT com backend...');
+        validateToken(savedToken, savedUser);
+      }
+    } catch (error) {
+      // ✅ ERRO AO PARSEAR savedUser → Limpar e ir para login
+      console.error('❌ Erro ao validar sessão:', error);
+      localStorage.clear();
+      setCurrentPage('login');
+      setToken(null);
+      setUser(null);
     }
   }, [validateToken]);
 
-  // ✅ Debug log (opcional - pode remover em produção)
+  // ✅ Verificar status do monitoramento ao carregar
   useEffect(() => {
-    console.log('🔐 Estado atual:', { 
-      currentPage, 
-      user: user?.username, 
-      hasToken: !!token 
-    });
-  }, [currentPage, user, token]);
+    if (token) {
+      checkMonitoringStatus();
+    }
+  }, [token]);
 
   useEffect(() => {
     if (token) {
@@ -112,6 +117,32 @@ function App() {
       return () => clearInterval(interval);
     }
   }, [token]);
+
+  // ✅ Verificar se há monitoramento ativo
+  const checkMonitoringStatus = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/monitoring/status`, {
+        headers: { 
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('🔍 Status do monitoramento:', data);
+        
+        if (data.active) {
+          console.log('✅ Monitoramento ativo detectado, sincronizando frontend...');
+          setIsMonitoring(true);
+        } else {
+          console.log('⚪ Nenhum monitoramento ativo');
+          setIsMonitoring(false);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Erro ao verificar status:', error);
+    }
+  };
 
   const fetchAvailableCryptos = async () => {
     setIsRefreshing(true);
@@ -239,43 +270,85 @@ function App() {
 
   const handleStartStopMonitoring = async () => {
     if (isMonitoring) {
-      setIsMonitoring(false);
-      alert('🛑 Monitoramento parado com sucesso!');
+      try {
+        console.log('🛑 Tentando parar monitoramento...');
+        
+        const response = await fetch(`${API_BASE_URL}/monitoring/stop`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Monitoramento parado:', data);
+          setIsMonitoring(false);
+          alert('🛑 Monitoramento parado com sucesso!');
+        } else {
+          const errorData = await response.json();
+          console.error('❌ Erro ao parar:', errorData);
+          alert(`⚠️ Erro ao parar: ${errorData.message || 'Erro desconhecido'}`);
+        }
+      } catch (error) {
+        console.error('❌ Erro na requisição de parar:', error);
+        alert('⚠️ Erro ao conectar com o servidor para parar o monitoramento');
+      }
+      
     } else {
       if (!monitoringEmail || selectedCryptos.length === 0) {
         alert('⚠️ Configure o email e selecione pelo menos uma criptomoeda!');
-      } else {
-        try {
-          const response = await fetch(`${API_BASE_URL}/monitoring/start`, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              email: monitoringEmail,
-              cryptocurrencies: selectedCryptos.map(c => c.coinId || c.name),
-              checkIntervalMinutes: monitoringInterval,
-              buyThreshold,
-              sellThreshold
-            })
-          });
-          if (response.ok) {
-            setIsMonitoring(true);
-            alert(`✅ Monitoramento iniciado!\n\n📊 ${selectedCryptos.length} criptomoeda(s)\n⏱️ Intervalo: ${monitoringInterval} min\n📧 Email: ${monitoringEmail}`);
-          } else {
-            alert('⚠️ Erro ao iniciar monitoramento. Verifique as configurações do servidor.');
-          }
-        } catch (error) {
-          console.error('Erro ao iniciar monitoramento:', error);
+        return;
+      }
+      
+      try {
+        console.log('▶️ Tentando iniciar monitoramento...');
+        
+        const cryptoIds = selectedCryptos.map(c => c.coinId || c.name);
+        const payload = {
+          email: monitoringEmail,
+          cryptocurrencies: cryptoIds,
+          checkIntervalMinutes: monitoringInterval,
+          buyThreshold,
+          sellThreshold
+        };
+        
+        console.log('📤 Payload enviado:', JSON.stringify(payload, null, 2));
+        
+        const response = await fetch(`${API_BASE_URL}/monitoring/start`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Monitoramento iniciado:', data);
           setIsMonitoring(true);
-          alert(`✅ Monitoramento iniciado (modo demonstração)!\n\n📊 ${selectedCryptos.length} criptomoeda(s)\n⏱️ Intervalo: ${monitoringInterval} min\n📧 Email: ${monitoringEmail}`);
+          alert(`✅ Monitoramento iniciado!\n\n📊 ${cryptoIds.length} criptomoeda(s)\n⏱️ Intervalo: ${monitoringInterval} min\n📧 Email: ${monitoringEmail}`);
+        } else {
+          const errorData = await response.json();
+          console.error('❌ Erro ao iniciar:', errorData);
+          
+          if (errorData.error === 'Monitoramento já está ativo') {
+            console.log('⚠️ Monitoramento já ativo detectado, sincronizando...');
+            setIsMonitoring(true);
+            alert('⚠️ Você já tem um monitoramento ativo. Clique em "Parar" para cancelá-lo.');
+          } else {
+            alert(`⚠️ Erro ao iniciar: ${errorData.message || 'Erro desconhecido'}`);
+          }
         }
+      } catch (error) {
+        console.error('❌ Erro na requisição de iniciar:', error);
+        alert('⚠️ Erro ao conectar com o servidor para iniciar o monitoramento');
       }
     }
   };
 
-  // ✅ CORREÇÃO: Controle de acesso mais rigoroso
   if (!token || !user) {
     if (currentPage === 'register') {
       return (
@@ -299,7 +372,6 @@ function App() {
     );
   }
 
-  // Navegação entre páginas logadas
   return (
     <ThemeProvider>
       {currentPage === 'dashboard' && (
@@ -329,18 +401,11 @@ function App() {
       )}
 
       {currentPage === 'portfolio' && (
-        <PortfolioPage
-          token={token}
-          onBack={() => setCurrentPage('dashboard')}
-        />
+        <PortfolioPage token={token} onBack={() => setCurrentPage('dashboard')} />
       )}
 
       {currentPage === 'bots' && (
-        <TradingBotsPage
-          token={token}
-          user={user}
-          onBack={() => setCurrentPage('dashboard')}
-        />
+        <TradingBotsPage token={token} user={user} onBack={() => setCurrentPage('dashboard')} />
       )}
     </ThemeProvider>
   );

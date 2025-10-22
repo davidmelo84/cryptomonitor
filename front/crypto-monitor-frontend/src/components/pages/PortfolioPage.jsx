@@ -16,7 +16,7 @@ import AddTransactionModal from '../portfolio/AddTransactionModal';
 import TransactionHistory from '../portfolio/TransactionHistory';
 import PortfolioChart from '../portfolio/PortfolioChart';
 
-function PortfolioPage({ token }) {
+function PortfolioPage({ token, onBack }) {
   const [portfolio, setPortfolio] = useState([]);
   const [summary, setSummary] = useState(null);
   const [transactions, setTransactions] = useState([]);
@@ -142,13 +142,22 @@ function PortfolioPage({ token }) {
             </p>
           </div>
 
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg"
-          >
-            <Plus size={20} />
-            Nova Transação
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={onBack}
+              className="bg-gray-500 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg"
+            >
+              ← Voltar
+            </button>
+            
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-lg font-bold flex items-center gap-2 hover:scale-105 transition-transform shadow-lg"
+            >
+              <Plus size={20} />
+              Nova Transação
+            </button>
+          </div>
         </div>
 
         {/* Summary Cards */}
