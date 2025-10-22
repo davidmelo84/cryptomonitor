@@ -6,10 +6,11 @@ import LoginPage from './components/pages/LoginPage';
 import RegisterPage from './components/pages/RegisterPage';
 import DashboardPage from './components/pages/DashboardPage';
 import PortfolioPage from './components/pages/PortfolioPage';
-import TradingBotsPage from './components/pages/TradingBotsPage'; // ⬅️ NOVO
+import TradingBotsPage from './components/pages/TradingBotsPage';
 import { API_BASE_URL } from './utils/constants';
 
 function App() {
+  // ✅ CORREÇÃO: Estado inicial sempre 'login' para evitar acesso direto
   const [currentPage, setCurrentPage] = useState('login');
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
@@ -25,45 +26,84 @@ function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
 
-  // Carrega dados salvos no localStorage (token e usuário)
-  useEffect(() => {
-  const savedToken = localStorage.getItem('token');
-  const savedUser = localStorage.getItem('user');
-  
-  if (savedToken && savedUser) {
-    // Se for token demo, aceita direto
-    if (savedToken === 'demo-token') {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-      setCurrentPage('dashboard');
-    } else {
-      // Token real - valida antes de usar
-      validateToken(savedToken, savedUser);
-    }
-  }
-}, []);
-
-const validateToken = async (savedToken, savedUser) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/user/me`, {
-      headers: { 'Authorization': `Bearer ${savedToken}` }
-    });
-    
-    if (response.ok) {
-      setToken(savedToken);
-      setUser(JSON.parse(savedUser));
-      setCurrentPage('dashboard');
-    } else {
-      // Token inválido - forçar novo login
+  // ✅ CORREÇÃO: Função de validação de token melhorada
+  const validateToken = useCallback(async (savedToken, savedUser) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/user/me`, {
+        headers: { 'Authorization': `Bearer ${savedToken}` }
+      });
+      
+      if (response.ok) {
+        setToken(savedToken);
+        setUser(JSON.parse(savedUser));
+        setCurrentPage('dashboard');
+      } else {
+        // Token inválido - forçar novo login
+        console.warn('Token inválido, redirecionando para login');
+        localStorage.clear();
+        setCurrentPage('login');
+        setToken(null);
+        setUser(null);
+      }
+    } catch (error) {
+      // Erro na validação - forçar novo login
+      console.error('Erro ao validar token:', error);
       localStorage.clear();
       setCurrentPage('login');
+      setToken(null);
+      setUser(null);
     }
-  } catch (error) {
-    // Erro na validação - forçar novo login
-    localStorage.clear();
-    setCurrentPage('login');
-  }
-};
+  }, []);
+
+  // ✅ CORREÇÃO: useEffect de inicialização com validação robusta
+  useEffect(() => {
+    const savedToken = localStorage.getItem('token');
+    const savedUser = localStorage.getItem('user');
+    
+    if (savedToken && savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        
+        // Validar AMBOS os tipos de token
+        if (savedToken === 'demo-token') {
+          // Demo token - validar se tem dados válidos
+          if (parsedUser && parsedUser.username) {
+            console.log('✅ Restaurando sessão demo:', parsedUser.username);
+            setToken(savedToken);
+            setUser(parsedUser);
+            setCurrentPage('dashboard');
+          } else {
+            // Token demo inválido
+            console.warn('⚠️ Token demo inválido');
+            localStorage.clear();
+            setCurrentPage('login');
+          }
+        } else {
+          // Token real - validar com backend
+          console.log('🔍 Validando token real...');
+          validateToken(savedToken, savedUser);
+        }
+      } catch (error) {
+        // Erro ao parsear savedUser
+        console.error('❌ Erro ao validar sessão:', error);
+        localStorage.clear();
+        setCurrentPage('login');
+      }
+    } else {
+      // Sem token armazenado - forçar login
+      console.log('🔐 Sem token armazenado, redirecionando para login');
+      setCurrentPage('login');
+    }
+  }, [validateToken]);
+
+  // ✅ Debug log (opcional - pode remover em produção)
+  useEffect(() => {
+    console.log('🔐 Estado atual:', { 
+      currentPage, 
+      user: user?.username, 
+      hasToken: !!token 
+    });
+  }, [currentPage, user, token]);
 
   useEffect(() => {
     if (token) {
@@ -126,10 +166,12 @@ const validateToken = async (savedToken, savedUser) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify({ username }));
         setCurrentPage('dashboard');
+        console.log('✅ Login realizado com sucesso');
       } else {
         setAuthError('Credenciais inválidas');
       }
     } catch (error) {
+      console.warn('⚠️ Backend indisponível, usando modo demo');
       setUser({ username });
       setToken('demo-token');
       localStorage.setItem('token', 'demo-token');
@@ -169,6 +211,7 @@ const validateToken = async (savedToken, savedUser) => {
   }, []);
 
   const handleLogout = () => {
+    console.log('🔓 Fazendo logout...');
     setUser(null);
     setToken(null);
     setCurrentPage('login');
@@ -232,8 +275,8 @@ const validateToken = async (savedToken, savedUser) => {
     }
   };
 
-  // 🔐 Controle de acesso: se não estiver logado, mostra Login/Register
-  if (!token) {
+  // ✅ CORREÇÃO: Controle de acesso mais rigoroso
+  if (!token || !user) {
     if (currentPage === 'register') {
       return (
         <ThemeProvider>
@@ -256,7 +299,7 @@ const validateToken = async (savedToken, savedUser) => {
     );
   }
 
-  // 🧭 Navegação entre páginas logadas
+  // Navegação entre páginas logadas
   return (
     <ThemeProvider>
       {currentPage === 'dashboard' && (
@@ -281,7 +324,7 @@ const validateToken = async (savedToken, savedUser) => {
           onToggleCryptoSelection={toggleCryptoSelection}
           onClearSelection={() => setSelectedCryptos([])}
           onNavigateToPortfolio={() => setCurrentPage('portfolio')}
-          onNavigateToBots={() => setCurrentPage('bots')} // ⬅️ NOVO
+          onNavigateToBots={() => setCurrentPage('bots')}
         />
       )}
 

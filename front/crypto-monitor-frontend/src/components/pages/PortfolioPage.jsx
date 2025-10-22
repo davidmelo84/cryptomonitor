@@ -1,6 +1,6 @@
 // front/crypto-monitor-frontend/src/components/pages/PortfolioPage.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Wallet,
   TrendingUp,
@@ -24,12 +24,8 @@ function PortfolioPage({ token }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeTab, setActiveTab] = useState('portfolio'); // 'portfolio', 'transactions'
 
-  useEffect(() => {
-    fetchPortfolio();
-    fetchTransactions();
-  }, []);
-
-  const fetchPortfolio = async () => {
+  // ✅ CORREÇÃO: Envolver em useCallback para evitar warning
+  const fetchPortfolio = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/portfolio`, {
@@ -53,9 +49,10 @@ function PortfolioPage({ token }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  const fetchTransactions = async () => {
+  // ✅ CORREÇÃO: Envolver em useCallback para evitar warning
+  const fetchTransactions = useCallback(async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/portfolio/transactions`, {
         headers: {
@@ -70,7 +67,13 @@ function PortfolioPage({ token }) {
     } catch (error) {
       console.error('Erro ao buscar transações:', error);
     }
-  };
+  }, [token]);
+
+  // ✅ CORREÇÃO: Agora pode incluir as dependências sem warning
+  useEffect(() => {
+    fetchPortfolio();
+    fetchTransactions();
+  }, [fetchPortfolio, fetchTransactions]);
 
   const handleAddTransaction = async (transaction) => {
     try {

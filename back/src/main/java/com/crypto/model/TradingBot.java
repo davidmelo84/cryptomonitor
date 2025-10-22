@@ -1,5 +1,3 @@
-// back/src/main/java/com/crypto/model/TradingBot.java
-
 package com.crypto.model;
 
 import jakarta.persistence.*;
@@ -33,14 +31,18 @@ public class TradingBot {
     @Column(name = "coin_symbol", nullable = false)
     private String coinSymbol;
 
+    // Estratégia padrão: GRID_TRADING
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "strategy", nullable = false)
-    private TradingStrategy strategy;
+    private TradingStrategy strategy = TradingStrategy.GRID_TRADING;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private BotStatus status = BotStatus.STOPPED;
 
+    @Builder.Default
     @Column(name = "is_simulation", nullable = false)
     private Boolean isSimulation = true;
 
@@ -78,18 +80,23 @@ public class TradingBot {
     private BigDecimal entryPrice;
 
     // Statistics
+    @Builder.Default
     @Column(name = "total_profit_loss", precision = 19, scale = 2)
     private BigDecimal totalProfitLoss = BigDecimal.ZERO;
 
+    @Builder.Default
     @Column(name = "total_trades")
     private Integer totalTrades = 0;
 
+    @Builder.Default
     @Column(name = "winning_trades")
     private Integer winningTrades = 0;
 
+    @Builder.Default
     @Column(name = "losing_trades")
     private Integer losingTrades = 0;
 
+    // Timestamps
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

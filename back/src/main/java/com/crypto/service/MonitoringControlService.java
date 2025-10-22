@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.time.Duration;
+
 
 @Slf4j
 @Service
@@ -38,7 +40,7 @@ public class MonitoringControlService {
             // Agenda tarefa periódica (a cada 5 minutos)
             ScheduledFuture<?> scheduledTask = taskScheduler.scheduleAtFixedRate(
                     () -> runMonitoringCycle(username, userEmail),
-                    300000 // 5 minutos em milissegundos
+                    Duration.ofMinutes(5) // ✅ Mais claro: 5 minutos
             );
 
             // Armazena a referência da tarefa

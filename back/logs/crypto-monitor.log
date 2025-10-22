@@ -2214,3 +2214,969 @@ jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
 2025-10-21 16:07:16 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-10-21 16:07:16 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-10-21 16:07:16 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-21 20:56:04 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 14316 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-10-21 20:56:04 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 20:56:09 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 20:56:09 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 348 ms. Found 7 JPA repository interfaces.
+2025-10-21 20:56:11 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-21 20:56:11 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 20:56:11 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-21 20:56:11 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-10-21 20:56:11 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 6688 ms
+2025-10-21 20:56:13 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-10-21 20:56:13 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-10-21 20:56:13 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-10-21 20:56:13 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/crypto_monitor (PostgreSQL 16.8)
+2025-10-21 20:56:13 [main] DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.6.0
+2025-10-21 20:56:13 [main] DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-10-21 20:56:13 [main] WARN  o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 16.8 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 15.
+2025-10-21 20:56:13 [main] DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-10-21 20:56:13 [main] DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-10-21 20:56:13 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-21 20:56:13 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-21 20:56:13 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-21 20:56:13 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-21 20:56:13 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.213s)
+2025-10-21 20:56:13 [main] DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-10-21 20:56:13 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-21 20:56:13 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-10-21 20:56:13 [main] DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 39 of 72M
+2025-10-21 20:56:14 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 20:56:14 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-21 20:56:14 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 20:56:14 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 20:56:14 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 20:56:15 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@77307b51
+2025-10-21 20:56:15 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 20:56:15 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 20:56:16 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 20:56:17 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 20:56:18 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-21 20:56:20 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 20:56:21 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService
+2025-10-21 20:56:22 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2025-10-21 20:56:22 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'taskExecutor'
+2025-10-21 20:56:22 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 20:56:22 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 38 mappings in 'requestMappingHandlerMapping'
+2025-10-21 20:56:22 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-10-21 20:56:23 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 15 endpoint(s) beneath base path '/actuator'
+2025-10-21 20:56:23 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@55d683cb, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4a3c683d, org.springframework.security.web.context.SecurityContextHolderFilter@637798b4, org.springframework.security.web.header.HeaderWriterFilter@414749f8, org.springframework.web.filter.CorsFilter@1791040d, org.springframework.security.web.authentication.logout.LogoutFilter@44b522ce, com.crypto.security.JwtAuthenticationFilter@1c4335c8, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4d45ec8c, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3a237f14, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3e706fc2, org.springframework.security.web.session.SessionManagementFilter@37e44608, org.springframework.security.web.access.ExceptionTranslationFilter@210e7a5, org.springframework.security.web.access.intercept.AuthorizationFilter@152225dd]
+2025-10-21 20:56:24 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-21 20:56:24 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-21 20:56:24 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2025-10-21 20:56:25 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/crypto-monitor'
+2025-10-21 20:56:25 [main] INFO  com.crypto.CryptoMonitorApplication - Started CryptoMonitorApplication in 22.166 seconds (process running for 27.678)
+2025-10-21 20:56:25 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 20:56:25 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@112dfb03
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@3d4d2e29
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-21 20:56:26 [RMI TCP Connection(1)-192.168.1.2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 8 ms
+2025-10-21 20:57:25 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 20:57:25 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 20:58:25 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 20:58:25 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 20:58:54 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2025-10-21 20:58:54 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'taskExecutor'
+2025-10-21 20:58:54 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 20:58:54 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-21 20:58:54 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-21 21:18:06 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 6536 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-10-21 21:18:06 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-21 21:18:10 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-21 21:18:10 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 319 ms. Found 7 JPA repository interfaces.
+2025-10-21 21:18:11 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-21 21:18:11 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-21 21:18:11 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-21 21:18:11 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-10-21 21:18:11 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 5370 ms
+2025-10-21 21:18:13 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-10-21 21:18:13 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-10-21 21:18:13 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-10-21 21:18:13 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/crypto_monitor (PostgreSQL 16.8)
+2025-10-21 21:18:13 [main] DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.6.0
+2025-10-21 21:18:13 [main] DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-10-21 21:18:13 [main] WARN  o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 16.8 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 15.
+2025-10-21 21:18:13 [main] DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-10-21 21:18:13 [main] DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-10-21 21:18:13 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-21 21:18:13 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-21 21:18:13 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-21 21:18:13 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-21 21:18:13 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.118s)
+2025-10-21 21:18:13 [main] DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-10-21 21:18:13 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-21 21:18:13 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-10-21 21:18:13 [main] DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 49 of 78M
+2025-10-21 21:18:13 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-21 21:18:13 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-21 21:18:13 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-21 21:18:14 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-21 21:18:14 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-21 21:18:14 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@52b30dcd
+2025-10-21 21:18:14 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-21 21:18:14 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-21 21:18:16 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-21 21:18:16 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-21 21:18:17 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-21 21:18:18 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-21 21:18:18 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService
+2025-10-21 21:18:19 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2025-10-21 21:18:19 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'taskExecutor'
+2025-10-21 21:18:19 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-21 21:18:19 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 38 mappings in 'requestMappingHandlerMapping'
+2025-10-21 21:18:19 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-10-21 21:18:20 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 15 endpoint(s) beneath base path '/actuator'
+2025-10-21 21:18:20 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@5dae85f7, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4a52c13c, org.springframework.security.web.context.SecurityContextHolderFilter@67108db4, org.springframework.security.web.header.HeaderWriterFilter@95d1ba6, org.springframework.web.filter.CorsFilter@47651c28, org.springframework.security.web.authentication.logout.LogoutFilter@bc4419c, com.crypto.security.JwtAuthenticationFilter@6d4dac56, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@24331ab6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@11def039, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5a67843b, org.springframework.security.web.session.SessionManagementFilter@71bebbff, org.springframework.security.web.access.ExceptionTranslationFilter@293918f9, org.springframework.security.web.access.intercept.AuthorizationFilter@3567edfe]
+2025-10-21 21:18:20 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-21 21:18:20 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-21 21:18:21 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2025-10-21 21:18:21 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/crypto-monitor'
+2025-10-21 21:18:21 [main] INFO  com.crypto.CryptoMonitorApplication - Started CryptoMonitorApplication in 16.184 seconds (process running for 18.999)
+2025-10-21 21:18:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:18:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:19:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:19:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:20:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:20:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:20:34 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-21 21:20:34 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-21 21:20:34 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-10-21 21:20:34 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-10-21 21:20:34 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-10-21 21:20:34 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@78ceb8cd
+2025-10-21 21:20:34 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@60b73425
+2025-10-21 21:20:34 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-21 21:20:34 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2025-10-21 21:20:34 [http-nio-8080-exec-1] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/crypto-monitor/api/user/me' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
+2025-10-21 21:20:35 [http-nio-8080-exec-1] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/crypto-monitor/api/user/me' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2025-10-21 21:20:35 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/user/me", parameters={}
+2025-10-21 21:20:35 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.UserController#getProfile(String)
+2025-10-21 21:20:35 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:20:35 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [User(id=2, username=teste, password=null, email=testando@gmail.com, role=USER)]
+2025-10-21 21:20:35 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:20:35 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:20:35 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:20:35 [http-nio-8080-exec-2] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:20:36 [http-nio-8080-exec-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [54d1de97] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:20:38 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [54d1de97] [258ebe5c-1] Response 200 OK
+2025-10-21 21:20:38 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [54d1de97] [258ebe5c-1] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108360, priceChange1 (truncated)...]
+2025-10-21 21:20:38 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:20:38 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108360, priceChange1 (truncated)...]
+2025-10-21 21:20:38 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:21:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:21:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:21:36 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:21:36 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:21:36 [http-nio-8080-exec-3] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:21:36 [http-nio-8080-exec-3] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5646a32] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:21:36 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5646a32] [258ebe5c-2] Response 200 OK
+2025-10-21 21:21:36 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [5646a32] [258ebe5c-2] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108360, priceChange1 (truncated)...]
+2025-10-21 21:21:36 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:21:36 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108360, priceChange1 (truncated)...]
+2025-10-21 21:21:36 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:22:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:22:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:22:36 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:22:36 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:22:36 [http-nio-8080-exec-4] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:22:36 [http-nio-8080-exec-4] DEBUG o.s.w.r.f.client.ExchangeFunctions - [1324aa36] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:22:36 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [1324aa36] [258ebe5c-3] Response 200 OK
+2025-10-21 21:22:36 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [1324aa36] [258ebe5c-3] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108331, priceChange1 (truncated)...]
+2025-10-21 21:22:36 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:22:36 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108331, priceChange1 (truncated)...]
+2025-10-21 21:22:36 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:23:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:23:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:23:36 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:23:36 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:23:36 [http-nio-8080-exec-5] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:23:36 [http-nio-8080-exec-5] DEBUG o.s.w.r.f.client.ExchangeFunctions - [7126b099] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:23:36 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [7126b099] [258ebe5c-4] Response 200 OK
+2025-10-21 21:23:36 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [7126b099] [258ebe5c-4] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108331, priceChange1 (truncated)...]
+2025-10-21 21:23:36 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:23:36 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108331, priceChange1 (truncated)...]
+2025-10-21 21:23:36 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:24:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:24:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:24:36 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:24:36 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:24:36 [http-nio-8080-exec-6] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:24:36 [http-nio-8080-exec-6] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3dd73e19] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:24:36 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3dd73e19] [258ebe5c-5] Response 200 OK
+2025-10-21 21:24:36 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [3dd73e19] [258ebe5c-5] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108306, priceChange1 (truncated)...]
+2025-10-21 21:24:36 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:24:36 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108306, priceChange1 (truncated)...]
+2025-10-21 21:24:36 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:25:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:25:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:25:35 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:25:35 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:25:35 [http-nio-8080-exec-7] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:25:35 [http-nio-8080-exec-7] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5b7beebf] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:25:35 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5b7beebf] [258ebe5c-6] Response 200 OK
+2025-10-21 21:25:35 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [5b7beebf] [258ebe5c-6] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108306, priceChange1 (truncated)...]
+2025-10-21 21:25:35 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:25:35 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108306, priceChange1 (truncated)...]
+2025-10-21 21:25:35 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:26:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:26:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:26:36 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:26:36 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:26:36 [http-nio-8080-exec-8] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:26:36 [http-nio-8080-exec-8] DEBUG o.s.w.r.f.client.ExchangeFunctions - [1b2cbe09] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:26:36 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [1b2cbe09] [258ebe5c-7] Response 200 OK
+2025-10-21 21:26:36 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [1b2cbe09] [258ebe5c-7] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108241, priceChange1 (truncated)...]
+2025-10-21 21:26:36 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:26:36 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108241, priceChange1 (truncated)...]
+2025-10-21 21:26:36 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:27:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:27:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:27:35 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:27:35 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:27:35 [http-nio-8080-exec-9] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:27:35 [http-nio-8080-exec-9] DEBUG o.s.w.r.f.client.ExchangeFunctions - [28041e93] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:27:35 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [28041e93] [258ebe5c-8] Response 200 OK
+2025-10-21 21:27:36 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [28041e93] [258ebe5c-8] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108241, priceChange1 (truncated)...]
+2025-10-21 21:27:36 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:27:36 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108241, priceChange1 (truncated)...]
+2025-10-21 21:27:36 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:28:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:28:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:28:37 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:28:37 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:28:37 [http-nio-8080-exec-10] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:28:37 [http-nio-8080-exec-10] DEBUG o.s.w.r.f.client.ExchangeFunctions - [11921706] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:28:37 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [11921706] [258ebe5c-9] Response 200 OK
+2025-10-21 21:28:37 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [11921706] [258ebe5c-9] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108125, priceChange1 (truncated)...]
+2025-10-21 21:28:37 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:28:37 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108125, priceChange1 (truncated)...]
+2025-10-21 21:28:37 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:29:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:29:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:29:38 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:29:38 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:29:38 [http-nio-8080-exec-1] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:29:38 [http-nio-8080-exec-1] DEBUG o.s.w.r.f.client.ExchangeFunctions - [a511256] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:29:38 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [a511256] [258ebe5c-10] Response 200 OK
+2025-10-21 21:29:38 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [a511256] [258ebe5c-10] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108054, priceChange1 (truncated)...]
+2025-10-21 21:29:38 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:29:38 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108054, priceChange1 (truncated)...]
+2025-10-21 21:29:38 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:30:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:30:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:30:38 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:30:38 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:30:38 [http-nio-8080-exec-2] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:30:38 [http-nio-8080-exec-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [44308abe] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:30:39 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [44308abe] [258ebe5c-11] Response 200 OK
+2025-10-21 21:30:39 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [44308abe] [258ebe5c-11] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108014, priceChange1 (truncated)...]
+2025-10-21 21:30:39 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:30:39 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108014, priceChange1 (truncated)...]
+2025-10-21 21:30:39 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:31:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:31:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:31:40 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:31:40 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:31:40 [http-nio-8080-exec-3] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:31:40 [http-nio-8080-exec-3] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2fa8392] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:31:40 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2fa8392] [258ebe5c-12] Response 200 OK
+2025-10-21 21:31:40 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [2fa8392] [258ebe5c-12] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107979, priceChange1 (truncated)...]
+2025-10-21 21:31:40 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:31:40 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107979, priceChange1 (truncated)...]
+2025-10-21 21:31:40 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:32:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:32:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:32:36 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:32:36 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:32:36 [http-nio-8080-exec-4] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:32:36 [http-nio-8080-exec-4] DEBUG o.s.w.r.f.client.ExchangeFunctions - [171b3c8a] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:32:36 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [171b3c8a] [258ebe5c-13] Response 200 OK
+2025-10-21 21:32:36 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [171b3c8a] [258ebe5c-13] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107979, priceChange1 (truncated)...]
+2025-10-21 21:32:36 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:32:36 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107979, priceChange1 (truncated)...]
+2025-10-21 21:32:36 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:32:38 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/user/me", parameters={}
+2025-10-21 21:32:38 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.UserController#getProfile(String)
+2025-10-21 21:32:38 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:32:38 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [User(id=2, username=teste, password=null, email=testando@gmail.com, role=USER)]
+2025-10-21 21:32:38 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:32:39 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:32:39 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:32:39 [http-nio-8080-exec-6] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:32:39 [http-nio-8080-exec-6] DEBUG o.s.w.r.f.client.ExchangeFunctions - [39e8bd7b] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:32:39 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [39e8bd7b] [258ebe5c-14] Response 200 OK
+2025-10-21 21:32:39 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [39e8bd7b] [258ebe5c-14] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107979, priceChange1 (truncated)...]
+2025-10-21 21:32:39 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:32:39 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107979, priceChange1 (truncated)...]
+2025-10-21 21:32:39 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:33:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:33:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:33:40 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:33:40 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:33:40 [http-nio-8080-exec-7] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:33:40 [http-nio-8080-exec-7] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5f447108] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:33:40 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5f447108] [258ebe5c-15] Response 200 OK
+2025-10-21 21:33:40 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [5f447108] [258ebe5c-15] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108130, priceChange1 (truncated)...]
+2025-10-21 21:33:40 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:33:40 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108130, priceChange1 (truncated)...]
+2025-10-21 21:33:40 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:34:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:34:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:34:39 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:34:39 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:34:39 [http-nio-8080-exec-8] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:34:39 [http-nio-8080-exec-8] DEBUG o.s.w.r.f.client.ExchangeFunctions - [6dd9d2d0] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:34:39 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [6dd9d2d0] [258ebe5c-16] Response 200 OK
+2025-10-21 21:34:39 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [6dd9d2d0] [258ebe5c-16] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108130, priceChange1 (truncated)...]
+2025-10-21 21:34:39 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:34:39 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108130, priceChange1 (truncated)...]
+2025-10-21 21:34:39 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:35:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:35:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:35:40 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:35:40 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:35:40 [http-nio-8080-exec-9] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:35:40 [http-nio-8080-exec-9] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2c3b9f4b] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:35:40 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2c3b9f4b] [258ebe5c-17] Response 200 OK
+2025-10-21 21:35:40 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [2c3b9f4b] [258ebe5c-17] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108187, priceChange1 (truncated)...]
+2025-10-21 21:35:40 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:35:40 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108187, priceChange1 (truncated)...]
+2025-10-21 21:35:40 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:36:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:36:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:36:39 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:36:39 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:36:39 [http-nio-8080-exec-10] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:36:39 [http-nio-8080-exec-10] DEBUG o.s.w.r.f.client.ExchangeFunctions - [15ad91ec] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:36:39 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [15ad91ec] [258ebe5c-18] Response 200 OK
+2025-10-21 21:36:39 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [15ad91ec] [258ebe5c-18] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108187, priceChange1 (truncated)...]
+2025-10-21 21:36:39 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:36:39 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108187, priceChange1 (truncated)...]
+2025-10-21 21:36:39 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:37:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:37:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:37:40 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:37:40 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:37:40 [http-nio-8080-exec-1] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:37:40 [http-nio-8080-exec-1] DEBUG o.s.w.r.f.client.ExchangeFunctions - [54f5e3e5] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:37:40 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [54f5e3e5] [258ebe5c-19] Response 200 OK
+2025-10-21 21:37:40 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [54f5e3e5] [258ebe5c-19] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108014, priceChange1 (truncated)...]
+2025-10-21 21:37:40 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:37:40 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108014, priceChange1 (truncated)...]
+2025-10-21 21:37:40 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:38:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:38:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:38:40 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:38:40 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:38:40 [http-nio-8080-exec-2] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:38:40 [http-nio-8080-exec-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [44247fb8] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:38:40 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [44247fb8] [258ebe5c-20] Response 200 OK
+2025-10-21 21:38:40 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [44247fb8] [258ebe5c-20] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108014, priceChange1 (truncated)...]
+2025-10-21 21:38:40 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:38:40 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108014, priceChange1 (truncated)...]
+2025-10-21 21:38:40 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:39:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:39:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:39:40 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:39:40 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:39:40 [http-nio-8080-exec-3] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:39:40 [http-nio-8080-exec-3] DEBUG o.s.w.r.f.client.ExchangeFunctions - [71640022] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:39:40 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [71640022] [258ebe5c-21] Response 200 OK
+2025-10-21 21:39:40 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [71640022] [258ebe5c-21] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107994, priceChange1 (truncated)...]
+2025-10-21 21:39:40 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:39:40 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107994, priceChange1 (truncated)...]
+2025-10-21 21:39:40 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:40:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:40:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:40:41 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:40:41 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:40:41 [http-nio-8080-exec-4] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:40:41 [http-nio-8080-exec-4] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5219a00d] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:40:41 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5219a00d] [258ebe5c-22] Response 200 OK
+2025-10-21 21:40:41 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [5219a00d] [258ebe5c-22] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107994, priceChange1 (truncated)...]
+2025-10-21 21:40:41 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:40:41 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107994, priceChange1 (truncated)...]
+2025-10-21 21:40:41 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:41:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:41:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:41:40 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:41:40 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:41:40 [http-nio-8080-exec-5] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:41:40 [http-nio-8080-exec-5] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3d9cebea] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:41:40 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3d9cebea] [258ebe5c-23] Response 200 OK
+2025-10-21 21:41:40 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [3d9cebea] [258ebe5c-23] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107994, priceChange1 (truncated)...]
+2025-10-21 21:41:40 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:41:40 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=107994, priceChange1 (truncated)...]
+2025-10-21 21:41:40 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:41:54 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/user/me", parameters={}
+2025-10-21 21:41:54 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.UserController#getProfile(String)
+2025-10-21 21:41:54 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:41:54 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [User(id=2, username=teste, password=null, email=testando@gmail.com, role=USER)]
+2025-10-21 21:41:54 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:41:54 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:41:54 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:41:54 [http-nio-8080-exec-7] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:41:54 [http-nio-8080-exec-7] DEBUG o.s.w.r.f.client.ExchangeFunctions - [1a46e484] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:41:54 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [1a46e484] [258ebe5c-24] Response 200 OK
+2025-10-21 21:41:54 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [1a46e484] [258ebe5c-24] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108013, priceChange1 (truncated)...]
+2025-10-21 21:41:54 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:41:54 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108013, priceChange1 (truncated)...]
+2025-10-21 21:41:54 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:41:56 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/user/me", parameters={}
+2025-10-21 21:41:56 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.UserController#getProfile(String)
+2025-10-21 21:41:56 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:41:56 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [User(id=2, username=teste, password=null, email=testando@gmail.com, role=USER)]
+2025-10-21 21:41:56 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:41:56 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:41:56 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:41:56 [http-nio-8080-exec-9] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:41:56 [http-nio-8080-exec-9] DEBUG o.s.w.r.f.client.ExchangeFunctions - [693914a8] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:41:56 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [693914a8] [258ebe5c-25] Response 200 OK
+2025-10-21 21:41:56 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [693914a8] [258ebe5c-25] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108013, priceChange1 (truncated)...]
+2025-10-21 21:41:56 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:41:56 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108013, priceChange1 (truncated)...]
+2025-10-21 21:41:56 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:42:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:42:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:43:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:43:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:44:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:44:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:45:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:45:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:46:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:46:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:46:48 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/auth/login", parameters={}
+2025-10-21 21:46:48 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.AuthController#login(User)
+2025-10-21 21:46:50 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [User(id=null, username=teste, password=cyb3rdefense, email=null, role=USER)]
+2025-10-21 21:46:51 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:46:51 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlhdCI6MTc2MTA5NDAxMSwiZXhwIjoxNzYxMTgwNDExfQ.J-S8V (truncated)...]
+2025-10-21 21:46:51 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:46:51 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:46:51 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:46:51 [http-nio-8080-exec-1] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:46:51 [http-nio-8080-exec-1] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5a19fe93] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:46:52 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5a19fe93] [258ebe5c-26] Response 200 OK
+2025-10-21 21:46:52 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [5a19fe93] [258ebe5c-26] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108178, priceChange1 (truncated)...]
+2025-10-21 21:46:52 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:46:52 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108178, priceChange1 (truncated)...]
+2025-10-21 21:46:52 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:46:59 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:46:59 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:47:00 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:00 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[], success=true}]
+2025-10-21 21:47:00 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:47:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:47:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:47:25 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:47:25 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#createBot(TradingBot, Authentication)
+2025-10-21 21:47:25 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [TradingBot(id=null, user=null, name=tesbtc, coinSymbol=BTC, strategy=GRID_TRADING, status=STOPPED, i (truncated)...]
+2025-10-21 21:47:28 [http-nio-8080-exec-3] INFO  c.crypto.service.TradingBotService - Bot criado: tesbtc - GRID_TRADING - BTC
+2025-10-21 21:47:28 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:28 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{success=true, bot=TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa (truncated)...]
+2025-10-21 21:47:28 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:47:30 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:47:30 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:47:30 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:30 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:47:30 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:47:32 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/bots/8/start", parameters={}
+2025-10-21 21:47:32 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#startBot(Long, Authentication)
+2025-10-21 21:47:32 [http-nio-8080-exec-5] INFO  com.crypto.service.CryptoService - 🎮 Usando MOCK dinâmico para bitcoin
+2025-10-21 21:47:32 [http-nio-8080-exec-5] INFO  com.crypto.service.CryptoService - 🎮 Mock BTC @ $45055.28189383156 (variação: ${:.2f})
+2025-10-21 21:47:32 [http-nio-8080-exec-5] INFO  c.crypto.service.TradingBotService - Bot tesbtc iniciado
+2025-10-21 21:47:32 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:32 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{message=Bot iniciado com sucesso!, success=true}]
+2025-10-21 21:47:32 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:47:34 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:47:34 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:47:34 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:34 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:47:34 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:47:38 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:47:38 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:47:38 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:47:38 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:47:38 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:38 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:47:38 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:47:38 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:38 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:47:38 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:47:40 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:47:40 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:47:40 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:40 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:47:40 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:47:52 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:47:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:47:52 [http-nio-8080-exec-10] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:47:52 [http-nio-8080-exec-10] DEBUG o.s.w.r.f.client.ExchangeFunctions - [1dba6a25] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:47:52 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [1dba6a25] [258ebe5c-27] Response 200 OK
+2025-10-21 21:47:52 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [1dba6a25] [258ebe5c-27] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108139, priceChange1 (truncated)...]
+2025-10-21 21:47:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:47:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108139, priceChange1 (truncated)...]
+2025-10-21 21:47:52 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:48:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 1 bots rodando
+2025-10-21 21:48:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 🤖 Executando bot: tesbtc | Estratégia: GRID_TRADING | Moeda: BTC
+2025-10-21 21:48:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📈 Executando Grid Trading para BTC
+2025-10-21 21:48:22 [scheduling-1] INFO  com.crypto.service.CryptoService - 🎮 Usando MOCK dinâmico para bitcoin
+2025-10-21 21:48:22 [scheduling-1] INFO  com.crypto.service.CryptoService - 🎮 Mock BTC @ $44961.52666094552 (variação: ${:.2f})
+2025-10-21 21:48:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 💰 Preço atual de BTC: $44961.52666094552
+2025-10-21 21:48:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Range do Grid: $44000.00000000 - $46000.00000000
+2025-10-21 21:48:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 🎯 Nível do Grid atual: 4 de 10
+2025-10-21 21:48:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⚪ Preço no meio do grid - aguardando
+2025-10-21 21:48:35 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:48:35 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:48:35 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:35 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:48:35 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:35 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:48:35 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:48:35 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:35 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:48:35 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:37 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:48:37 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:48:37 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:37 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:48:37 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:38 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:48:38 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:48:38 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:38 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:48:38 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:41 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:48:41 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:48:41 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:41 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:48:41 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:51 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:48:51 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:48:51 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:51 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:48:51 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:51 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:48:51 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:48:51 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:48:51 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:48:51 [http-nio-8080-exec-7] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:48:51 [http-nio-8080-exec-7] DEBUG o.s.w.r.f.client.ExchangeFunctions - [209166cf] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:48:51 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:51 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:48:51 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:51 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [209166cf] [258ebe5c-28] Response 200 OK
+2025-10-21 21:48:51 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [209166cf] [258ebe5c-28] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108139, priceChange1 (truncated)...]
+2025-10-21 21:48:51 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:51 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108139, priceChange1 (truncated)...]
+2025-10-21 21:48:51 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:54 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:48:54 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:48:54 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:54 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:48:54 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:54 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:48:54 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:48:54 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:54 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:48:54 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:55 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:48:55 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:48:55 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:55 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:48:55 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:55 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:48:55 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:48:55 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:55 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:48:55 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:48:58 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:48:58 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:48:58 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:48:58 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:48:58 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:03 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:03 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:03 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:03 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:03 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:05 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:49:05 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:49:05 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:05 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:49:05 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:05 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:05 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:05 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:05 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:05 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:07 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:07 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:07 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:07 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:07 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:07 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:49:07 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:49:07 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:07 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:49:07 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:08 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:08 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:08 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:08 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:08 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:11 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:11 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:49:11 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:11 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:49:11 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:11 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:11 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:11 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:49:11 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:11 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:12 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:12 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:12 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:12 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:12 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:14 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:49:14 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:14 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:14 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:49:14 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:14 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:14 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:14 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:14 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:49:14 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:15 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:15 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:15 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:15 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:15 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:15 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:49:15 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:49:15 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:15 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:49:15 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:16 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:16 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:16 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:16 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:16 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:21 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:21 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:49:21 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:21 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:49:21 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:21 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:21 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:21 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:21 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:49:21 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:49:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 1 bots rodando
+2025-10-21 21:49:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 🤖 Executando bot: tesbtc | Estratégia: GRID_TRADING | Moeda: BTC
+2025-10-21 21:49:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📈 Executando Grid Trading para BTC
+2025-10-21 21:49:22 [scheduling-1] INFO  com.crypto.service.CryptoService - 🎮 Usando MOCK dinâmico para bitcoin
+2025-10-21 21:49:22 [scheduling-1] INFO  com.crypto.service.CryptoService - 🎮 Mock BTC @ $45086.196129327596 (variação: ${:.2f})
+2025-10-21 21:49:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 💰 Preço atual de BTC: $45086.196129327596
+2025-10-21 21:49:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Range do Grid: $44000.00000000 - $46000.00000000
+2025-10-21 21:49:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 🎯 Nível do Grid atual: 5 de 10
+2025-10-21 21:49:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⚪ Preço no meio do grid - aguardando
+2025-10-21 21:49:22 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:49:22 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:49:22 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:22 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:49:22 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:49:52 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:49:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:49:52 [http-nio-8080-exec-10] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:49:52 [http-nio-8080-exec-10] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5732e1b8] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:49:52 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [5732e1b8] [258ebe5c-29] Response 200 OK
+2025-10-21 21:49:52 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [5732e1b8] [258ebe5c-29] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108208, priceChange1 (truncated)...]
+2025-10-21 21:49:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:49:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108208, priceChange1 (truncated)...]
+2025-10-21 21:49:52 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:03 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:03 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:04 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:04 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:04 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:04 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:04 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:04 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:04 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:04 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:05 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:05 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:05 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:05 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:05 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:05 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:05 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:05 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:05 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:05 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:08 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:08 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:08 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:08 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:08 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:14 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:14 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:14 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:14 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:14 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:14 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:14 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:14 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:14 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:14 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:15 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:15 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:15 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:15 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:15 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:18 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:18 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:18 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:18 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:18 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:20 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:20 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:20 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:20 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:20 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:20 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:20 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:20 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:20 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:20 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:21 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:21 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:21 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:21 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:21 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:50:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 1 bots rodando
+2025-10-21 21:50:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 🤖 Executando bot: tesbtc | Estratégia: GRID_TRADING | Moeda: BTC
+2025-10-21 21:50:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📈 Executando Grid Trading para BTC
+2025-10-21 21:50:22 [scheduling-1] INFO  com.crypto.service.CryptoService - 🎮 Usando MOCK dinâmico para bitcoin
+2025-10-21 21:50:22 [scheduling-1] INFO  com.crypto.service.CryptoService - 🎮 Mock BTC @ $44857.975815549406 (variação: ${:.2f})
+2025-10-21 21:50:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 💰 Preço atual de BTC: $44857.975815549406
+2025-10-21 21:50:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Range do Grid: $44000.00000000 - $46000.00000000
+2025-10-21 21:50:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 🎯 Nível do Grid atual: 4 de 10
+2025-10-21 21:50:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⚪ Preço no meio do grid - aguardando
+2025-10-21 21:50:41 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:41 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:41 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:41 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:41 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:42 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:42 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:42 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:42 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:42 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:43 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:43 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:43 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:43 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:43 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:43 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:43 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:43 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:43 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:43 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:44 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:44 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:44 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:44 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:44 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:45 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:45 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:45 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:45 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:45 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:46 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:46 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:46 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:46 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:46 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:52 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:50:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:50:52 [http-nio-8080-exec-10] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:50:52 [http-nio-8080-exec-10] DEBUG o.s.w.r.f.client.ExchangeFunctions - [14d39100] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:50:52 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [14d39100] [258ebe5c-30] Response 200 OK
+2025-10-21 21:50:52 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [14d39100] [258ebe5c-30] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108208, priceChange1 (truncated)...]
+2025-10-21 21:50:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:52 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108208, priceChange1 (truncated)...]
+2025-10-21 21:50:52 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:56 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:56 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:56 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:56 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:56 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:57 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:57 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:57 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:57 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:57 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:58 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:50:58 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:50:58 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:58 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:50:58 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:50:58 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:50:58 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:50:58 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:50:58 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:50:58 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:00 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:51:00 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:51:00 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:00 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:51:00 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:02 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots/8/trades", parameters={}
+2025-10-21 21:51:02 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getBotTrades(Long, Authentication)
+2025-10-21 21:51:02 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:51:02 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:51:02 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:02 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{trades=[], success=true}]
+2025-10-21 21:51:02 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:02 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:02 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:51:02 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:03 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/bots/8/stop", parameters={}
+2025-10-21 21:51:03 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#stopBot(Long, Authentication)
+2025-10-21 21:51:03 [http-nio-8080-exec-7] INFO  c.crypto.service.TradingBotService - Bot tesbtc parado
+2025-10-21 21:51:03 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:03 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{message=Bot parado com sucesso!, success=true}]
+2025-10-21 21:51:03 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:03 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:51:03 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:51:03 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:03 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:51:03 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:04 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:51:04 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:51:04 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:04 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[TradingBot(id=8, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyl (truncated)...]
+2025-10-21 21:51:04 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:07 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - DELETE "/crypto-monitor/api/bots/8", parameters={}
+2025-10-21 21:51:07 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#deleteBot(Long, Authentication)
+2025-10-21 21:51:07 [http-nio-8080-exec-2] INFO  c.crypto.service.TradingBotService - Bot tesbtc deletado
+2025-10-21 21:51:07 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:07 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{message=Bot deletado com sucesso!, success=true}]
+2025-10-21 21:51:07 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:09 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/bots", parameters={}
+2025-10-21 21:51:09 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.TradingBotController#getUserBots(Authentication)
+2025-10-21 21:51:09 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:09 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{bots=[], success=true}]
+2025-10-21 21:51:09 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:21 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:51:21 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:51:21 [http-nio-8080-exec-3] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:51:21 [http-nio-8080-exec-3] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3b401e19] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:51:21 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3b401e19] [258ebe5c-31] Response 200 OK
+2025-10-21 21:51:21 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [3b401e19] [258ebe5c-31] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108172, priceChange1 (truncated)...]
+2025-10-21 21:51:21 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:21 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108172, priceChange1 (truncated)...]
+2025-10-21 21:51:21 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-21 21:51:22 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-21 21:51:31 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/portfolio", parameters={}
+2025-10-21 21:51:31 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/portfolio/transactions", parameters={}
+2025-10-21 21:51:31 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.PortfolioController#getTransactions(Authentication)
+2025-10-21 21:51:31 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.PortfolioController#getPortfolio(Authentication)
+2025-10-21 21:51:31 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:31 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[]]
+2025-10-21 21:51:31 [http-nio-8080-exec-5] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:51:31 [http-nio-8080-exec-5] DEBUG o.s.w.r.f.client.ExchangeFunctions - [466d7da4] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:51:31 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:31 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [466d7da4] [258ebe5c-32] Response 200 OK
+2025-10-21 21:51:31 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [466d7da4] [258ebe5c-32] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108172, priceChange1 (truncated)...]
+2025-10-21 21:51:31 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:31 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{totalProfitLoss=0, portfolio=[], totalInvested=0, totalCurrentValue=0, totalProfitLossPercent=0}]
+2025-10-21 21:51:31 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:41 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/user/me", parameters={}
+2025-10-21 21:51:41 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.UserController#getProfile(String)
+2025-10-21 21:51:41 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:41 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [User(id=2, username=teste, password=null, email=testando@gmail.com, role=USER)]
+2025-10-21 21:51:41 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:42 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:51:42 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:51:42 [http-nio-8080-exec-8] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:51:42 [http-nio-8080-exec-8] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2c95c443] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:51:42 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2c95c443] [258ebe5c-33] Response 200 OK
+2025-10-21 21:51:42 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [2c95c443] [258ebe5c-33] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108172, priceChange1 (truncated)...]
+2025-10-21 21:51:42 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:42 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108172, priceChange1 (truncated)...]
+2025-10-21 21:51:42 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-21 21:51:48 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-21 21:51:48 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-21 21:51:48 [http-nio-8080-exec-7] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:51:48 [http-nio-8080-exec-7] DEBUG o.s.w.r.f.client.ExchangeFunctions - [32c2aeab] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-21 21:51:48 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [32c2aeab] [258ebe5c-34] Response 200 OK
+2025-10-21 21:51:48 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [32c2aeab] [258ebe5c-34] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108172, priceChange1 (truncated)...]
+2025-10-21 21:51:48 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-21 21:51:48 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=108172, priceChange1 (truncated)...]
+2025-10-21 21:51:48 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK

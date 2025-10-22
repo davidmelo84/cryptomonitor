@@ -13,6 +13,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import java.math.RoundingMode;
+
 
 import java.math.BigDecimal;
 import java.time.*;
@@ -387,7 +389,7 @@ public class CryptoService {
         mock.setPriceChange1h(random.nextDouble() * 2 - 1); // -1% a +1%
         mock.setPriceChange7d(random.nextDouble() * 20 - 10); // -10% a +10%
         mock.setMarketCap(config.marketCap);
-        mock.setTotalVolume(config.marketCap.divide(BigDecimal.valueOf(30), BigDecimal.ROUND_HALF_UP));
+        mock.setTotalVolume(config.marketCap.divide(BigDecimal.valueOf(30), RoundingMode.HALF_UP));
         mock.setLastUpdated(LocalDateTime.now());
 
         log.info("🎮 Mock {} @ ${} (variação: ${:.2f})",
