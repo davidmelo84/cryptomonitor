@@ -1,32 +1,46 @@
 import React from 'react';
 import { BarChart3, TrendingUp, Bell } from 'lucide-react';
-import StatCard from './StatCard';
+import { useTheme } from '../../contexts/ThemeContext';
 
 function StatsCards({ selectedCryptos, isMonitoring }) {
+  const { isDark } = useTheme();
+  
   const averageChange = selectedCryptos.length > 0
     ? selectedCryptos.reduce((sum, crypto) => sum + (crypto.priceChange24h || 0), 0) / selectedCryptos.length
     : 0;
 
+  const isPositive = averageChange >= 0;
+
   return (
-    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 mb-8">
-      <StatCard
-        icon={<BarChart3 size={24} color="#667eea" />}
-        label="Selecionadas"
-        value={selectedCryptos.length}
-      />
+    <div className="stats-grid">
+      {/* Selecionadas */}
+      <div className={`stat-card ${isDark ? 'dark' : ''}`}>
+        <div className="stat-icon">
+          <BarChart3 size={24} color="#667eea" />
+          <span className="stat-label">Selecionadas</span>
+        </div>
+        <p className="stat-value">{selectedCryptos.length}</p>
+      </div>
       
-      <StatCard
-        icon={<TrendingUp size={24} color="#667eea" />}
-        label="Variação Média"
-        value={`${averageChange >= 0 ? '+' : ''}${averageChange.toFixed(2)}%`}
-        valueColor={averageChange >= 0 ? '#10b981' : '#ef4444'}
-      />
+      {/* Variação Média */}
+      <div className={`stat-card ${isDark ? 'dark' : ''}`}>
+        <div className="stat-icon">
+          <TrendingUp size={24} color="#667eea" />
+          <span className="stat-label">Variação Média</span>
+        </div>
+        <p className={`stat-value ${isPositive ? 'positive' : 'negative'}`}>
+          {averageChange >= 0 ? '+' : ''}{averageChange.toFixed(2)}%
+        </p>
+      </div>
       
-      <StatCard
-        icon={<Bell size={24} color="#667eea" />}
-        label="Alertas Ativos"
-        value={isMonitoring ? selectedCryptos.length * 2 : 0}
-      />
+      {/* Alertas Ativos */}
+      <div className={`stat-card ${isDark ? 'dark' : ''}`}>
+        <div className="stat-icon">
+          <Bell size={24} color="#667eea" />
+          <span className="stat-label">Alertas Ativos</span>
+        </div>
+        <p className="stat-value">{isMonitoring ? selectedCryptos.length * 2 : 0}</p>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Zap } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 import CryptoCard from './CryptoCard';
 
 function CryptocurrenciesCard({
@@ -8,6 +9,7 @@ function CryptocurrenciesCard({
   onToggleSelection,
   onClearSelection
 }) {
+  const { isDark } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('marketCap');
 
@@ -24,65 +26,68 @@ function CryptocurrenciesCard({
     });
 
   return (
-    <div className="bg-white p-8 rounded-[20px] shadow-md">
-      <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+    <div className={`cryptocurrencies-card ${isDark ? 'dark' : ''}`}>
+      <div className="cryptocurrencies-header">
         <div>
-          <h2 className="flex items-center gap-3 m-0 text-2xl font-bold">
+          <h2 className="cryptocurrencies-title">
             <Zap size={28} color="#667eea" />
             Criptomoedas Disponíveis
           </h2>
-          <p className="mt-2 mb-0 text-gray-600 text-sm">
+          <p className="cryptocurrencies-subtitle">
             {selectedCryptos.length} de {filteredCryptos.length} selecionadas
           </p>
         </div>
         
-        <div className="flex gap-3 flex-wrap">
+        <div className="cryptocurrencies-actions">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-3 border-2 border-gray-200 rounded-lg text-sm min-w-[200px] focus:border-indigo-500 focus:outline-none"
+            className="search-input"
             placeholder="🔍 Buscar moeda..."
           />
+          
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="p-3 border-2 border-gray-200 rounded-lg text-sm cursor-pointer focus:border-indigo-500 focus:outline-none"
+            className="sort-select"
           >
             <option value="marketCap">Market Cap</option>
             <option value="price">Preço</option>
             <option value="change">Variação</option>
           </select>
+          
           {selectedCryptos.length > 0 && (
-            <button
-              onClick={onClearSelection}
-              className="bg-red-500 text-white border-none px-5 py-3 rounded-lg cursor-pointer font-bold text-sm hover:bg-red-600"
-            >
+            <button onClick={onClearSelection} className="clear-button">
               ✕ Limpar
             </button>
           )}
         </div>
       </div>
       
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
-        {filteredCryptos.map((crypto, index) => (
-          <CryptoCard
-            key={crypto.coinId || crypto.name || index}
-            crypto={crypto}
-            isSelected={selectedCryptos.some(c => {
-              const selectedId = c.coinId || c.name || c.symbol;
-              const identifier = crypto.coinId || crypto.name || crypto.symbol;
-              return selectedId === identifier;
-            })}
-            onToggle={() => onToggleSelection(crypto)}
-          />
-        ))}
+      <div className="cryptocurrencies-grid">
+        {filteredCryptos.map((crypto, index) => {
+          const identifier = crypto.coinId || crypto.name || crypto.symbol;
+          const isSelected = selectedCryptos.some(c => {
+            const selectedId = c.coinId || c.name || c.symbol;
+            return selectedId === identifier;
+          });
+          
+          return (
+            <CryptoCard
+              key={identifier}
+              crypto={crypto}
+              isSelected={isSelected}
+              onToggle={() => onToggleSelection(crypto)}
+            />
+          );
+        })}
       </div>
       
       {filteredCryptos.length === 0 && (
-        <div className="text-center py-16 px-5 text-gray-400">
-          <p className="text-lg mb-3">Nenhuma criptomoeda encontrada</p>
-          <p className="text-sm">Tente buscar por outro termo</p>
+        <div className="cryptocurrencies-empty">
+          <p>Nenhuma criptomoeda encontrada</p>
+          <p>Tente buscar por outro termo</p>
         </div>
       )}
     </div>

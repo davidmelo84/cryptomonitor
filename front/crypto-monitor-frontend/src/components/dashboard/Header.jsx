@@ -1,52 +1,79 @@
 import React from 'react';
-import { TrendingUp, User, RefreshCw, LogOut } from 'lucide-react';
-import Button from '../common/Button';
+import { TrendingUp, User, RefreshCw, LogOut, Wallet, Bot } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
+import ThemeToggle from '../common/ThemeToggle';
 
-function Header({ user, lastUpdate, isRefreshing, onRefresh, onLogout }) {
+function Header({ 
+  user, 
+  lastUpdate, 
+  isRefreshing, 
+  onRefresh, 
+  onLogout,
+  onNavigateToPortfolio,
+  onNavigateToBots 
+}) {
+  const { isDark } = useTheme();
+
   return (
-    <div className="bg-white border-b-4 border-indigo-500 p-5 shadow-md">
-      <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-4">
-        <div className="flex items-center gap-4">
-          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-3 rounded-xl">
+    <div className={`dashboard-header ${isDark ? 'dark' : ''}`}>
+      <div className="header-content">
+        {/* Logo */}
+        <div className="header-logo">
+          <div className="logo-icon">
             <TrendingUp size={32} color="white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold m-0">Crypto Monitor</h1>
-            <p className="text-gray-600 text-xs m-0">
+            <h1 className="header-title">Crypto Monitor</h1>
+            <p className="header-subtitle">
               {lastUpdate && `Atualizado ${lastUpdate.toLocaleTimeString()}`}
             </p>
           </div>
         </div>
         
-        <div className="flex gap-3 items-center flex-wrap">
-          <div className="bg-indigo-50 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2">
+        {/* Actions */}
+        <div className="header-actions">
+          <ThemeToggle />
+          
+          <div className="user-badge">
             <User size={18} color="#667eea" />
             {user?.username}
           </div>
           
-          <Button
+          <button
+            onClick={onNavigateToPortfolio}
+            className="header-btn header-btn-portfolio"
+          >
+            <Wallet size={16} />
+            Portfolio
+          </button>
+
+          <button
+            onClick={onNavigateToBots}
+            className="header-btn header-btn-bots"
+          >
+            <Bot size={16} />
+            Trading Bots
+          </button>
+          
+          <button
             onClick={onRefresh}
             disabled={isRefreshing}
-            variant="secondary"
-            icon={
-              <RefreshCw 
-                size={16} 
-                style={{ animation: isRefreshing ? 'spin 1s linear infinite' : 'none' }} 
-              />
-            }
-            className="text-sm px-4 py-2"
+            className="header-btn header-btn-refresh"
           >
+            <RefreshCw 
+              size={16} 
+              className={isRefreshing ? 'animate-spin' : ''} 
+            />
             Atualizar
-          </Button>
+          </button>
           
-          <Button
+          <button
             onClick={onLogout}
-            variant="danger"
-            icon={<LogOut size={16} />}
-            className="text-sm px-4 py-2"
+            className="header-btn header-btn-logout"
           >
+            <LogOut size={16} />
             Sair
-          </Button>
+          </button>
         </div>
       </div>
     </div>

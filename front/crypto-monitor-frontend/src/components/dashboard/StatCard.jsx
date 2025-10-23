@@ -1,13 +1,15 @@
-import React from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 function StatCard({ icon, label, value, valueColor = '#333' }) {
+  const { isDark } = useTheme();
+  
   return (
-    <div className="bg-white p-5 rounded-[15px] shadow-md">
-      <div className="flex items-center gap-3 mb-3">
+    <div className={`stat-card ${isDark ? 'dark' : ''}`}>
+      <div className="stat-icon">
         {icon}
-        <span className="text-sm text-gray-600">{label}</span>
+        <span className="stat-label">{label}</span>
       </div>
-      <p className="m-0 text-4xl font-bold" style={{ color: valueColor }}>
+      <p className="stat-value" style={{ color: valueColor }}>
         {value}
       </p>
     </div>

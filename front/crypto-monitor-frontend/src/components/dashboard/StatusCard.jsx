@@ -3,25 +3,19 @@ import { Activity, XCircle } from 'lucide-react';
 
 function StatusCard({ isMonitoring, selectedCryptos, monitoringInterval, onStartStop }) {
   return (
-    <div
-      className={`p-8 rounded-[20px] mb-8 text-white shadow-xl relative overflow-hidden ${
-        isMonitoring
-          ? 'bg-gradient-to-br from-teal-500 to-green-400'
-          : 'bg-gradient-to-br from-pink-400 to-red-500'
-      }`}
-    >
-      <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full" />
+    <div className={`status-card ${isMonitoring ? 'active' : 'inactive'}`}>
+      <div className="status-card-bg-circle" />
       
-      <div className="flex justify-between items-center flex-wrap gap-5 relative">
-        <div className="flex items-center gap-5">
-          <div className="bg-white/20 p-4 rounded-[15px]">
+      <div className="status-content">
+        <div className="status-info">
+          <div className="status-icon">
             {isMonitoring ? <Activity size={40} /> : <XCircle size={40} />}
           </div>
           <div>
-            <h2 className="text-3xl font-bold m-0">
+            <h2 className="status-title">
               {isMonitoring ? '✓ Monitoramento Ativo' : '○ Monitoramento Inativo'}
             </h2>
-            <p className="text-base mt-2 mb-0 opacity-90">
+            <p className="status-description">
               {isMonitoring
                 ? `${selectedCryptos.length} moeda(s) • Verificação a cada ${monitoringInterval} min`
                 : 'Configure e inicie para receber alertas em tempo real'}
@@ -31,8 +25,7 @@ function StatusCard({ isMonitoring, selectedCryptos, monitoringInterval, onStart
         
         <button
           onClick={onStartStop}
-          className="bg-white px-12 py-5 rounded-xl text-lg font-bold cursor-pointer shadow-lg transition-transform duration-200 hover:scale-105"
-          style={{ color: isMonitoring ? '#f5576c' : '#11998e' }}
+          className={`status-button ${isMonitoring ? 'active' : 'inactive'}`}
         >
           {isMonitoring ? '■ Parar' : '▶ Iniciar'}
         </button>
