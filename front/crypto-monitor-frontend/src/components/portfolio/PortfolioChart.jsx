@@ -1,26 +1,18 @@
 // front/crypto-monitor-frontend/src/components/portfolio/PortfolioChart.jsx
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import '../../styles/portfolio.css';
+
+const COLORS = [
+  '#667eea', '#10b981', '#ef4444', '#f59e0b',
+  '#06b6d4', '#ec4899', '#8b5cf6', '#14b8a6'
+];
 
 function PortfolioChart({ portfolio }) {
-  const COLORS = [
-    '#667eea', '#10b981', '#ef4444', '#f59e0b', 
-    '#06b6d4', '#ec4899', '#8b5cf6', '#14b8a6'
-  ];
-
-  const chartData = portfolio.map((item) => ({
-    name: item.coinSymbol,
-    value: parseFloat(item.currentValue),
-    percentage: 0 // será calculado abaixo
-  }));
-
-  // Calcular percentagens
-  const total = chartData.reduce((sum, item) => sum + item.value, 0);
-  chartData.forEach(item => {
-    item.percentage = ((item.value / total) * 100).toFixed(2);
-  });
-
+  // ============================================
+  // FORMATTERS
+  // ============================================
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -31,10 +23,32 @@ function PortfolioChart({ portfolio }) {
     }).format(value);
   };
 
+  // ============================================
+  // COMPUTED DATA
+  // ============================================
+  const chartData = useMemo(() => {
+    const total = portfolio.reduce((sum, item) => sum + parseFloat(item.currentValue), 0);
+    
+    return portfolio.map((item) => {
+      const value = parseFloat(item.currentValue);
+      const percentage = ((value / total) * 100).toFixed(2);
+      
+      return {
+        name: item.coinSymbol,
+        value: value,
+        percentage: percentage
+      };
+    }).sort((a, b) => b.value - a.value); // Ordenar por valor
+  }, [portfolio]);
+
+  // ============================================
+  // CUSTOM TOOLTIP
+  // ============================================
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload || !payload.length) return null;
 
     const data = payload[0].payload;
+    
     return (
       <div className="bg-white p-4 rounded-lg shadow-xl border-2 border-indigo-200">
         <p className="font-bold text-gray-800 mb-2">{data.name}</p>
@@ -48,14 +62,29 @@ function PortfolioChart({ portfolio }) {
     );
   };
 
+  // ============================================
+  // RENDER
+  // ============================================
+  if (portfolio.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-      <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+    <div className="portfolio-chart-container">
+      
+      {/* ============================================
+          HEADER
+          ============================================ */}
+      <h3 className="portfolio-chart-header">
         📊 Distribuição do Portfolio
       </h3>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Chart */}
+      {/* ============================================
+          CHART & LEGEND GRID
+          ============================================ */}
+      <div className="portfolio-chart-grid">
+        
+        {/* PIE CHART */}
         <div style={{ width: '100%', height: '300px' }}>
           <ResponsiveContainer>
             <PieChart>
@@ -70,7 +99,10 @@ function PortfolioChart({ portfolio }) {
                 dataKey="value"
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={COLORS[index % COLORS.length]} 
+                  />
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
@@ -78,29 +110,48 @@ function PortfolioChart({ portfolio }) {
           </ResponsiveContainer>
         </div>
 
-        {/* Legend */}
-        <div className="flex flex-col justify-center">
-          <div className="space-y-3">
-            {chartData.map((item, index) => (
-              <div 
-                key={item.name}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  />
-                  <span className="font-bold text-gray-800">{item.name}</span>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold text-indigo-600">{formatCurrency(item.value)}</p>
-                  <p className="text-sm text-gray-500">{item.percentage}%</p>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* LEGEND */}
+        <div className="portfolio-chart-legend">
+          {chartData.map((item, index) => (
+            <LegendItem
+              key={item.name}
+              item={item}
+              color={COLORS[index % COLORS.length]}
+              formatCurrency={formatCurrency}
+            />
+          ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// LEGEND ITEM COMPONENT
+// ============================================
+function LegendItem({ item, color, formatCurrency }) {
+  return (
+    <div className="portfolio-chart-legend-item">
+      
+      {/* Left Side: Color + Symbol */}
+      <div className="portfolio-chart-legend-left">
+        <div
+          className="portfolio-chart-legend-color"
+          style={{ backgroundColor: color }}
+        />
+        <span className="portfolio-chart-legend-symbol">
+          {item.name}
+        </span>
+      </div>
+
+      {/* Right Side: Value + Percentage */}
+      <div className="portfolio-chart-legend-right">
+        <p className="portfolio-chart-legend-value">
+          {formatCurrency(item.value)}
+        </p>
+        <p className="portfolio-chart-legend-percent">
+          {item.percentage}%
+        </p>
       </div>
     </div>
   );

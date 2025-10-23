@@ -1,0 +1,522 @@
+/* ============================================
+   PORTFOLIO STYLES
+   front/crypto-monitor-frontend/src/styles/portfolio.css
+   ============================================ */
+
+/* ============================================
+   SUMMARY CARDS
+   ============================================ */
+.portfolio-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.summary-card-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.summary-card-value {
+  font-size: 1.875rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.summary-card-value.positive {
+  color: #10b981;
+}
+
+.summary-card-value.negative {
+  color: #ef4444;
+}
+
+/* ============================================
+   PORTFOLIO TABLE
+   ============================================ */
+.portfolio-table-container {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.portfolio-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.portfolio-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.portfolio-table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.portfolio-table th.text-right {
+  text-align: right;
+}
+
+.portfolio-table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.portfolio-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.portfolio-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.portfolio-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.portfolio-table tbody tr:nth-child(even):hover {
+  background-color: #f3f4f6;
+}
+
+.portfolio-empty {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  color: #9ca3af;
+}
+
+.portfolio-empty-icon {
+  margin: 0 auto 1rem;
+  color: #d1d5db;
+}
+
+.portfolio-empty-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.portfolio-empty-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* ============================================
+   TRANSACTION MODAL
+   ============================================ */
+.transaction-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.25rem;
+}
+
+.transaction-modal {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 40rem;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.transaction-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 20px 20px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transaction-modal-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.transaction-modal-close {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.transaction-modal-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.transaction-modal-body {
+  padding: 1.5rem;
+}
+
+/* ============================================
+   TRANSACTION TYPE SELECTOR
+   ============================================ */
+.transaction-type-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.transaction-type-button {
+  padding: 1rem;
+  border-radius: 10px;
+  border: 2px solid #d1d5db;
+  background: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.transaction-type-button:hover {
+  border-color: #667eea;
+}
+
+.transaction-type-button.buy.active {
+  border-color: #10b981;
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.transaction-type-button.sell.active {
+  border-color: #ef4444;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* ============================================
+   CRYPTO QUICK SELECT
+   ============================================ */
+.crypto-quick-select {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.crypto-quick-button {
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 2px solid #d1d5db;
+  background: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.crypto-quick-button:hover {
+  border-color: #667eea;
+}
+
+.crypto-quick-button.active {
+  border-color: #667eea;
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+/* ============================================
+   FORM FIELDS
+   ============================================ */
+.form-field {
+  margin-bottom: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.3s ease;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+/* ============================================
+   TOTAL VALUE DISPLAY
+   ============================================ */
+.total-value-display {
+  padding: 1rem;
+  background: #eef2ff;
+  border: 2px solid #c7d2fe;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.total-value-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-value-label {
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #4338ca;
+}
+
+.total-value-amount {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #312e81;
+}
+
+/* ============================================
+   TRANSACTION HISTORY
+   ============================================ */
+.transaction-history-container {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transaction-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.transaction-table th {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.transaction-table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.transaction-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.transaction-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.transaction-type-badge.buy {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.transaction-type-badge.sell {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.transaction-delete-btn {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.transaction-delete-btn:hover {
+  background: #fee2e2;
+}
+
+/* ============================================
+   PORTFOLIO CHART
+   ============================================ */
+.portfolio-chart-container {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.portfolio-chart-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #374151;
+}
+
+.portfolio-chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.portfolio-chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.portfolio-chart-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.portfolio-chart-legend-item:hover {
+  background: #f3f4f6;
+}
+
+.portfolio-chart-legend-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.portfolio-chart-legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+}
+
+.portfolio-chart-legend-symbol {
+  font-weight: bold;
+  color: #374151;
+}
+
+.portfolio-chart-legend-right {
+  text-align: right;
+}
+
+.portfolio-chart-legend-value {
+  font-weight: bold;
+  color: #4338ca;
+  font-size: 0.875rem;
+}
+
+.portfolio-chart-legend-percent {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+  .portfolio-chart-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .crypto-quick-select {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .portfolio-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .transaction-type-selector {
+    grid-template-columns: 1fr;
+  }
+  
+  .crypto-quick-select {
+    grid-template-columns: 1fr;
+  }
+  
+  .portfolio-table,
+  .transaction-table {
+    font-size: 0.75rem;
+  }
+  
+  .portfolio-table th,
+  .portfolio-table td,
+  .transaction-table th,
+  .transaction-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}

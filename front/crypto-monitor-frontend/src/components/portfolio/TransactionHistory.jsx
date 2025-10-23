@@ -3,8 +3,12 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Trash2 } from 'lucide-react';
 import { API_BASE_URL } from '../../utils/constants';
+import '../../styles/portfolio.css';
 
 function TransactionHistory({ transactions, onRefresh, token }) {
+  // ============================================
+  // FORMATTERS
+  // ============================================
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -25,18 +29,29 @@ function TransactionHistory({ transactions, onRefresh, token }) {
     });
   };
 
+  const formatQuantity = (value) => {
+    return parseFloat(value).toFixed(8);
+  };
+
+  // ============================================
+  // HANDLERS
+  // ============================================
   const handleDelete = async (transactionId) => {
-    if (!window.confirm('⚠️ Tem certeza que deseja deletar esta transação?\n\nEsta ação não pode ser desfeita.')) {
+    if (!window.confirm(
+      '⚠️ Tem certeza que deseja deletar esta transação?\n\n' +
+      'Esta ação não pode ser desfeita.'
+    )) {
       return;
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/portfolio/transaction/${transactionId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
+      const response = await fetch(
+        `${API_BASE_URL}/portfolio/transaction/${transactionId}`,
+        {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
         }
-      });
+      );
 
       if (response.ok) {
         alert('✅ Transação deletada com sucesso!');
@@ -51,111 +66,164 @@ function TransactionHistory({ transactions, onRefresh, token }) {
     }
   };
 
+  // ============================================
+  // COMPUTED VALUES
+  // ============================================
+  const summary = {
+    total: transactions.length,
+    buys: transactions.filter(tx => tx.type === 'BUY').length,
+    sells: transactions.filter(tx => tx.type === 'SELL').length
+  };
+
+  // ============================================
+  // RENDER
+  // ============================================
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden">
+    <div className="transaction-history-container">
+      
+      {/* ============================================
+          TABLE
+          ============================================ */}
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+        <table className="transaction-table">
+          <thead>
             <tr>
-              <th className="px-6 py-4 text-left font-bold">Data</th>
-              <th className="px-6 py-4 text-left font-bold">Tipo</th>
-              <th className="px-6 py-4 text-left font-bold">Ativo</th>
-              <th className="px-6 py-4 text-right font-bold">Quantidade</th>
-              <th className="px-6 py-4 text-right font-bold">Preço Unitário</th>
-              <th className="px-6 py-4 text-right font-bold">Valor Total</th>
-              <th className="px-6 py-4 text-left font-bold">Observações</th>
-              <th className="px-6 py-4 text-center font-bold">Ações</th>
+              <th>Data</th>
+              <th>Tipo</th>
+              <th>Ativo</th>
+              <th className="text-right">Quantidade</th>
+              <th className="text-right">Preço Unitário</th>
+              <th className="text-right">Valor Total</th>
+              <th>Observações</th>
+              <th className="text-center">Ações</th>
             </tr>
           </thead>
           <tbody>
             {transactions.length === 0 ? (
               <tr>
-                <td colSpan="8" className="px-6 py-12 text-center text-gray-500">
-                  <p className="text-lg font-semibold">Nenhuma transação encontrada</p>
-                  <p className="text-sm mt-2">Adicione sua primeira transação para começar</p>
+                <td colSpan="8" className="portfolio-empty">
+                  <p className="portfolio-empty-title">
+                    Nenhuma transação encontrada
+                  </p>
+                  <p className="portfolio-empty-subtitle">
+                    Adicione sua primeira transação para começar
+                  </p>
                 </td>
               </tr>
             ) : (
-              transactions.map((tx, index) => {
-                const isBuy = tx.type === 'BUY';
-                return (
-                  <tr 
-                    key={tx.id}
-                    className={`border-b hover:bg-gray-50 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-                    }`}
-                  >
-                    <td className="px-6 py-4 text-sm text-gray-600 font-mono">
-                      {formatDate(tx.transactionDate)}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-sm ${
-                        isBuy 
-                          ? 'bg-green-100 text-green-700' 
-                          : 'bg-red-100 text-red-700'
-                      }`}>
-                        {isBuy ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-                        {isBuy ? 'Compra' : 'Venda'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-bold text-gray-800">{tx.coinName}</p>
-                        <p className="text-sm text-gray-500">{tx.coinSymbol}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-right font-mono font-semibold">
-                      {parseFloat(tx.quantity).toFixed(8)}
-                    </td>
-                    <td className="px-6 py-4 text-right font-semibold">
-                      {formatCurrency(tx.pricePerUnit)}
-                    </td>
-                    <td className="px-6 py-4 text-right font-bold text-indigo-600">
-                      {formatCurrency(tx.totalValue)}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
-                      {tx.notes || '-'}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => handleDelete(tx.id)}
-                        className="text-red-600 hover:bg-red-50 p-2 rounded-lg transition-colors"
-                        title="Deletar transação"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
+              transactions.map((tx) => (
+                <TransactionRow
+                  key={tx.id}
+                  transaction={tx}
+                  onDelete={handleDelete}
+                  formatters={{ formatCurrency, formatDate, formatQuantity }}
+                />
+              ))
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Summary */}
+      {/* ============================================
+          SUMMARY
+          ============================================ */}
       {transactions.length > 0 && (
         <div className="bg-gray-50 p-6 border-t-2 border-gray-200">
           <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto">
-            <div className="text-center">
-              <p className="text-sm text-gray-600 font-semibold mb-1">Total de Transações</p>
-              <p className="text-2xl font-bold text-gray-800">{transactions.length}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600 font-semibold mb-1">Compras</p>
-              <p className="text-2xl font-bold text-green-600">
-                {transactions.filter(tx => tx.type === 'BUY').length}
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600 font-semibold mb-1">Vendas</p>
-              <p className="text-2xl font-bold text-red-600">
-                {transactions.filter(tx => tx.type === 'SELL').length}
-              </p>
-            </div>
+            <SummaryCard
+              label="Total de Transações"
+              value={summary.total}
+              color="text-gray-800"
+            />
+            <SummaryCard
+              label="Compras"
+              value={summary.buys}
+              color="text-green-600"
+            />
+            <SummaryCard
+              label="Vendas"
+              value={summary.sells}
+              color="text-red-600"
+            />
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ============================================
+// TRANSACTION ROW COMPONENT
+// ============================================
+function TransactionRow({ transaction, onDelete, formatters }) {
+  const { formatCurrency, formatDate, formatQuantity } = formatters;
+  const isBuy = transaction.type === 'BUY';
+
+  return (
+    <tr>
+      {/* Data */}
+      <td className="font-mono text-gray-600">
+        {formatDate(transaction.transactionDate)}
+      </td>
+
+      {/* Tipo */}
+      <td>
+        <span className={`transaction-type-badge ${isBuy ? 'buy' : 'sell'}`}>
+          {isBuy ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+          {isBuy ? 'Compra' : 'Venda'}
+        </span>
+      </td>
+
+      {/* Ativo */}
+      <td>
+        <div>
+          <p className="font-bold text-gray-800">{transaction.coinName}</p>
+          <p className="text-sm text-gray-500">{transaction.coinSymbol}</p>
+        </div>
+      </td>
+
+      {/* Quantidade */}
+      <td className="text-right font-mono font-semibold">
+        {formatQuantity(transaction.quantity)}
+      </td>
+
+      {/* Preço Unitário */}
+      <td className="text-right font-semibold">
+        {formatCurrency(transaction.pricePerUnit)}
+      </td>
+
+      {/* Valor Total */}
+      <td className="text-right font-bold text-indigo-600">
+        {formatCurrency(transaction.totalValue)}
+      </td>
+
+      {/* Observações */}
+      <td className="text-sm text-gray-600 max-w-xs truncate">
+        {transaction.notes || '-'}
+      </td>
+
+      {/* Ações */}
+      <td className="text-center">
+        <button
+          onClick={() => onDelete(transaction.id)}
+          className="transaction-delete-btn"
+          title="Deletar transação"
+        >
+          <Trash2 size={18} />
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+// ============================================
+// SUMMARY CARD COMPONENT
+// ============================================
+function SummaryCard({ label, value, color }) {
+  return (
+    <div className="text-center">
+      <p className="text-sm text-gray-600 font-semibold mb-1">{label}</p>
+      <p className={`text-2xl font-bold ${color}`}>{value}</p>
     </div>
   );
 }

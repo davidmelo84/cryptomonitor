@@ -3,7 +3,19 @@
 import React, { useState } from 'react';
 import { X, TrendingUp, TrendingDown } from 'lucide-react';
 
+const POPULAR_CRYPTOS = [
+  { symbol: 'BTC', name: 'Bitcoin' },
+  { symbol: 'ETH', name: 'Ethereum' },
+  { symbol: 'ADA', name: 'Cardano' },
+  { symbol: 'DOT', name: 'Polkadot' },
+  { symbol: 'LINK', name: 'Chainlink' },
+  { symbol: 'SOL', name: 'Solana' }
+];
+
 function AddTransactionModal({ onClose, onSubmit }) {
+  // ============================================
+  // STATE
+  // ============================================
   const [formData, setFormData] = useState({
     coinSymbol: '',
     coinName: '',
@@ -14,15 +26,9 @@ function AddTransactionModal({ onClose, onSubmit }) {
     notes: ''
   });
 
-  const popularCryptos = [
-    { symbol: 'BTC', name: 'Bitcoin' },
-    { symbol: 'ETH', name: 'Ethereum' },
-    { symbol: 'ADA', name: 'Cardano' },
-    { symbol: 'DOT', name: 'Polkadot' },
-    { symbol: 'LINK', name: 'Chainlink' },
-    { symbol: 'SOL', name: 'Solana' }
-  ];
-
+  // ============================================
+  // HANDLERS
+  // ============================================
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -47,14 +53,32 @@ function AddTransactionModal({ onClose, onSubmit }) {
     });
   };
 
+  const updateField = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  // ============================================
+  // COMPUTED VALUES
+  // ============================================
   const totalValue = formData.quantity && formData.pricePerUnit
     ? (parseFloat(formData.quantity) * parseFloat(formData.pricePerUnit)).toFixed(2)
     : '0.00';
 
+  // ============================================
+  // RENDER
+  // ============================================
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* ============================================
+            HEADER
+            ============================================ */}
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-t-2xl flex justify-between items-center">
           <h2 className="text-2xl font-bold">Nova Transação</h2>
           <button
@@ -65,7 +89,11 @@ function AddTransactionModal({ onClose, onSubmit }) {
           </button>
         </div>
 
+        {/* ============================================
+            FORM
+            ============================================ */}
         <form onSubmit={handleSubmit} className="p-6">
+          
           {/* Transaction Type */}
           <div className="mb-6">
             <label className="block text-sm font-bold text-gray-700 mb-3">
@@ -74,7 +102,7 @@ function AddTransactionModal({ onClose, onSubmit }) {
             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, type: 'BUY' })}
+                onClick={() => updateField('type', 'BUY')}
                 className={`p-4 rounded-lg border-2 font-bold flex items-center justify-center gap-2 transition-all ${
                   formData.type === 'BUY'
                     ? 'border-green-500 bg-green-50 text-green-700'
@@ -86,7 +114,7 @@ function AddTransactionModal({ onClose, onSubmit }) {
               </button>
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, type: 'SELL' })}
+                onClick={() => updateField('type', 'SELL')}
                 className={`p-4 rounded-lg border-2 font-bold flex items-center justify-center gap-2 transition-all ${
                   formData.type === 'SELL'
                     ? 'border-red-500 bg-red-50 text-red-700'
@@ -105,7 +133,7 @@ function AddTransactionModal({ onClose, onSubmit }) {
               Criptomoedas Populares
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {popularCryptos.map((crypto) => (
+              {POPULAR_CRYPTOS.map((crypto) => (
                 <button
                   key={crypto.symbol}
                   type="button"
@@ -123,89 +151,60 @@ function AddTransactionModal({ onClose, onSubmit }) {
           </div>
 
           {/* Coin Symbol */}
-          <div className="mb-4">
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Símbolo da Moeda *
-            </label>
-            <input
-              type="text"
-              value={formData.coinSymbol}
-              onChange={(e) => setFormData({ ...formData, coinSymbol: e.target.value.toUpperCase() })}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
-              placeholder="Ex: BTC, ETH, ADA"
-              required
-            />
-          </div>
+          <InputField
+            label="Símbolo da Moeda *"
+            value={formData.coinSymbol}
+            onChange={(e) => updateField('coinSymbol', e.target.value.toUpperCase())}
+            placeholder="Ex: BTC, ETH, ADA"
+            required
+          />
 
           {/* Coin Name */}
-          <div className="mb-4">
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Nome da Moeda *
-            </label>
-            <input
-              type="text"
-              value={formData.coinName}
-              onChange={(e) => setFormData({ ...formData, coinName: e.target.value })}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
-              placeholder="Ex: Bitcoin, Ethereum"
-              required
-            />
-          </div>
+          <InputField
+            label="Nome da Moeda *"
+            value={formData.coinName}
+            onChange={(e) => updateField('coinName', e.target.value)}
+            placeholder="Ex: Bitcoin, Ethereum"
+            required
+          />
 
           {/* Quantity */}
-          <div className="mb-4">
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Quantidade *
-            </label>
-            <input
-              type="number"
-              step="0.00000001"
-              value={formData.quantity}
-              onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
-              placeholder="Ex: 0.5"
-              required
-            />
-          </div>
+          <InputField
+            label="Quantidade *"
+            type="number"
+            step="0.00000001"
+            value={formData.quantity}
+            onChange={(e) => updateField('quantity', e.target.value)}
+            placeholder="Ex: 0.5"
+            required
+          />
 
           {/* Price Per Unit */}
-          <div className="mb-4">
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Preço por Unidade (USD) *
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              value={formData.pricePerUnit}
-              onChange={(e) => setFormData({ ...formData, pricePerUnit: e.target.value })}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
-              placeholder="Ex: 43250.50"
-              required
-            />
-          </div>
+          <InputField
+            label="Preço por Unidade (USD) *"
+            type="number"
+            step="0.01"
+            value={formData.pricePerUnit}
+            onChange={(e) => updateField('pricePerUnit', e.target.value)}
+            placeholder="Ex: 43250.50"
+            required
+          />
 
-          {/* Total Value (Calculated) */}
+          {/* Total Value Display */}
           <div className="mb-4 p-4 bg-indigo-50 rounded-lg border-2 border-indigo-200">
             <div className="flex justify-between items-center">
               <span className="text-sm font-bold text-indigo-700">Valor Total:</span>
-              <span className="text-2xl font-bold text-indigo-900">
-                ${totalValue}
-              </span>
+              <span className="text-2xl font-bold text-indigo-900">${totalValue}</span>
             </div>
           </div>
 
           {/* Transaction Date */}
-          <div className="mb-4">
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Data da Transação
-            </label>
-            <input
-              type="datetime-local"
-              value={formData.transactionDate}
-              onChange={(e) => setFormData({ ...formData, transactionDate: e.target.value })}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
-            />
-          </div>
+          <InputField
+            label="Data da Transação"
+            type="datetime-local"
+            value={formData.transactionDate}
+            onChange={(e) => updateField('transactionDate', e.target.value)}
+          />
 
           {/* Notes */}
           <div className="mb-6">
@@ -214,7 +213,7 @@ function AddTransactionModal({ onClose, onSubmit }) {
             </label>
             <textarea
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={(e) => updateField('notes', e.target.value)}
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
               rows="3"
               placeholder="Ex: Compra mensal, estratégia DCA..."
@@ -239,6 +238,28 @@ function AddTransactionModal({ onClose, onSubmit }) {
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+// ============================================
+// INPUT FIELD COMPONENT
+// ============================================
+function InputField({ label, type = 'text', value, onChange, placeholder, required, step }) {
+  return (
+    <div className="mb-4">
+      <label className="block text-sm font-bold text-gray-700 mb-2">
+        {label}
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
+        placeholder={placeholder}
+        required={required}
+        step={step}
+      />
     </div>
   );
 }

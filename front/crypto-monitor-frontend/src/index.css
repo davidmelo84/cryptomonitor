@@ -4,6 +4,8 @@
 
 
 @import './styles/components.css';
+/* Portfolio específico */
+@import './styles/portfolio.css';
 
 * {
   margin: 0;
