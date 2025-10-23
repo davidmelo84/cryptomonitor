@@ -1,10 +1,10 @@
 /* ============================================
    CRYPTO MONITOR - COMPONENT STYLES
-   Estilos reutilizáveis para componentes
+   Versão OTIMIZADA - Sem duplicações
    ============================================ */
 
 /* ============================================
-   1. CONTAINERS & LAYOUTS
+   1. BASE & LAYOUT
    ============================================ */
 .page-container {
   min-height: 100vh;
@@ -19,7 +19,7 @@
 .content-wrapper {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 30px 20px;
+  padding: 1.875rem 1.25rem;
 }
 
 /* ============================================
@@ -43,99 +43,77 @@
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-.card-compact {
-  padding: 20px;
-  border-radius: 15px;
-}
-
 /* ============================================
-   DASHBOARD PAGE LAYOUT
+   3. BUTTONS
    ============================================ */
-
-.page-container {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-  transition: background 0.5s ease;
-}
-
-.page-container.dark {
-  background: linear-gradient(to bottom, #111827, #1f2937);
-}
-
-.content-wrapper {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1.875rem 1.25rem;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .cryptocurrencies-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .settings-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .header-content {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .header-actions {
-    width: 100%;
-    justify-content: flex-start;
-  }
-}
-
-/* ============================================
-   CRYPTO CARD - VERSÃO CORRIGIDA
-   ============================================ */
-
-.crypto-card {
-  padding: 20px;
-  border-radius: 15px;
-  border: 2px solid #e5e7eb;
+.btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  user-select: none;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+/* ============================================
+   4. INPUTS
+   ============================================ */
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: border-color 0.3s;
   background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  color: #333;
 }
 
-.crypto-card.dark {
-  border-color: #374151;
-  background: #1f2937;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.crypto-card.selected {
-  border: 3px solid #667eea;
-  background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
-}
-
-.crypto-card.dark.selected {
-  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+.form-input:focus,
+.form-select:focus {
+  outline: none;
   border-color: #667eea;
 }
 
-.crypto-card:hover:not(.selected) {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+.form-input.dark,
+.form-select.dark {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
 }
 
-.crypto-card.dark:hover:not(.selected) {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-}
 /* ============================================
-   STATUS CARD
+   5. STATUS CARD
    ============================================ */
-
 .status-card {
   padding: 2rem;
   border-radius: 20px;
@@ -144,7 +122,6 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   position: relative;
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
 .status-card.active {
@@ -184,9 +161,6 @@
   background: rgba(255, 255, 255, 0.2);
   padding: 1rem;
   border-radius: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .status-title {
@@ -226,136 +200,8 @@
 }
 
 /* ============================================
-   5. BUTTONS
+   6. STATS CARDS
    ============================================ */
-.btn {
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.2s ease;
-}
-
-.btn:hover:not(:disabled) {
-  transform: scale(1.05);
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-}
-
-.btn-success {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  color: white;
-}
-
-.btn-danger {
-  background: #ef4444;
-  color: white;
-}
-
-.btn-secondary {
-  background: #667eea;
-  color: white;
-}
-
-.btn-ghost {
-  background: transparent;
-  border: 2px solid #667eea;
-  color: #667eea;
-}
-
-.btn-large {
-  padding: 18px 45px;
-  font-size: 18px;
-}
-
-/* ============================================
-   6. INPUTS & FORMS
-   ============================================ */
-.form-input {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  font-size: 14px;
-  transition: border-color 0.3s;
-}
-
-.form-input.dark {
-  background: #374151;
-  border-color: #4b5563;
-  color: #f3f4f6;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #667eea;
-}
-
-.form-select {
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  cursor: pointer;
-  background: white;
-}
-
-.form-select.dark {
-  background: #374151;
-  border-color: #4b5563;
-  color: #f3f4f6;
-}
-
-/* ============================================
-   7. BADGES & TAGS
-   ============================================ */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.badge-success {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.badge-danger {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.badge-info {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.badge-warning {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-/* ============================================
-   STATS CARDS
-   ============================================ */
-
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -418,243 +264,8 @@
 }
 
 /* ============================================
-   9. TABLES
+   7. AUTH PAGES
    ============================================ */
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.data-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.data-table th {
-  padding: 16px;
-  text-align: left;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.data-table td {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.data-table tbody tr:hover {
-  background: #f9fafb;
-}
-
-.data-table.dark tbody tr:hover {
-  background: #374151;
-}
-
-/* ============================================
-   10. MODALS
-   ============================================ */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.modal-content {
-  background: white;
-  border-radius: 20px;
-  padding: 30px;
-  max-width: 600px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-content.dark {
-  background: #1f2937;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-}
-
-/* ============================================
-   11. GRIDS
-   ============================================ */
-.grid-auto-fit {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.grid-auto-fill {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.grid-2-cols {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.grid-3-cols {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-/* ============================================
-   12. ANIMATIONS
-   ============================================ */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.5s ease;
-}
-
-.animate-slide-in {
-  animation: slideIn 0.3s ease;
-}
-
-.animate-pulse {
-  animation: pulse 2s ease infinite;
-}
-
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-/* ============================================
-   13. UTILITIES
-   ============================================ */
-.glass-effect {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.shadow-soft {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.shadow-medium {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.shadow-hard {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-/* ============================================
-   14. RESPONSIVE
-   ============================================ */
-@media (max-width: 768px) {
-  .content-wrapper {
-    padding: 20px 15px;
-  }
-
-  .card {
-    padding: 20px;
-  }
-
-  .grid-2-cols,
-  .grid-3-cols {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-value {
-    font-size: 24px;
-  }
-
-  .btn-large {
-    padding: 14px 30px;
-    font-size: 16px;
-  }
-}
-
-/* ============================================
-   15. SCROLLBAR CUSTOMIZATION
-   ============================================ */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #667eea, #764ba2);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #5568d3, #6a3f8f);
-}
-
-/* Dark mode scrollbar */
-.dark::-webkit-scrollbar-track {
-  background: #1f2937;
-}
-
-/* ============================================
-   AUTH PAGES (Login & Register)
-   ============================================ */
-
 .auth-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -742,7 +353,6 @@
 
 .auth-logo.register {
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  box-shadow: 0 10px 30px rgba(17, 153, 142, 0.3);
 }
 
 .auth-title {
@@ -754,7 +364,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  transition: all 0.3s ease;
 }
 
 .auth-title.register {
@@ -769,7 +378,6 @@
   color: #6b7280;
   margin-bottom: 1.875rem;
   font-size: 0.875rem;
-  transition: color 0.3s ease;
 }
 
 .auth-card.dark .auth-subtitle {
@@ -805,10 +413,6 @@
   color: #f3f4f6;
 }
 
-.auth-card.dark .auth-input:focus {
-  border-color: #667eea;
-}
-
 .auth-icon {
   position: absolute;
   right: 1rem;
@@ -816,13 +420,9 @@
   transform: translateY(-50%);
   cursor: pointer;
   color: #6b7280;
-  transition: color 0.3s ease;
   background: none;
   border: none;
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .auth-card.dark .auth-icon {
@@ -832,19 +432,6 @@
 .password-strength {
   margin-bottom: 1rem;
   font-size: 0.75rem;
-}
-
-.password-strength-label {
-  margin-bottom: 0.25rem;
-}
-
-.password-strength-label span:first-child {
-  color: #6b7280;
-}
-
-.password-strength-label span.strength {
-  font-weight: bold;
-  margin-left: 0.25rem;
 }
 
 .password-strength-bar {
@@ -876,11 +463,6 @@
   color: #c00;
 }
 
-.auth-card.dark .alert-error {
-  background: #7f1d1d;
-  color: #fca5a5;
-}
-
 .auth-button {
   width: 100%;
   padding: 1rem;
@@ -902,7 +484,6 @@
 
 .auth-button.register {
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
 }
 
 .auth-link {
@@ -912,7 +493,6 @@
   cursor: pointer;
   font-weight: bold;
   font-size: 0.875rem;
-  transition: color 0.3s ease;
 }
 
 .auth-link span {
@@ -924,21 +504,18 @@
 }
 
 /* ============================================
-   SETTINGS CARD
+   8. SETTINGS CARD
    ============================================ */
-
 .settings-card {
   background: white;
   padding: 2rem;
   border-radius: 20px;
   margin-bottom: 2rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
 }
 
 .settings-card.dark {
   background: #1f2937;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .settings-card-header {
@@ -978,51 +555,26 @@
   color: #f3f4f6;
 }
 
-.settings-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
-  font-size: 0.875rem;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
-  background: white;
-  color: #333;
-}
-
-.settings-input:focus {
-  border-color: #667eea;
-  outline: none;
-}
-
-.settings-card.dark .settings-input {
-  background: #374151;
-  border-color: #4b5563;
-  color: #f3f4f6;
-}
-
-.settings-card.dark .settings-input:focus {
-  border-color: #667eea;
-}
-
+.settings-input,
 .settings-select {
   width: 100%;
   padding: 0.75rem;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
   font-size: 0.875rem;
-  cursor: pointer;
   box-sizing: border-box;
+  transition: border-color 0.3s;
   background: white;
   color: #333;
-  transition: border-color 0.3s;
 }
 
+.settings-input:focus,
 .settings-select:focus {
   border-color: #667eea;
   outline: none;
 }
 
+.settings-card.dark .settings-input,
 .settings-card.dark .settings-select {
   background: #374151;
   border-color: #4b5563;
@@ -1060,20 +612,17 @@
 }
 
 /* ============================================
-   CRYPTOCURRENCIES CARD
+   9. CRYPTOCURRENCIES CARD
    ============================================ */
-
 .cryptocurrencies-card {
   background: white;
   padding: 2rem;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
 }
 
 .cryptocurrencies-card.dark {
   background: #1f2937;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .cryptocurrencies-header {
@@ -1121,7 +670,6 @@
   border-radius: 10px;
   font-size: 0.875rem;
   min-width: 200px;
-  transition: border-color 0.3s;
   background: white;
   color: #333;
 }
@@ -1145,7 +693,6 @@
   cursor: pointer;
   background: white;
   color: #333;
-  transition: border-color 0.3s;
 }
 
 .sort-select:focus {
@@ -1188,30 +735,53 @@
   color: #9ca3af;
 }
 
-.cryptocurrencies-empty p:first-child {
-  font-size: 1.125rem;
-  margin-bottom: 0.75rem;
+/* ============================================
+   10. CRYPTO CARD
+   ============================================ */
+.crypto-card {
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.cryptocurrencies-empty p:last-child {
-  font-size: 0.875rem;
+.crypto-card.dark {
+  border-color: #374151;
+  background: #1f2937;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.crypto-card.selected {
+  border: 3px solid #667eea;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+}
+
+.crypto-card.dark.selected {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-color: #667eea;
+}
+
+.crypto-card:hover:not(.selected) {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* ============================================
-   DASHBOARD HEADER
+   11. DASHBOARD HEADER
    ============================================ */
-
 .dashboard-header {
   background: white;
   border-bottom: 3px solid #667eea;
   padding: 1.25rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
 }
 
 .dashboard-header.dark {
   background: #1f2937;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .header-content {
@@ -1284,7 +854,6 @@
   color: #f3f4f6;
 }
 
-/* Botões específicos do Header */
 .header-btn {
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -1325,4 +894,94 @@
 .header-btn-logout {
   background: #ef4444;
   color: white;
+}
+
+/* ============================================
+   12. ANIMATIONS
+   ============================================ */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ============================================
+   13. RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 20px 15px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cryptocurrencies-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .auth-card {
+    padding: 20px;
+  }
+}
+
+/* ============================================
+   14. SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #667eea, #764ba2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #5568d3, #6a3f8f);
+}
+
+.dark::-webkit-scrollbar-track {
+  background: #1f2937;
 }

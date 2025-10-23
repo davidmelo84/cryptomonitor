@@ -1,3 +1,6 @@
+// front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
+// ✅ VERSÃO CORRIGIDA - Com gráficos funcionando
+
 import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import Header from '../dashboard/Header';
@@ -5,6 +8,7 @@ import StatusCard from '../dashboard/StatusCard';
 import StatsCards from '../dashboard/StatsCards';
 import SettingsCard from '../dashboard/SettingsCard';
 import CryptocurrenciesCard from '../dashboard/CryptocurrenciesCard';
+import ChartTabs from '../dashboard/ChartTabs'; // ✅ ADICIONADO
 
 function DashboardPage({
   user,
@@ -44,6 +48,7 @@ function DashboardPage({
       />
 
       <div className="content-wrapper">
+        {/* Status Card */}
         <StatusCard
           isMonitoring={isMonitoring}
           selectedCryptos={selectedCryptos}
@@ -51,6 +56,7 @@ function DashboardPage({
           onStartStop={onStartStopMonitoring}
         />
 
+        {/* Stats Cards */}
         {selectedCryptos.length > 0 && (
           <StatsCards
             selectedCryptos={selectedCryptos}
@@ -58,6 +64,12 @@ function DashboardPage({
           />
         )}
 
+        {/* ✅ GRÁFICOS - ADICIONADO */}
+        {selectedCryptos.length > 0 && (
+          <ChartTabs selectedCryptos={selectedCryptos} />
+        )}
+
+        {/* Settings Card */}
         <SettingsCard
           monitoringEmail={monitoringEmail}
           setMonitoringEmail={setMonitoringEmail}
@@ -69,6 +81,7 @@ function DashboardPage({
           setSellThreshold={setSellThreshold}
         />
 
+        {/* Cryptocurrencies Card */}
         <CryptocurrenciesCard
           availableCryptos={availableCryptos}
           selectedCryptos={selectedCryptos}
