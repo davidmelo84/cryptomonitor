@@ -236,3 +236,154 @@ jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
 2025-10-24 11:56:38 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-10-24 11:56:38 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-10-24 11:56:38 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-24 15:33:48 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 4792 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-10-24 15:33:48 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-24 15:33:52 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-24 15:33:54 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1778 ms. Found 7 JPA repository interfaces.
+2025-10-24 15:33:57 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-24 15:33:57 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-24 15:33:57 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-24 15:33:58 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-10-24 15:33:58 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 10112 ms
+2025-10-24 15:34:01 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-10-24 15:34:01 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-10-24 15:34:01 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-10-24 15:34:01 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/crypto_monitor (PostgreSQL 16.8)
+2025-10-24 15:34:01 [main] DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.6.0
+2025-10-24 15:34:01 [main] DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-10-24 15:34:01 [main] WARN  o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 16.8 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 15.
+2025-10-24 15:34:01 [main] DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-10-24 15:34:01 [main] DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-10-24 15:34:01 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-24 15:34:01 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-24 15:34:01 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-24 15:34:01 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-24 15:34:01 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.086s)
+2025-10-24 15:34:01 [main] DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-10-24 15:34:01 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-24 15:34:01 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-10-24 15:34:01 [main] DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 49 of 78M
+2025-10-24 15:34:02 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-24 15:34:02 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-24 15:34:02 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-24 15:34:03 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-24 15:34:03 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-24 15:34:03 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@534d0cfa
+2025-10-24 15:34:03 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-24 15:34:03 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-24 15:34:05 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-24 15:34:06 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-24 15:34:07 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-24 15:34:09 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-24 15:34:10 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService
+2025-10-24 15:34:11 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2025-10-24 15:34:11 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'taskExecutor'
+2025-10-24 15:34:11 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-24 15:34:12 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 44 mappings in 'requestMappingHandlerMapping'
+2025-10-24 15:34:12 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-10-24 15:34:13 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 15 endpoint(s) beneath base path '/actuator'
+2025-10-24 15:34:13 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@199f2854, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5c9cbc69, org.springframework.security.web.context.SecurityContextHolderFilter@49ce89ec, org.springframework.security.web.header.HeaderWriterFilter@588931b9, org.springframework.web.filter.CorsFilter@60a4e124, org.springframework.security.web.authentication.logout.LogoutFilter@a983f06, com.crypto.security.JwtAuthenticationFilter@218e28d9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5a530836, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4a13a4ca, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3815c525, org.springframework.security.web.session.SessionManagementFilter@824eb67, org.springframework.security.web.access.ExceptionTranslationFilter@5de991a8, org.springframework.security.web.access.intercept.AuthorizationFilter@2ef2fa78]
+2025-10-24 15:34:13 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-24 15:34:13 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-24 15:34:13 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2025-10-24 15:34:14 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/crypto-monitor'
+2025-10-24 15:34:14 [main] INFO  com.crypto.CryptoMonitorApplication - Started CryptoMonitorApplication in 27.695 seconds (process running for 42.678)
+2025-10-24 15:34:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 15:34:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 15:35:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 15:35:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 15:36:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 15:36:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 15:36:48 [http-nio-8080-exec-2] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-24 15:36:48 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-24 15:36:48 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-10-24 15:36:48 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-10-24 15:36:48 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-10-24 15:36:48 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@2d758834
+2025-10-24 15:36:48 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@4da584e
+2025-10-24 15:36:48 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-24 15:36:48 [http-nio-8080-exec-2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2025-10-24 15:36:48 [http-nio-8080-exec-2] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/crypto-monitor/api/user/me' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
+2025-10-24 15:36:49 [http-nio-8080-exec-2] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/crypto-monitor/api/user/me' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2025-10-24 15:36:49 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/user/me", parameters={}
+2025-10-24 15:36:49 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.UserController#getProfile(String)
+2025-10-24 15:36:49 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 15:36:49 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [User(id=2, username=teste, password=null, email=testando@gmail.com, role=USER)]
+2025-10-24 15:36:49 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 15:36:49 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-24 15:36:49 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-24 15:36:49 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 15:36:49 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{totalActiveMonitors=0, timestamp=1761331009725, active=false, username=teste}]
+2025-10-24 15:36:49 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 15:36:50 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-24 15:36:50 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-24 15:36:50 [http-nio-8080-exec-3] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 15:36:51 [http-nio-8080-exec-3] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3684a142] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 15:36:55 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3684a142] [f1081ebd-1] Response 200 OK
+2025-10-24 15:36:55 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [3684a142] [f1081ebd-1] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110546, priceChange1 (truncated)...]
+2025-10-24 15:36:55 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 15:36:55 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110546, priceChange1 (truncated)...]
+2025-10-24 15:36:55 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 15:37:06 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/auth/login", parameters={}
+2025-10-24 15:37:06 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.AuthController#login(User)
+2025-10-24 15:37:06 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [User(id=null, username=teste, password=cyb3rdefense, email=null, role=USER)]
+2025-10-24 15:37:07 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 15:37:07 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlhdCI6MTc2MTMzMTAyNywiZXhwIjoxNzYxNDE3NDI3fQ.JQK6X (truncated)...]
+2025-10-24 15:37:07 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 15:37:07 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-24 15:37:07 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-24 15:37:07 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 15:37:07 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{totalActiveMonitors=0, timestamp=1761331027273, active=false, username=teste}]
+2025-10-24 15:37:07 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 15:37:07 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-24 15:37:07 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-24 15:37:07 [http-nio-8080-exec-6] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 15:37:07 [http-nio-8080-exec-6] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3bbfa5fe] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 15:37:07 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [3bbfa5fe] [f1081ebd-2] Response 200 OK
+2025-10-24 15:37:07 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [3bbfa5fe] [f1081ebd-2] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110546, priceChange1 (truncated)...]
+2025-10-24 15:37:07 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 15:37:07 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110546, priceChange1 (truncated)...]
+2025-10-24 15:37:07 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 15:37:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 15:37:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 15:38:07 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-24 15:38:07 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-24 15:38:07 [http-nio-8080-exec-4] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 15:38:07 [http-nio-8080-exec-4] DEBUG o.s.w.r.f.client.ExchangeFunctions - [23f52c28] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 15:38:08 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [23f52c28] [f1081ebd-3] Response 200 OK
+2025-10-24 15:38:08 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [23f52c28] [f1081ebd-3] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110518, priceChange1 (truncated)...]
+2025-10-24 15:38:08 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 15:38:08 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110518, priceChange1 (truncated)...]
+2025-10-24 15:38:08 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 15:38:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 15:38:14 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 15:39:15 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2025-10-24 15:39:15 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'taskExecutor'
+2025-10-24 15:39:15 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-24 15:39:15 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-24 15:39:15 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

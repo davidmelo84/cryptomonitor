@@ -1,36 +1,32 @@
+// front/crypto-monitor-frontend/src/components/auth/AuthContainer.jsx
+// ✅ REFATORADO - SEM CSS INLINE
+
 import React from 'react';
+import '../../styles/components.css';
 
 function AuthContainer({ children, variant = 'login' }) {
+  // Configurações dos círculos flutuantes baseado na variante
   const floatingCircles = variant === 'login' ? [
-    { width: '300px', height: '300px', top: '-150px', left: '-150px' },
-    { width: '200px', height: '200px', bottom: '-100px', right: '-100px' }
+    { className: 'floating-circle large' },
+    { className: 'floating-circle small' }
   ] : [
-    { width: '250px', height: '250px', top: '10%', right: '10%' }
+    { className: 'floating-circle medium' }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center p-5 relative overflow-hidden">
-      {floatingCircles.map((style, index) => (
+    <div className="auth-container">
+      {/* Círculos flutuantes decorativos */}
+      {floatingCircles.map((circle, index) => (
         <div
           key={index}
-          className="absolute rounded-full bg-white/10 animate-float"
-          style={style}
+          className={circle.className}
         />
       ))}
       
-      <div className="bg-white rounded-[20px] p-10 shadow-2xl max-w-[450px] w-full relative z-10">
+      {/* Card de autenticação */}
+      <div className="auth-card">
         {children}
       </div>
-
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }

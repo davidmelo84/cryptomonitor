@@ -1,3 +1,6 @@
+// front/crypto-monitor-frontend/src/components/portfolio/AddTransactionModal.jsx
+// ✅ REFATORADO - SEM CSS INLINE
+
 import React, { useState, useEffect } from 'react';
 import { formatCurrency, formatSymbol } from '../../utils/formatters';
 import '../../styles/AddTransactionModal.css';
@@ -41,13 +44,11 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
       const data = await response.json();
       setAvailableCryptos(data);
       
-      // Set default crypto if list is not empty
       if (data.length > 0 && !formData.cryptoSymbol) {
         setFormData(prev => ({ ...prev, cryptoSymbol: data[0].symbol }));
       }
     } catch (err) {
       console.error('Error fetching cryptos:', err);
-      // Default cryptos if API fails
       setAvailableCryptos([
         { symbol: 'BTC', name: 'Bitcoin' },
         { symbol: 'ETH', name: 'Ethereum' },
@@ -69,7 +70,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
       const data = await response.json();
       setCurrentPrice(data.currentPrice);
       
-      // Auto-fill price if empty
       if (!formData.price) {
         setFormData(prev => ({ ...prev, price: data.currentPrice }));
       }
@@ -92,7 +92,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
     setError(null);
     setLoading(true);
 
-    // Validation
     if (!formData.cryptoSymbol || !formData.quantity || !formData.price) {
       setError('Preencha todos os campos obrigatórios');
       setLoading(false);
@@ -132,7 +131,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
 
       const newTransaction = await response.json();
       
-      // Reset form
       setFormData({
         cryptoSymbol: availableCryptos[0]?.symbol || '',
         type: 'BUY',
@@ -141,7 +139,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
         date: new Date().toISOString().split('T')[0]
       });
 
-      // Notify parent
       if (onTransactionAdded) {
         onTransactionAdded(newTransaction);
       }
@@ -171,12 +168,17 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
+        
+        {/* Header */}
         <div className="modal-header">
           <h2>Nova Transação</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="transaction-form">
+          
+          {/* Error Message */}
           {error && (
             <div className="error-message">
               ⚠️ {error}
@@ -185,7 +187,7 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
 
           {/* Crypto Selection */}
           <div className="form-group">
-            <label htmlFor="cryptoSymbol">Criptomoeda *</label>
+            <label htmlFor="cryptoSymbol">Criptomoeda</label>
             <select
               id="cryptoSymbol"
               name="cryptoSymbol"
@@ -204,7 +206,7 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
 
           {/* Transaction Type */}
           <div className="form-group">
-            <label>Tipo de Transação *</label>
+            <label>Tipo de Transação</label>
             <div className="radio-group">
               <label className="radio-label">
                 <input
@@ -231,7 +233,7 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
 
           {/* Quantity */}
           <div className="form-group">
-            <label htmlFor="quantity">Quantidade *</label>
+            <label htmlFor="quantity">Quantidade</label>
             <input
               type="number"
               id="quantity"
@@ -247,7 +249,7 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
 
           {/* Price */}
           <div className="form-group">
-            <label htmlFor="price">Preço Unitário *</label>
+            <label htmlFor="price">Preço Unitário</label>
             <div className="price-input-group">
               <input
                 type="number"
@@ -275,7 +277,7 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
 
           {/* Date */}
           <div className="form-group">
-            <label htmlFor="date">Data *</label>
+            <label htmlFor="date">Data</label>
             <input
               type="date"
               id="date"
@@ -287,7 +289,7 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
             />
           </div>
 
-          {/* Total Value */}
+          {/* Total Value Display */}
           {formData.quantity && formData.price && (
             <div className="form-group total-display">
               <label>Valor Total</label>

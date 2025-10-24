@@ -1,3 +1,6 @@
+// front/crypto-monitor-frontend/src/components/portfolio/TransactionHistory.jsx
+// ✅ REFATORADO - SEM CSS INLINE
+
 import React, { useState, useEffect } from 'react';
 import { 
   formatCurrency, 
@@ -60,26 +63,35 @@ function TransactionHistory() {
     }
   };
 
+  // Loading State
   if (loading) {
     return (
       <div className="transaction-history">
-        <div className="loading">Carregando histórico...</div>
+        <div className="loading">
+          Carregando histórico...
+        </div>
       </div>
     );
   }
 
+  // Error State
   if (error) {
     return (
       <div className="transaction-history">
-        <div className="error">Erro: {error}</div>
+        <div className="error">
+          Erro: {error}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="transaction-history">
+      
+      {/* Header with Filters */}
       <div className="transaction-header">
         <h2>Histórico de Transações</h2>
+        
         <div className="transaction-filters">
           <button 
             className={filter === 'all' ? 'active' : ''}
@@ -102,60 +114,82 @@ function TransactionHistory() {
         </div>
       </div>
 
+      {/* Empty State */}
       {filteredTransactions.length === 0 ? (
         <div className="no-transactions">
           <p>Nenhuma transação encontrada</p>
         </div>
       ) : (
-        <div className="transactions-table-container">
-          <table className="transactions-table">
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Cripto</th>
-                <th>Tipo</th>
-                <th>Quantidade</th>
-                <th>Preço</th>
-                <th>Total</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTransactions.map((tx) => (
-                <tr key={tx.id}>
-                  <td>{formatDate(tx.date, 'short')}</td>
-                  <td className="crypto-cell">
-                    <span className="crypto-symbol">{tx.cryptoSymbol}</span>
-                  </td>
-                  <td>
-                    <span className={`transaction-type ${tx.type.toLowerCase()}`}>
-                      {tx.type === 'BUY' ? 'Compra' : 'Venda'}
-                    </span>
-                  </td>
-                  <td>{formatQuantity(tx.quantity)}</td>
-                  <td>{formatCurrency(tx.price)}</td>
-                  <td className="total-cell">
-                    {formatCurrency(tx.quantity * tx.price)}
-                  </td>
-                  <td>
-                    <button 
-                      className="delete-btn"
-                      onClick={() => deleteTransaction(tx.id)}
-                      title="Excluir transação"
-                    >
-                      🗑️
-                    </button>
-                  </td>
+        <>
+          {/* Transactions Table */}
+          <div className="transactions-table-container">
+            <table className="transactions-table">
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Cripto</th>
+                  <th>Tipo</th>
+                  <th>Quantidade</th>
+                  <th>Preço</th>
+                  <th>Total</th>
+                  <th>Ações</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {filteredTransactions.map((tx) => (
+                  <tr key={tx.id}>
+                    {/* Date */}
+                    <td>{formatDate(tx.date, 'short')}</td>
+                    
+                    {/* Crypto Symbol */}
+                    <td className="crypto-cell">
+                      <span className="crypto-symbol">
+                        {tx.cryptoSymbol}
+                      </span>
+                    </td>
+                    
+                    {/* Transaction Type */}
+                    <td>
+                      <span className={`transaction-type ${tx.type.toLowerCase()}`}>
+                        {tx.type === 'BUY' ? 'Compra' : 'Venda'}
+                      </span>
+                    </td>
+                    
+                    {/* Quantity */}
+                    <td>{formatQuantity(tx.quantity)}</td>
+                    
+                    {/* Price */}
+                    <td>{formatCurrency(tx.price)}</td>
+                    
+                    {/* Total */}
+                    <td className="total-cell">
+                      {formatCurrency(tx.quantity * tx.price)}
+                    </td>
+                    
+                    {/* Actions */}
+                    <td>
+                      <button 
+                        className="delete-btn"
+                        onClick={() => deleteTransaction(tx.id)}
+                        title="Excluir transação"
+                      >
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      <div className="transaction-summary">
-        <p>Total de transações: <strong>{filteredTransactions.length}</strong></p>
-      </div>
+          {/* Summary Footer */}
+          <div className="transaction-summary">
+            <p>
+              Total de transações: <strong>{filteredTransactions.length}</strong>
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }
