@@ -1,229 +1,161 @@
-// front/crypto-monitor-frontend/src/components/portfolio/TransactionHistory.jsx
+import React, { useState, useEffect } from 'react';
+import { 
+  formatCurrency, 
+  formatDate, 
+  formatQuantity 
+} from '../../utils/formatters';
+import './TransactionHistory.css';
 
-import React from 'react';
-import { TrendingUp, TrendingDown, Trash2 } from 'lucide-react';
-import { API_BASE_URL } from '../../utils/constants';
-import '../../styles/portfolio.css';
+function TransactionHistory() {
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filter, setFilter] = useState('all'); // all, buy, sell
 
-function TransactionHistory({ transactions, onRefresh, token }) {
-  // ============================================
-  // FORMATTERS
-  // ============================================
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(value);
-  };
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:8080/api/transactions', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
 
-  const formatQuantity = (value) => {
-    return parseFloat(value).toFixed(8);
-  };
+      if (!response.ok) throw new Error('Failed to fetch transactions');
 
-  // ============================================
-  // HANDLERS
-  // ============================================
-  const handleDelete = async (transactionId) => {
-    if (!window.confirm(
-      '⚠️ Tem certeza que deseja deletar esta transação?\n\n' +
-      'Esta ação não pode ser desfeita.'
-    )) {
-      return;
+      const data = await response.json();
+      setTransactions(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const filteredTransactions = transactions.filter(tx => {
+    if (filter === 'all') return true;
+    return tx.type.toLowerCase() === filter;
+  });
+
+  const deleteTransaction = async (id) => {
+    if (!window.confirm('Deseja realmente excluir esta transação?')) return;
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/portfolio/transaction/${transactionId}`,
-        {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` }
+      const response = await fetch(`http://localhost:8080/api/transactions/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-      );
+      });
 
-      if (response.ok) {
-        alert('✅ Transação deletada com sucesso!');
-        onRefresh();
-      } else {
-        const error = await response.json();
-        alert(`❌ Erro: ${error.error || 'Falha ao deletar transação'}`);
-      }
-    } catch (error) {
-      console.error('Erro ao deletar transação:', error);
-      alert('❌ Erro ao deletar transação');
+      if (!response.ok) throw new Error('Failed to delete transaction');
+
+      setTransactions(transactions.filter(tx => tx.id !== id));
+    } catch (err) {
+      alert('Erro ao excluir transação: ' + err.message);
     }
   };
 
-  // ============================================
-  // COMPUTED VALUES
-  // ============================================
-  const summary = {
-    total: transactions.length,
-    buys: transactions.filter(tx => tx.type === 'BUY').length,
-    sells: transactions.filter(tx => tx.type === 'SELL').length
-  };
+  if (loading) {
+    return (
+      <div className="transaction-history">
+        <div className="loading">Carregando histórico...</div>
+      </div>
+    );
+  }
 
-  // ============================================
-  // RENDER
-  // ============================================
+  if (error) {
+    return (
+      <div className="transaction-history">
+        <div className="error">Erro: {error}</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="transaction-history-container">
-      
-      {/* ============================================
-          TABLE
-          ============================================ */}
-      <div className="overflow-x-auto">
-        <table className="transaction-table">
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Tipo</th>
-              <th>Ativo</th>
-              <th className="text-right">Quantidade</th>
-              <th className="text-right">Preço Unitário</th>
-              <th className="text-right">Valor Total</th>
-              <th>Observações</th>
-              <th className="text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.length === 0 ? (
-              <tr>
-                <td colSpan="8" className="portfolio-empty">
-                  <p className="portfolio-empty-title">
-                    Nenhuma transação encontrada
-                  </p>
-                  <p className="portfolio-empty-subtitle">
-                    Adicione sua primeira transação para começar
-                  </p>
-                </td>
-              </tr>
-            ) : (
-              transactions.map((tx) => (
-                <TransactionRow
-                  key={tx.id}
-                  transaction={tx}
-                  onDelete={handleDelete}
-                  formatters={{ formatCurrency, formatDate, formatQuantity }}
-                />
-              ))
-            )}
-          </tbody>
-        </table>
+    <div className="transaction-history">
+      <div className="transaction-header">
+        <h2>Histórico de Transações</h2>
+        <div className="transaction-filters">
+          <button 
+            className={filter === 'all' ? 'active' : ''}
+            onClick={() => setFilter('all')}
+          >
+            Todas
+          </button>
+          <button 
+            className={filter === 'buy' ? 'active' : ''}
+            onClick={() => setFilter('buy')}
+          >
+            Compras
+          </button>
+          <button 
+            className={filter === 'sell' ? 'active' : ''}
+            onClick={() => setFilter('sell')}
+          >
+            Vendas
+          </button>
+        </div>
       </div>
 
-      {/* ============================================
-          SUMMARY
-          ============================================ */}
-      {transactions.length > 0 && (
-        <div className="bg-gray-50 p-6 border-t-2 border-gray-200">
-          <div className="grid grid-cols-3 gap-6 max-w-3xl mx-auto">
-            <SummaryCard
-              label="Total de Transações"
-              value={summary.total}
-              color="text-gray-800"
-            />
-            <SummaryCard
-              label="Compras"
-              value={summary.buys}
-              color="text-green-600"
-            />
-            <SummaryCard
-              label="Vendas"
-              value={summary.sells}
-              color="text-red-600"
-            />
-          </div>
+      {filteredTransactions.length === 0 ? (
+        <div className="no-transactions">
+          <p>Nenhuma transação encontrada</p>
+        </div>
+      ) : (
+        <div className="transactions-table-container">
+          <table className="transactions-table">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Cripto</th>
+                <th>Tipo</th>
+                <th>Quantidade</th>
+                <th>Preço</th>
+                <th>Total</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTransactions.map((tx) => (
+                <tr key={tx.id}>
+                  <td>{formatDate(tx.date, 'short')}</td>
+                  <td className="crypto-cell">
+                    <span className="crypto-symbol">{tx.cryptoSymbol}</span>
+                  </td>
+                  <td>
+                    <span className={`transaction-type ${tx.type.toLowerCase()}`}>
+                      {tx.type === 'BUY' ? 'Compra' : 'Venda'}
+                    </span>
+                  </td>
+                  <td>{formatQuantity(tx.quantity)}</td>
+                  <td>{formatCurrency(tx.price)}</td>
+                  <td className="total-cell">
+                    {formatCurrency(tx.quantity * tx.price)}
+                  </td>
+                  <td>
+                    <button 
+                      className="delete-btn"
+                      onClick={() => deleteTransaction(tx.id)}
+                      title="Excluir transação"
+                    >
+                      🗑️
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
-    </div>
-  );
-}
 
-// ============================================
-// TRANSACTION ROW COMPONENT
-// ============================================
-function TransactionRow({ transaction, onDelete, formatters }) {
-  const { formatCurrency, formatDate, formatQuantity } = formatters;
-  const isBuy = transaction.type === 'BUY';
-
-  return (
-    <tr>
-      {/* Data */}
-      <td className="font-mono text-gray-600">
-        {formatDate(transaction.transactionDate)}
-      </td>
-
-      {/* Tipo */}
-      <td>
-        <span className={`transaction-type-badge ${isBuy ? 'buy' : 'sell'}`}>
-          {isBuy ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-          {isBuy ? 'Compra' : 'Venda'}
-        </span>
-      </td>
-
-      {/* Ativo */}
-      <td>
-        <div>
-          <p className="font-bold text-gray-800">{transaction.coinName}</p>
-          <p className="text-sm text-gray-500">{transaction.coinSymbol}</p>
-        </div>
-      </td>
-
-      {/* Quantidade */}
-      <td className="text-right font-mono font-semibold">
-        {formatQuantity(transaction.quantity)}
-      </td>
-
-      {/* Preço Unitário */}
-      <td className="text-right font-semibold">
-        {formatCurrency(transaction.pricePerUnit)}
-      </td>
-
-      {/* Valor Total */}
-      <td className="text-right font-bold text-indigo-600">
-        {formatCurrency(transaction.totalValue)}
-      </td>
-
-      {/* Observações */}
-      <td className="text-sm text-gray-600 max-w-xs truncate">
-        {transaction.notes || '-'}
-      </td>
-
-      {/* Ações */}
-      <td className="text-center">
-        <button
-          onClick={() => onDelete(transaction.id)}
-          className="transaction-delete-btn"
-          title="Deletar transação"
-        >
-          <Trash2 size={18} />
-        </button>
-      </td>
-    </tr>
-  );
-}
-
-// ============================================
-// SUMMARY CARD COMPONENT
-// ============================================
-function SummaryCard({ label, value, color }) {
-  return (
-    <div className="text-center">
-      <p className="text-sm text-gray-600 font-semibold mb-1">{label}</p>
-      <p className={`text-2xl font-bold ${color}`}>{value}</p>
+      <div className="transaction-summary">
+        <p>Total de transações: <strong>{filteredTransactions.length}</strong></p>
+      </div>
     </div>
   );
 }

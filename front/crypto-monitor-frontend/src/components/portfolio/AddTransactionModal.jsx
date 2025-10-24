@@ -1,265 +1,322 @@
-// front/crypto-monitor-frontend/src/components/portfolio/AddTransactionModal.jsx
+import React, { useState, useEffect } from 'react';
+import { formatCurrency, formatSymbol } from '../../utils/formatters';
+import './AddTransactionModal.css';
 
-import React, { useState } from 'react';
-import { X, TrendingUp, TrendingDown } from 'lucide-react';
-
-const POPULAR_CRYPTOS = [
-  { symbol: 'BTC', name: 'Bitcoin' },
-  { symbol: 'ETH', name: 'Ethereum' },
-  { symbol: 'ADA', name: 'Cardano' },
-  { symbol: 'DOT', name: 'Polkadot' },
-  { symbol: 'LINK', name: 'Chainlink' },
-  { symbol: 'SOL', name: 'Solana' }
-];
-
-function AddTransactionModal({ onClose, onSubmit }) {
-  // ============================================
-  // STATE
-  // ============================================
+function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
   const [formData, setFormData] = useState({
-    coinSymbol: '',
-    coinName: '',
+    cryptoSymbol: '',
     type: 'BUY',
     quantity: '',
-    pricePerUnit: '',
-    transactionDate: new Date().toISOString().slice(0, 16),
-    notes: ''
+    price: '',
+    date: new Date().toISOString().split('T')[0]
   });
 
-  // ============================================
-  // HANDLERS
-  // ============================================
-  const handleSubmit = (e) => {
+  const [availableCryptos, setAvailableCryptos] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentPrice, setCurrentPrice] = useState(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchAvailableCryptos();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (formData.cryptoSymbol) {
+      fetchCurrentPrice(formData.cryptoSymbol);
+    }
+  }, [formData.cryptoSymbol]);
+
+  const fetchAvailableCryptos = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/crypto/list', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch cryptos');
+
+      const data = await response.json();
+      setAvailableCryptos(data);
+      
+      // Set default crypto if list is not empty
+      if (data.length > 0 && !formData.cryptoSymbol) {
+        setFormData(prev => ({ ...prev, cryptoSymbol: data[0].symbol }));
+      }
+    } catch (err) {
+      console.error('Error fetching cryptos:', err);
+      // Default cryptos if API fails
+      setAvailableCryptos([
+        { symbol: 'BTC', name: 'Bitcoin' },
+        { symbol: 'ETH', name: 'Ethereum' },
+        { symbol: 'BNB', name: 'Binance Coin' }
+      ]);
+    }
+  };
+
+  const fetchCurrentPrice = async (symbol) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/crypto/${symbol}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch price');
+
+      const data = await response.json();
+      setCurrentPrice(data.currentPrice);
+      
+      // Auto-fill price if empty
+      if (!formData.price) {
+        setFormData(prev => ({ ...prev, price: data.currentPrice }));
+      }
+    } catch (err) {
+      console.error('Error fetching price:', err);
+      setCurrentPrice(null);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!formData.coinSymbol || !formData.quantity || !formData.pricePerUnit) {
-      alert('⚠️ Preencha todos os campos obrigatórios');
+    setError(null);
+    setLoading(true);
+
+    // Validation
+    if (!formData.cryptoSymbol || !formData.quantity || !formData.price) {
+      setError('Preencha todos os campos obrigatórios');
+      setLoading(false);
       return;
     }
 
-    onSubmit({
-      ...formData,
-      coinSymbol: formData.coinSymbol.toUpperCase(),
-      quantity: parseFloat(formData.quantity),
-      pricePerUnit: parseFloat(formData.pricePerUnit)
-    });
+    if (parseFloat(formData.quantity) <= 0) {
+      setError('Quantidade deve ser maior que zero');
+      setLoading(false);
+      return;
+    }
+
+    if (parseFloat(formData.price) <= 0) {
+      setError('Preço deve ser maior que zero');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8080/api/transactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          ...formData,
+          quantity: parseFloat(formData.quantity),
+          price: parseFloat(formData.price)
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add transaction');
+      }
+
+      const newTransaction = await response.json();
+      
+      // Reset form
+      setFormData({
+        cryptoSymbol: availableCryptos[0]?.symbol || '',
+        type: 'BUY',
+        quantity: '',
+        price: '',
+        date: new Date().toISOString().split('T')[0]
+      });
+
+      // Notify parent
+      if (onTransactionAdded) {
+        onTransactionAdded(newTransaction);
+      }
+
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const selectCrypto = (crypto) => {
-    setFormData({
-      ...formData,
-      coinSymbol: crypto.symbol,
-      coinName: crypto.name
-    });
+  const calculateTotal = () => {
+    const quantity = parseFloat(formData.quantity) || 0;
+    const price = parseFloat(formData.price) || 0;
+    return quantity * price;
   };
 
-  const updateField = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+  const useCurrentPrice = () => {
+    if (currentPrice) {
+      setFormData(prev => ({ ...prev, price: currentPrice }));
+    }
   };
 
-  // ============================================
-  // COMPUTED VALUES
-  // ============================================
-  const totalValue = formData.quantity && formData.pricePerUnit
-    ? (parseFloat(formData.quantity) * parseFloat(formData.pricePerUnit)).toFixed(2)
-    : '0.00';
+  if (!isOpen) return null;
 
-  // ============================================
-  // RENDER
-  // ============================================
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-      onClick={onClose}
-    >
-      <div 
-        className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* ============================================
-            HEADER
-            ============================================ */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-6 rounded-t-2xl flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Nova Transação</h2>
-          <button
-            onClick={onClose}
-            className="text-white hover:bg-white/20 rounded-full p-2 transition-colors"
-          >
-            <X size={24} />
-          </button>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Nova Transação</h2>
+          <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
-        {/* ============================================
-            FORM
-            ============================================ */}
-        <form onSubmit={handleSubmit} className="p-6">
-          
-          {/* Transaction Type */}
-          <div className="mb-6">
-            <label className="block text-sm font-bold text-gray-700 mb-3">
-              Tipo de Transação
-            </label>
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                type="button"
-                onClick={() => updateField('type', 'BUY')}
-                className={`p-4 rounded-lg border-2 font-bold flex items-center justify-center gap-2 transition-all ${
-                  formData.type === 'BUY'
-                    ? 'border-green-500 bg-green-50 text-green-700'
-                    : 'border-gray-300 bg-white text-gray-600 hover:border-green-300'
-                }`}
-              >
-                <TrendingUp size={20} />
-                Compra
-              </button>
-              <button
-                type="button"
-                onClick={() => updateField('type', 'SELL')}
-                className={`p-4 rounded-lg border-2 font-bold flex items-center justify-center gap-2 transition-all ${
-                  formData.type === 'SELL'
-                    ? 'border-red-500 bg-red-50 text-red-700'
-                    : 'border-gray-300 bg-white text-gray-600 hover:border-red-300'
-                }`}
-              >
-                <TrendingDown size={20} />
-                Venda
-              </button>
+        <form onSubmit={handleSubmit} className="transaction-form">
+          {error && (
+            <div className="error-message">
+              ⚠️ {error}
             </div>
-          </div>
+          )}
 
-          {/* Popular Cryptos */}
-          <div className="mb-6">
-            <label className="block text-sm font-bold text-gray-700 mb-3">
-              Criptomoedas Populares
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {POPULAR_CRYPTOS.map((crypto) => (
-                <button
-                  key={crypto.symbol}
-                  type="button"
-                  onClick={() => selectCrypto(crypto)}
-                  className={`p-3 rounded-lg border-2 font-semibold text-sm transition-all ${
-                    formData.coinSymbol === crypto.symbol
-                      ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                      : 'border-gray-300 bg-white text-gray-600 hover:border-indigo-300'
-                  }`}
-                >
-                  {crypto.symbol}
-                </button>
+          {/* Crypto Selection */}
+          <div className="form-group">
+            <label htmlFor="cryptoSymbol">Criptomoeda *</label>
+            <select
+              id="cryptoSymbol"
+              name="cryptoSymbol"
+              value={formData.cryptoSymbol}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecione...</option>
+              {availableCryptos.map(crypto => (
+                <option key={crypto.symbol} value={crypto.symbol}>
+                  {formatSymbol(crypto.symbol)} - {crypto.name}
+                </option>
               ))}
-            </div>
+            </select>
           </div>
 
-          {/* Coin Symbol */}
-          <InputField
-            label="Símbolo da Moeda *"
-            value={formData.coinSymbol}
-            onChange={(e) => updateField('coinSymbol', e.target.value.toUpperCase())}
-            placeholder="Ex: BTC, ETH, ADA"
-            required
-          />
-
-          {/* Coin Name */}
-          <InputField
-            label="Nome da Moeda *"
-            value={formData.coinName}
-            onChange={(e) => updateField('coinName', e.target.value)}
-            placeholder="Ex: Bitcoin, Ethereum"
-            required
-          />
+          {/* Transaction Type */}
+          <div className="form-group">
+            <label>Tipo de Transação *</label>
+            <div className="radio-group">
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="type"
+                  value="BUY"
+                  checked={formData.type === 'BUY'}
+                  onChange={handleChange}
+                />
+                <span className="radio-text">Compra</span>
+              </label>
+              <label className="radio-label">
+                <input
+                  type="radio"
+                  name="type"
+                  value="SELL"
+                  checked={formData.type === 'SELL'}
+                  onChange={handleChange}
+                />
+                <span className="radio-text">Venda</span>
+              </label>
+            </div>
+          </div>
 
           {/* Quantity */}
-          <InputField
-            label="Quantidade *"
-            type="number"
-            step="0.00000001"
-            value={formData.quantity}
-            onChange={(e) => updateField('quantity', e.target.value)}
-            placeholder="Ex: 0.5"
-            required
-          />
-
-          {/* Price Per Unit */}
-          <InputField
-            label="Preço por Unidade (USD) *"
-            type="number"
-            step="0.01"
-            value={formData.pricePerUnit}
-            onChange={(e) => updateField('pricePerUnit', e.target.value)}
-            placeholder="Ex: 43250.50"
-            required
-          />
-
-          {/* Total Value Display */}
-          <div className="mb-4 p-4 bg-indigo-50 rounded-lg border-2 border-indigo-200">
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-bold text-indigo-700">Valor Total:</span>
-              <span className="text-2xl font-bold text-indigo-900">${totalValue}</span>
-            </div>
-          </div>
-
-          {/* Transaction Date */}
-          <InputField
-            label="Data da Transação"
-            type="datetime-local"
-            value={formData.transactionDate}
-            onChange={(e) => updateField('transactionDate', e.target.value)}
-          />
-
-          {/* Notes */}
-          <div className="mb-6">
-            <label className="block text-sm font-bold text-gray-700 mb-2">
-              Observações (Opcional)
-            </label>
-            <textarea
-              value={formData.notes}
-              onChange={(e) => updateField('notes', e.target.value)}
-              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
-              rows="3"
-              placeholder="Ex: Compra mensal, estratégia DCA..."
+          <div className="form-group">
+            <label htmlFor="quantity">Quantidade *</label>
+            <input
+              type="number"
+              id="quantity"
+              name="quantity"
+              value={formData.quantity}
+              onChange={handleChange}
+              placeholder="0.00000000"
+              step="0.00000001"
+              min="0"
+              required
             />
           </div>
 
-          {/* Buttons */}
-          <div className="flex gap-4">
-            <button
-              type="button"
+          {/* Price */}
+          <div className="form-group">
+            <label htmlFor="price">Preço Unitário *</label>
+            <div className="price-input-group">
+              <input
+                type="number"
+                id="price"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                required
+              />
+              {currentPrice && (
+                <button 
+                  type="button" 
+                  className="use-current-price-btn"
+                  onClick={useCurrentPrice}
+                  title="Usar preço atual"
+                >
+                  Preço atual: {formatCurrency(currentPrice)}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Date */}
+          <div className="form-group">
+            <label htmlFor="date">Data *</label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              max={new Date().toISOString().split('T')[0]}
+              required
+            />
+          </div>
+
+          {/* Total Value */}
+          {formData.quantity && formData.price && (
+            <div className="form-group total-display">
+              <label>Valor Total</label>
+              <div className="total-value">
+                {formatCurrency(calculateTotal())}
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="form-actions">
+            <button 
+              type="button" 
+              className="btn-cancel" 
               onClick={onClose}
-              className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-bold hover:bg-gray-300 transition-colors"
+              disabled={loading}
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg font-bold hover:scale-105 transition-transform shadow-lg"
+            <button 
+              type="submit" 
+              className="btn-submit"
+              disabled={loading}
             >
-              {formData.type === 'BUY' ? '✓ Comprar' : '✓ Vender'}
+              {loading ? 'Salvando...' : 'Adicionar Transação'}
             </button>
           </div>
         </form>
       </div>
-    </div>
-  );
-}
-
-// ============================================
-// INPUT FIELD COMPONENT
-// ============================================
-function InputField({ label, type = 'text', value, onChange, placeholder, required, step }) {
-  return (
-    <div className="mb-4">
-      <label className="block text-sm font-bold text-gray-700 mb-2">
-        {label}
-      </label>
-      <input
-        type={type}
-        value={value}
-        onChange={onChange}
-        className="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:outline-none"
-        placeholder={placeholder}
-        required={required}
-        step={step}
-      />
     </div>
   );
 }

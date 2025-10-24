@@ -1,4 +1,5 @@
 // front/crypto-monitor-frontend/src/components/dashboard/PriceChart.jsx
+// ✅ REFATORADO - Usando formatters.js
 
 import React, { useState, useEffect, useCallback } from 'react';
 import {
@@ -15,6 +16,7 @@ import {
 } from 'recharts';
 import { TrendingUp, TrendingDown, Activity, BarChart2 } from 'lucide-react';
 import { API_BASE_URL } from '../../utils/constants';
+import { formatCurrency, formatCompactCurrency } from '../../utils/formatters';
 
 function PriceChart({ coinId, coinName, coinSymbol }) {
   const [chartData, setChartData] = useState([]);
@@ -88,15 +90,6 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
     fetchChartData();
   }, [fetchChartData]);
 
-  const formatPrice = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(value);
-  };
-
   const formatVolume = (value) => {
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
     if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
@@ -112,7 +105,7 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
           {payload[0].payload.date}
         </p>
         <p className="text-lg font-bold text-indigo-600 mb-1">
-          {formatPrice(payload[0].value)}
+          {formatCurrency(payload[0].value)}
         </p>
         {payload[1] && (
           <p className="text-xs text-gray-600">
@@ -150,7 +143,7 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
             <div className="flex items-center gap-4 flex-wrap">
               <div>
                 <p className="text-3xl font-bold text-gray-800">
-                  {formatPrice(stats.current)}
+                  {formatCurrency(stats.current)}
                 </p>
               </div>
               
@@ -226,14 +219,14 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
           <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
             <p className="text-sm text-blue-700 font-semibold mb-1">Mínimo</p>
             <p className="text-xl font-bold text-blue-900">
-              {formatPrice(stats.min)}
+              {formatCurrency(stats.min)}
             </p>
           </div>
           
           <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg">
             <p className="text-sm text-purple-700 font-semibold mb-1">Máximo</p>
             <p className="text-xl font-bold text-purple-900">
-              {formatPrice(stats.max)}
+              {formatCurrency(stats.max)}
             </p>
           </div>
           
@@ -267,7 +260,7 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
               <YAxis 
                 stroke="#666"
                 tick={{ fontSize: 12 }}
-                tickFormatter={formatPrice}
+                tickFormatter={formatCurrency}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
@@ -298,7 +291,7 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
               <YAxis 
                 stroke="#666"
                 tick={{ fontSize: 12 }}
-                tickFormatter={formatPrice}
+                tickFormatter={formatCurrency}
               />
               <Tooltip content={<CustomTooltip />} />
               <Legend />
