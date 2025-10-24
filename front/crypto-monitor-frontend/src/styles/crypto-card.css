@@ -1,0 +1,427 @@
+/* ============================================
+   CRYPTO CARD COMPONENT
+   front/crypto-monitor-frontend/src/styles/crypto-card.css
+   ============================================ */
+
+/* ============================================
+   1. BASE CARD STYLES
+   ============================================ */
+
+.crypto-card {
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.crypto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   2. SELECTED STATE
+   ============================================ */
+
+.crypto-card.selected {
+  border: 3px solid #667eea;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+}
+
+.crypto-card.selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ============================================
+   3. DARK MODE
+   ============================================ */
+
+.crypto-card.dark {
+  border-color: #374151;
+  background: #1f2937;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  color: #f3f4f6;
+}
+
+.crypto-card.dark:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.crypto-card.dark.selected {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-color: #667eea;
+}
+
+/* ============================================
+   4. CARD HEADER
+   ============================================ */
+
+.crypto-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.crypto-card-info {
+  flex: 1;
+  min-width: 0; /* Para truncate funcionar */
+}
+
+.crypto-card-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crypto-card.dark .crypto-card-name {
+  color: #f3f4f6;
+}
+
+.crypto-card-symbol {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.crypto-card.dark .crypto-card-symbol {
+  color: #9ca3af;
+}
+
+/* ============================================
+   5. CHECKBOX
+   ============================================ */
+
+.crypto-card-checkbox {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 8px;
+  border: 2px solid #d1d5db;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.crypto-card.dark .crypto-card-checkbox {
+  border-color: #4b5563;
+  background: #374151;
+}
+
+.crypto-card.selected .crypto-card-checkbox {
+  border-color: #667eea;
+  background: #667eea;
+}
+
+.crypto-card-checkbox-icon {
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.2s ease;
+}
+
+.crypto-card.selected .crypto-card-checkbox-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ============================================
+   6. PRICE SECTION
+   ============================================ */
+
+.crypto-card-price-section {
+  margin-bottom: 12px;
+}
+
+.crypto-card-price {
+  margin: 0;
+  font-size: 32px;
+  font-weight: bold;
+  color: #1f2937;
+  line-height: 1;
+}
+
+.crypto-card.dark .crypto-card-price {
+  color: #f3f4f6;
+}
+
+/* ============================================
+   7. FOOTER (Change Badge + Market Cap)
+   ============================================ */
+
+.crypto-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Change Badge */
+.crypto-card-change-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.crypto-card-change-badge.positive {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.crypto-card-change-badge.negative {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.crypto-card-change-arrow {
+  font-size: 16px;
+}
+
+.crypto-card-change-value {
+  font-size: 14px;
+}
+
+/* Market Cap */
+.crypto-card-market-cap {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.crypto-card.dark .crypto-card-market-cap {
+  color: #6b7280;
+}
+
+/* ============================================
+   8. HOVER EFFECTS
+   ============================================ */
+
+.crypto-card:hover .crypto-card-checkbox {
+  border-color: #667eea;
+  transform: scale(1.1);
+}
+
+.crypto-card:hover .crypto-card-change-badge.positive {
+  background: #bbf7d0;
+  transform: scale(1.05);
+}
+
+.crypto-card:hover .crypto-card-change-badge.negative {
+  background: #fecaca;
+  transform: scale(1.05);
+}
+
+/* ============================================
+   9. LOADING STATE
+   ============================================ */
+
+.crypto-card.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.crypto-card.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  to {
+    left: 100%;
+  }
+}
+
+/* ============================================
+   10. DISABLED STATE
+   ============================================ */
+
+.crypto-card.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   11. COMPACT VARIANT (Optional)
+   ============================================ */
+
+.crypto-card.compact {
+  padding: 12px;
+}
+
+.crypto-card.compact .crypto-card-name {
+  font-size: 16px;
+}
+
+.crypto-card.compact .crypto-card-price {
+  font-size: 24px;
+}
+
+.crypto-card.compact .crypto-card-checkbox {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
+
+/* ============================================
+   12. ANIMATIONS
+   ============================================ */
+
+/* Entrada suave */
+.crypto-card {
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulse animation on new data */
+.crypto-card.updated {
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+}
+
+/* ============================================
+   13. ACCESSIBILITY
+   ============================================ */
+
+/* Focus visible (keyboard navigation) */
+.crypto-card:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .crypto-card {
+    border-width: 3px;
+  }
+  
+  .crypto-card.selected {
+    border-width: 4px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .crypto-card,
+  .crypto-card-checkbox,
+  .crypto-card-change-badge {
+    transition: none;
+    animation: none;
+  }
+  
+  .crypto-card:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   14. RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .crypto-card {
+    padding: 16px;
+  }
+  
+  .crypto-card-price {
+    font-size: 28px;
+  }
+  
+  .crypto-card-name {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .crypto-card {
+    padding: 12px;
+  }
+  
+  .crypto-card-price {
+    font-size: 24px;
+  }
+  
+  .crypto-card-change-badge {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+}
+
+/* ============================================
+   15. PRINT STYLES
+   ============================================ */
+
+@media print {
+  .crypto-card {
+    box-shadow: none;
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+  
+  .crypto-card-checkbox {
+    display: none;
+  }
+  
+  .crypto-card:hover {
+    transform: none;
+  }
+}

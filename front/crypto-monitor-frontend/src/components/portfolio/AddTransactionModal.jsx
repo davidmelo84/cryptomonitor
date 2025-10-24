@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { formatCurrency, formatSymbol } from '../../utils/formatters';
-import './AddTransactionModal.css';
+import '../../styles/AddTransactionModal.css';
 
 function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
   const [formData, setFormData] = useState({

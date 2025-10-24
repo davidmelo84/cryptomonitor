@@ -4,7 +4,7 @@ import {
   formatPercent, 
   formatPercentWithSign 
 } from '../../utils/formatters';
-import './trading-bots.css';
+import '../../styles/trading-bots.css';
 
 function TradingBotsPage() {
   const [bots, setBots] = useState([]);

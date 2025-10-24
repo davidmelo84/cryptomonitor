@@ -4,7 +4,7 @@ import {
   formatDate, 
   formatQuantity 
 } from '../../utils/formatters';
-import './TransactionHistory.css';
+import '../../styles/TransactionHistory.css';
 
 function TransactionHistory() {
   const [transactions, setTransactions] = useState([]);
