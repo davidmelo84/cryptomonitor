@@ -1,16 +1,16 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
-// ✅ VERSÃO CORRIGIDA - Com gráficos funcionando
+// ✅ VERSÃO FINAL - Com Modal Telegram + Gráficos + Tudo funcionando
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import Header from '../dashboard/Header';
 import StatusCard from '../dashboard/StatusCard';
 import StatsCards from '../dashboard/StatsCards';
 import SettingsCard from '../dashboard/SettingsCard';
 import CryptocurrenciesCard from '../dashboard/CryptocurrenciesCard';
-import ChartTabs from '../dashboard/ChartTabs'; // ✅ ADICIONADO
+import ChartTabs from '../dashboard/ChartTabs';
 import TelegramConfig from '../telegram/TelegramConfig';
-
+import '../../styles/TelegramModal.css'; // ✅ IMPORTAR CSS DO MODAL
 
 function DashboardPage({
   user,
@@ -36,6 +36,9 @@ function DashboardPage({
   onNavigateToBots
 }) {
   const { isDark } = useTheme();
+  
+  // ✅ ESTADO DO MODAL TELEGRAM
+  const [showTelegramConfig, setShowTelegramConfig] = useState(false);
 
   return (
     <div className={`page-container ${isDark ? 'dark' : ''}`}>
@@ -47,6 +50,7 @@ function DashboardPage({
         onLogout={onLogout}
         onNavigateToPortfolio={onNavigateToPortfolio}
         onNavigateToBots={onNavigateToBots}
+        onOpenTelegramConfig={() => setShowTelegramConfig(true)} // ✅ ABRIR MODAL
       />
 
       <div className="content-wrapper">
@@ -66,7 +70,7 @@ function DashboardPage({
           />
         )}
 
-        {/* ✅ GRÁFICOS - ADICIONADO */}
+        {/* Gráficos */}
         {selectedCryptos.length > 0 && (
           <ChartTabs selectedCryptos={selectedCryptos} />
         )}
@@ -91,6 +95,41 @@ function DashboardPage({
           onClearSelection={onClearSelection}
         />
       </div>
+
+      {/* ✅ MODAL TELEGRAM CONFIG */}
+      {showTelegramConfig && (
+        <div 
+          className="telegram-modal-overlay" 
+          onClick={() => setShowTelegramConfig(false)}
+        >
+          <div 
+            className={`telegram-modal-content ${isDark ? 'dark' : ''}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header do Modal */}
+            <div className="telegram-modal-header">
+              <h2 className="telegram-modal-title">
+                📱 Configuração do Telegram
+              </h2>
+              <button 
+                className="telegram-modal-close"
+                onClick={() => setShowTelegramConfig(false)}
+                aria-label="Fechar"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body do Modal */}
+            <div className="telegram-modal-body">
+              <TelegramConfig 
+                userEmail={monitoringEmail}
+                token={localStorage.getItem('token')}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,5 +1,7 @@
+// front/crypto-monitor-frontend/src/components/dashboard/Header.jsx
+
 import React from 'react';
-import { TrendingUp, User, RefreshCw, LogOut, Wallet, Bot } from 'lucide-react';
+import { TrendingUp, User, RefreshCw, LogOut, Wallet, Bot, Send } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
 
@@ -10,7 +12,8 @@ function Header({
   onRefresh, 
   onLogout,
   onNavigateToPortfolio,
-  onNavigateToBots 
+  onNavigateToBots,
+  onOpenTelegramConfig // ✅ NOVO
 }) {
   const { isDark } = useTheme();
 
@@ -53,6 +56,15 @@ function Header({
           >
             <Bot size={16} />
             Trading Bots
+          </button>
+
+          {/* ✅ NOVO: Botão Telegram */}
+          <button
+            onClick={onOpenTelegramConfig}
+            className="header-btn header-btn-telegram"
+          >
+            <Send size={16} />
+            Telegram
           </button>
           
           <button

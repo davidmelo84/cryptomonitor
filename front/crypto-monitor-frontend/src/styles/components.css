@@ -968,6 +968,16 @@
   color: white;
 }
 
+.header-btn-telegram {
+  background: linear-gradient(135deg, #229ED9 0%, #0088CC 100%);
+  color: white;
+}
+
+.header-btn-telegram:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(34, 158, 217, 0.4);
+}
+
 /* ============================================
    12. MODAL (ADDTO TRANSACTION) - NOVO
    Small, semantic modal styling to replace inline styles
