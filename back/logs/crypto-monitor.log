@@ -823,3 +823,450 @@ jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
 2025-10-24 16:45:53 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
 2025-10-24 16:46:08 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
 2025-10-24 16:46:08 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 16:47:08 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 16:47:08 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 16:48:08 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 16:48:08 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 16:48:43 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2025-10-24 16:48:43 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'taskExecutor'
+2025-10-24 16:48:43 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-24 16:48:43 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-24 16:48:43 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-24 21:49:13 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 18592 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-10-24 21:49:13 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-24 21:49:17 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-24 21:49:17 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 227 ms. Found 7 JPA repository interfaces.
+2025-10-24 21:49:18 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-24 21:49:18 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-24 21:49:18 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-24 21:49:18 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-10-24 21:49:18 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4921 ms
+2025-10-24 21:49:20 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-10-24 21:49:20 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-10-24 21:49:20 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-10-24 21:49:20 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/crypto_monitor (PostgreSQL 16.8)
+2025-10-24 21:49:20 [main] DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.6.0
+2025-10-24 21:49:20 [main] DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-10-24 21:49:20 [main] WARN  o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 16.8 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 15.
+2025-10-24 21:49:20 [main] DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-10-24 21:49:20 [main] DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-10-24 21:49:20 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-24 21:49:20 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-24 21:49:20 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-24 21:49:20 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-24 21:49:20 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.196s)
+2025-10-24 21:49:20 [main] DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-10-24 21:49:20 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-24 21:49:20 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-10-24 21:49:20 [main] DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 30 of 94M
+2025-10-24 21:49:21 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-24 21:49:21 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-24 21:49:21 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-24 21:49:22 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-24 21:49:22 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-24 21:49:22 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@59c38af5
+2025-10-24 21:49:22 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-24 21:49:22 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-24 21:49:31 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-24 21:49:32 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-24 21:49:33 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-24 21:49:34 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-24 21:49:35 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'cryptoController' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\controller\CryptoController.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'alertService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\service\AlertService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'notificationService': Injection of autowired dependencies failed
+2025-10-24 21:49:35 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-24 21:49:35 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-24 21:49:36 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-24 21:52:12 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 10164 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-10-24 21:52:12 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-24 21:52:14 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-24 21:52:14 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 277 ms. Found 7 JPA repository interfaces.
+2025-10-24 21:52:16 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-24 21:52:16 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-24 21:52:16 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-24 21:52:16 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-10-24 21:52:16 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3722 ms
+2025-10-24 21:52:17 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-10-24 21:52:17 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-10-24 21:52:17 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-10-24 21:52:17 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/crypto_monitor (PostgreSQL 16.8)
+2025-10-24 21:52:17 [main] DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.6.0
+2025-10-24 21:52:17 [main] DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-10-24 21:52:17 [main] WARN  o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 16.8 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 15.
+2025-10-24 21:52:17 [main] DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-10-24 21:52:17 [main] DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-10-24 21:52:17 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-24 21:52:17 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-24 21:52:17 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-24 21:52:17 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-24 21:52:17 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.034s)
+2025-10-24 21:52:17 [main] DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-10-24 21:52:17 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-24 21:52:17 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-10-24 21:52:17 [main] DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 43 of 90M
+2025-10-24 21:52:17 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-24 21:52:17 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-24 21:52:17 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-24 21:52:18 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-24 21:52:18 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-24 21:52:18 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2de96eba
+2025-10-24 21:52:18 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-24 21:52:18 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-24 21:52:19 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-24 21:52:20 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-24 21:52:20 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-24 21:52:21 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-24 21:52:21 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'cryptoController' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\controller\CryptoController.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'alertService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\service\AlertService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'notificationService': Injection of autowired dependencies failed
+2025-10-24 21:52:21 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-24 21:52:21 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-24 21:52:21 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-24 21:52:21 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-10-24 21:52:21 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-10-24 21:52:22 [main] ERROR o.s.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'cryptoController' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\controller\CryptoController.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'alertService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\service\AlertService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'notificationService': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:973)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:946)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:616)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:455)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:323)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1342)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1331)
+	at com.crypto.CryptoMonitorApplication.main(CryptoMonitorApplication.java:16)
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'alertService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\service\AlertService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'notificationService': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 19 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'notificationService': Injection of autowired dependencies failed
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:499)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1420)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 33 common frames omitted
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder '8489653452' in value "${8489653452}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:180)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveNestedPlaceholders(AbstractPropertyResolver.java:230)
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:79)
+	at org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver.getProperty(ConfigurationPropertySourcesPropertyResolver.java:60)
+	at org.springframework.core.env.AbstractEnvironment.getProperty(AbstractEnvironment.java:552)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$1.getProperty(PropertySourcesPlaceholderConfigurer.java:153)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer$1.getProperty(PropertySourcesPlaceholderConfigurer.java:149)
+	at org.springframework.core.env.PropertySourcesPropertyResolver.getProperty(PropertySourcesPropertyResolver.java:85)
+	at org.springframework.core.env.PropertySourcesPropertyResolver.getPropertyAsRawString(PropertySourcesPropertyResolver.java:74)
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:159)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:126)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:239)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:200)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:921)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1372)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:769)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:752)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:145)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:493)
+	... 45 common frames omitted
+2025-10-24 21:57:11 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 17556 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-10-24 21:57:11 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-24 21:57:12 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-24 21:57:12 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 211 ms. Found 7 JPA repository interfaces.
+2025-10-24 21:57:13 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-24 21:57:13 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-24 21:57:13 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-24 21:57:14 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-10-24 21:57:14 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2768 ms
+2025-10-24 21:57:14 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-10-24 21:57:14 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-10-24 21:57:14 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-10-24 21:57:14 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/crypto_monitor (PostgreSQL 16.8)
+2025-10-24 21:57:14 [main] DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.6.0
+2025-10-24 21:57:14 [main] DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-10-24 21:57:14 [main] WARN  o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 16.8 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 15.
+2025-10-24 21:57:14 [main] DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-10-24 21:57:14 [main] DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-10-24 21:57:14 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-24 21:57:14 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-24 21:57:14 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-24 21:57:14 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-24 21:57:14 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 2 migrations (execution time 00:00.032s)
+2025-10-24 21:57:14 [main] DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-10-24 21:57:15 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-24 21:57:15 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2025-10-24 21:57:15 [main] DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 45 of 84M
+2025-10-24 21:57:15 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-24 21:57:15 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-24 21:57:15 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-24 21:57:15 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-24 21:57:15 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-24 21:57:15 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@61e0f9b9
+2025-10-24 21:57:15 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-24 21:57:15 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-24 21:57:17 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-24 21:57:17 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-24 21:57:17 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-24 21:57:18 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-24 21:57:18 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService
+2025-10-24 21:57:19 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2025-10-24 21:57:19 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'taskExecutor'
+2025-10-24 21:57:19 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-24 21:57:19 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 44 mappings in 'requestMappingHandlerMapping'
+2025-10-24 21:57:19 [main] DEBUG o.s.w.s.h.SimpleUrlHandlerMapping - Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2025-10-24 21:57:20 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 15 endpoint(s) beneath base path '/actuator'
+2025-10-24 21:57:20 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4fb0884d, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@b627ffa, org.springframework.security.web.context.SecurityContextHolderFilter@57e6fd09, org.springframework.security.web.header.HeaderWriterFilter@328c6f65, org.springframework.web.filter.CorsFilter@2a987a5d, org.springframework.security.web.authentication.logout.LogoutFilter@77f3bb3f, com.crypto.security.JwtAuthenticationFilter@79f6b43a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@462c68b3, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@425cf933, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@13180cc9, org.springframework.security.web.session.SessionManagementFilter@bbc199a, org.springframework.security.web.access.ExceptionTranslationFilter@496de48b, org.springframework.security.web.access.intercept.AuthorizationFilter@31eed3bc]
+2025-10-24 21:57:20 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-24 21:57:20 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-24 21:57:21 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2025-10-24 21:57:21 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/crypto-monitor'
+2025-10-24 21:57:21 [main] INFO  com.crypto.CryptoMonitorApplication - Started CryptoMonitorApplication in 11.066 seconds (process running for 11.948)
+2025-10-24 21:57:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 21:57:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@5710598e
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@3ca26839
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-24 21:57:22 [RMI TCP Connection(2)-192.168.1.2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 6 ms
+2025-10-24 21:58:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 21:58:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 21:59:06 [http-nio-8080-exec-1] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/crypto-monitor/api/user/me' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
+2025-10-24 21:59:06 [http-nio-8080-exec-1] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/crypto-monitor/api/user/me' (previous null). Performing MatchableHandlerMapping lookup. This is logged once only at WARN level, and every time at TRACE.
+2025-10-24 21:59:06 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/user/me", parameters={}
+2025-10-24 21:59:06 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.UserController#getProfile(String)
+2025-10-24 21:59:07 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 21:59:07 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [User(id=2, username=teste, password=null, email=testando@gmail.com, role=USER)]
+2025-10-24 21:59:07 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 21:59:07 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-24 21:59:07 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-24 21:59:07 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 21:59:07 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{totalActiveMonitors=0, timestamp=1761353947442, active=false, username=teste}]
+2025-10-24 21:59:07 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 21:59:07 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-24 21:59:07 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-24 21:59:07 [http-nio-8080-exec-3] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 21:59:08 [http-nio-8080-exec-3] DEBUG o.s.w.r.f.client.ExchangeFunctions - [36dd1f27] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 21:59:10 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [36dd1f27] [eb01d738-1] Response 200 OK
+2025-10-24 21:59:10 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [36dd1f27] [eb01d738-1] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110747, priceChange1 (truncated)...]
+2025-10-24 21:59:10 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 21:59:10 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110747, priceChange1 (truncated)...]
+2025-10-24 21:59:10 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 21:59:12 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/auth/login", parameters={}
+2025-10-24 21:59:12 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.AuthController#login(User)
+2025-10-24 21:59:12 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [User(id=null, username=teste, password=cyb3rdefense, email=null, role=USER)]
+2025-10-24 21:59:12 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 21:59:12 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlhdCI6MTc2MTM1Mzk1MiwiZXhwIjoxNzYxNDQwMzUyfQ.H2mCb (truncated)...]
+2025-10-24 21:59:12 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 21:59:12 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-24 21:59:12 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-24 21:59:12 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 21:59:12 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{totalActiveMonitors=0, timestamp=1761353952941, active=false, username=teste}]
+2025-10-24 21:59:12 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 21:59:13 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-24 21:59:13 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-24 21:59:13 [http-nio-8080-exec-6] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 21:59:13 [http-nio-8080-exec-6] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2e3cf9ca] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 21:59:13 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2e3cf9ca] [eb01d738-2] Response 200 OK
+2025-10-24 21:59:13 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [2e3cf9ca] [eb01d738-2] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110747, priceChange1 (truncated)...]
+2025-10-24 21:59:13 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 21:59:13 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110747, priceChange1 (truncated)...]
+2025-10-24 21:59:13 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 21:59:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-24 21:59:21 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-24 21:59:28 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/monitoring/start", parameters={}
+2025-10-24 21:59:28 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#startMonitoring(Map, Authentication)
+2025-10-24 21:59:28 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [{email=melodavid84@icloud.com, cryptocurrencies=[bitcoin, ethereum], checkIntervalMinutes=5, buyThre (truncated)...]
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - 📥 REQUISIÇÃO PARA INICIAR MONITORAMENTO
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    👤 Usuário: teste
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    📧 Email: melodavid84@icloud.com
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    📊 Criptomoedas recebidas: [bitcoin, ethereum]
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    📊 Quantidade: 2
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    ⏱️  Intervalo: 5 minutos
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    📉 Threshold compra: -5.0%
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    📈 Threshold venda: +10.0%
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - 🗑️  Deletando alertas antigos do email: melodavid84@icloud.com
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  com.crypto.service.AlertService - 🛑 Desativando todos os alertas para: melodavid84@icloud.com
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  com.crypto.service.AlertService - ✅ 18 alertas desativados para melodavid84@icloud.com
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - 🔧 Iniciando criação de alertas para 2 cryptos
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    🔹 Criando alertas para:
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - CoinId recebido: bitcoin
+2025-10-24 21:59:28 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Símbolo mapeado: BTC
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  com.crypto.service.AlertService - ✅ Nova regra de alerta criada: AlertRule(id=125, coinSymbol=BTC, alertType=PERCENT_CHANGE_24H, thresholdValue=-5.0, timePeriod=null, active=true, notificationEmail=melodavid84@icloud.com, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyljRVaH72aoxNqvm39VDRiCLxMO, email=testando@gmail.com, role=USER))
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    ✅ Regra de COMPRA criada:
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Símbolo: BTC
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Email: melodavid84@icloud.com
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Threshold: -5.0%
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  com.crypto.service.AlertService - ✅ Nova regra de alerta criada: AlertRule(id=126, coinSymbol=BTC, alertType=PERCENT_CHANGE_24H, thresholdValue=10.0, timePeriod=null, active=true, notificationEmail=melodavid84@icloud.com, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyljRVaH72aoxNqvm39VDRiCLxMO, email=testando@gmail.com, role=USER))
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    ✅ Regra de VENDA criada:
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Símbolo: BTC
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Email: melodavid84@icloud.com
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Threshold: +10.0%
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    🔹 Criando alertas para:
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - CoinId recebido: ethereum
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Símbolo mapeado: ETH
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  com.crypto.service.AlertService - ✅ Nova regra de alerta criada: AlertRule(id=127, coinSymbol=ETH, alertType=PERCENT_CHANGE_24H, thresholdValue=-5.0, timePeriod=null, active=true, notificationEmail=melodavid84@icloud.com, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyljRVaH72aoxNqvm39VDRiCLxMO, email=testando@gmail.com, role=USER))
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    ✅ Regra de COMPRA criada:
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Símbolo: ETH
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Email: melodavid84@icloud.com
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Threshold: -5.0%
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  com.crypto.service.AlertService - ✅ Nova regra de alerta criada: AlertRule(id=128, coinSymbol=ETH, alertType=PERCENT_CHANGE_24H, thresholdValue=10.0, timePeriod=null, active=true, notificationEmail=melodavid84@icloud.com, user=User(id=2, username=teste, password=$2a$10$0LoPX4SUzqUXixVa6WRWOO2ePLyljRVaH72aoxNqvm39VDRiCLxMO, email=testando@gmail.com, role=USER))
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -    ✅ Regra de VENDA criada:
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Símbolo: ETH
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Email: melodavid84@icloud.com
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController -       - Threshold: +10.0%
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - 🎯 Total de alertas criados: 4
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - 📋 TOTAL DE REGRAS CRIADAS: 4
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.service.MonitoringControlService - ✅ Monitoramento INICIADO para usuário: teste (email: melodavid84@icloud.com)
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.service.MonitoringControlService - 🔄 Executando ciclo de monitoramento para: teste
+2025-10-24 21:59:29 [crypto-monitor-1] INFO  c.c.service.MonitoringControlService - 🔄 Executando ciclo de monitoramento para: teste
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.service.CryptoMonitoringService - 🔄 Iniciando ciclo de monitoramento para email: melodavid84@icloud.com
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 21:59:29 [crypto-monitor-1] INFO  c.c.service.CryptoMonitoringService - 🔄 Iniciando ciclo de monitoramento para email: melodavid84@icloud.com
+2025-10-24 21:59:29 [crypto-monitor-1] INFO  com.crypto.service.CryptoService - Buscando cotações em: https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 21:59:29 [http-nio-8080-exec-8] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2ee7ad25] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 21:59:29 [crypto-monitor-1] DEBUG o.s.w.r.f.client.ExchangeFunctions - [51fee431] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-24 21:59:29 [reactor-http-nio-2] DEBUG o.s.w.r.f.client.ExchangeFunctions - [2ee7ad25] [eb01d738-3] Response 200 OK
+2025-10-24 21:59:29 [reactor-http-nio-2] DEBUG org.springframework.web.HttpLogging - [2ee7ad25] [eb01d738-3] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110747, priceChange1 (truncated)...]
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.service.CryptoMonitoringService - 📊 Obtidos preços de 9 criptomoedas
+2025-10-24 21:59:29 [reactor-http-nio-3] DEBUG o.s.w.r.f.client.ExchangeFunctions - [51fee431] [bd3bd452-1] Response 200 OK
+2025-10-24 21:59:29 [reactor-http-nio-3] DEBUG org.springframework.web.HttpLogging - [51fee431] [bd3bd452-1] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=110747, priceChange1 (truncated)...]
+2025-10-24 21:59:29 [crypto-monitor-1] INFO  c.c.service.CryptoMonitoringService - 📊 Obtidos preços de 9 criptomoedas
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  com.crypto.service.AlertService - 🔍 Processando alertas para email: melodavid84@icloud.com
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  com.crypto.service.AlertService - ✅ Processamento concluído para melodavid84@icloud.com: 4 alertas verificados, 0 disparados
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.service.CryptoMonitoringService - ✅ Ciclo de monitoramento concluído para: melodavid84@icloud.com
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.service.MonitoringControlService - ✅ Ciclo concluído para: teste
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - ✅ MONITORAMENTO INICIADO COM SUCESSO!
+2025-10-24 21:59:29 [http-nio-8080-exec-8] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-24 21:59:29 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 21:59:29 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{alertRulesCreated=4, email=melodavid84@icloud.com, message=Monitoramento iniciado com sucesso, cryp (truncated)...]
+2025-10-24 21:59:29 [crypto-monitor-1] INFO  com.crypto.service.AlertService - 🔍 Processando alertas para email: melodavid84@icloud.com
+2025-10-24 21:59:29 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-24 21:59:29 [crypto-monitor-1] INFO  com.crypto.service.AlertService - ✅ Processamento concluído para melodavid84@icloud.com: 4 alertas verificados, 0 disparados
+2025-10-24 21:59:29 [crypto-monitor-1] INFO  c.c.service.CryptoMonitoringService - ✅ Ciclo de monitoramento concluído para: melodavid84@icloud.com
+2025-10-24 21:59:29 [crypto-monitor-1] INFO  c.c.service.MonitoringControlService - ✅ Ciclo concluído para: teste
+2025-10-24 21:59:33 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/monitoring/stop", parameters={}
+2025-10-24 21:59:33 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#stopMonitoring(Authentication)
+2025-10-24 21:59:33 [http-nio-8080-exec-9] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-24 21:59:33 [http-nio-8080-exec-9] INFO  c.c.controller.MonitoringController - 🛑 REQUISIÇÃO PARA PARAR MONITORAMENTO
+2025-10-24 21:59:33 [http-nio-8080-exec-9] INFO  c.c.controller.MonitoringController -    👤 Usuário: teste
+2025-10-24 21:59:33 [http-nio-8080-exec-9] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-24 21:59:33 [http-nio-8080-exec-9] INFO  c.c.service.MonitoringControlService - 🛑 Monitoramento PARADO para usuário: teste
+2025-10-24 21:59:33 [http-nio-8080-exec-9] INFO  c.c.controller.MonitoringController - ✅ MONITORAMENTO PARADO COM SUCESSO!
+2025-10-24 21:59:33 [http-nio-8080-exec-9] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-24 21:59:33 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-24 21:59:33 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{active=false, message=Monitoramento parado com sucesso, username=teste}]
+2025-10-24 21:59:33 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
