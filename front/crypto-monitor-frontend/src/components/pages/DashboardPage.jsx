@@ -9,6 +9,8 @@ import StatsCards from '../dashboard/StatsCards';
 import SettingsCard from '../dashboard/SettingsCard';
 import CryptocurrenciesCard from '../dashboard/CryptocurrenciesCard';
 import ChartTabs from '../dashboard/ChartTabs'; // ✅ ADICIONADO
+import TelegramConfig from '../telegram/TelegramConfig';
+
 
 function DashboardPage({
   user,
