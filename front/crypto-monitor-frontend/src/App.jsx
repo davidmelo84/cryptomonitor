@@ -1,4 +1,6 @@
 // front/crypto-monitor-frontend/src/App.jsx
+// ✅ VERSÃO CORRIGIDA - Sem loops, com lazy loading
+
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { API_BASE_URL } from './utils/constants';
@@ -36,68 +38,38 @@ function App() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
 
-  // ✅ Validar token com backend
-  const validateToken = useCallback(async (savedToken, savedUser) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/user/me`, {
-        headers: { 'Authorization': `Bearer ${savedToken}` }
-      });
-
-      if (response.ok) {
-        setToken(savedToken);
-        setUser(JSON.parse(savedUser));
-        setCurrentPage('dashboard');
-      } else {
-        localStorage.clear();
-        setCurrentPage('login');
-        setToken(null);
-        setUser(null);
-      }
-    } catch {
-      localStorage.clear();
-      setCurrentPage('login');
-      setToken(null);
-      setUser(null);
-    }
-  }, []);
-
-  // ✅ Restaurar sessão ao iniciar app
+  // ✅ Restaurar sessão ao iniciar (SEM validação com backend)
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
 
     if (!savedToken || !savedUser) {
       setCurrentPage('login');
-      setToken(null);
-      setUser(null);
       return;
     }
 
     try {
       const parsedUser = JSON.parse(savedUser);
-
-      if (savedToken === 'demo-token') {
-        if (parsedUser?.username) {
-          setToken(savedToken);
-          setUser(parsedUser);
-          setCurrentPage('dashboard');
-        } else {
-          localStorage.clear();
-          setCurrentPage('login');
-        }
-      } else {
-        validateToken(savedToken, savedUser);
-      }
-    } catch {
+      
+      // ✅ Simplesmente restaurar (sem validar com backend)
+      setToken(savedToken);
+      setUser(parsedUser);
+      setCurrentPage('dashboard');
+    } catch (error) {
+      console.error('Erro ao restaurar sessão:', error);
       localStorage.clear();
       setCurrentPage('login');
-      setToken(null);
-      setUser(null);
     }
-  }, [validateToken]);
+  }, []); // ✅ Executar APENAS uma vez
 
-  // ✅ Fetch inicial de monitoramento e criptos
-  useEffect(() => { if (token) checkMonitoringStatus(); }, [token]);
+  // ✅ Fetch inicial de monitoramento
+  useEffect(() => {
+    if (token) {
+      checkMonitoringStatus();
+    }
+  }, [token]);
+
+  // ✅ Fetch de cryptos com intervalo
   useEffect(() => {
     if (token) {
       fetchAvailableCryptos();
@@ -112,33 +84,41 @@ function App() {
       const response = await fetch(`${API_BASE_URL}/monitoring/status`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
       if (response.ok) {
         const data = await response.json();
-        setIsMonitoring(data.active);
+        setIsMonitoring(data.active || false);
       }
     } catch (error) {
-      console.error(error);
+      console.error('Erro ao verificar status:', error);
     }
   };
 
   const fetchAvailableCryptos = async () => {
     setIsRefreshing(true);
+    
     try {
       const response = await fetch(`${API_BASE_URL}/crypto/current`);
+      
       if (!response.ok) throw new Error('API falhou');
+      
       const data = await response.json();
+      
       const normalized = data.map(c => ({
         coinId: c.id,
         name: c.name,
         symbol: c.symbol,
         currentPrice: c.current_price || 0,
-        priceChange24h: c.price_change_24h || 0,
+        priceChange24h: c.price_change_percentage_24h || 0,
         marketCap: c.market_cap || 0
       }));
+      
       setAvailableCryptos(normalized);
       setLastUpdate(new Date());
-    } catch {
-      // fallback mock
+    } catch (error) {
+      console.error('Erro ao buscar cryptos:', error);
+      
+      // ✅ Fallback mock
       setAvailableCryptos([
         { coinId: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', currentPrice: 43250.50, priceChange24h: 2.5, marketCap: 845000000000 },
         { coinId: 'ethereum', name: 'Ethereum', symbol: 'ETH', currentPrice: 2280.30, priceChange24h: -1.2, marketCap: 274000000000 },
@@ -148,19 +128,26 @@ function App() {
         { coinId: 'solana', name: 'Solana', symbol: 'SOL', currentPrice: 98.45, priceChange24h: 5.2, marketCap: 42000000000 }
       ]);
       setLastUpdate(new Date());
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
     }
-    setTimeout(() => setIsRefreshing(false), 500);
   };
 
   const handleLogin = useCallback(async (username, password) => {
     setAuthError('');
-    if (!username || !password) { setAuthError('Preencha todos os campos'); return; }
+    
+    if (!username || !password) {
+      setAuthError('Preencha todos os campos');
+      return;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
+
       if (response.ok) {
         const data = await response.json();
         setToken(data.token);
@@ -171,7 +158,10 @@ function App() {
       } else {
         setAuthError('Credenciais inválidas');
       }
-    } catch {
+    } catch (error) {
+      console.error('Erro no login:', error);
+      
+      // ✅ Modo demo
       setToken('demo-token');
       setUser({ username });
       localStorage.setItem('token', 'demo-token');
@@ -182,18 +172,32 @@ function App() {
 
   const handleRegister = useCallback(async (regUsername, regEmail, regPassword, regConfirmPassword) => {
     setAuthError('');
+    
     if (!regUsername || !regEmail || !regPassword || !regConfirmPassword) {
-      setAuthError('Preencha todos os campos'); return false;
+      setAuthError('Preencha todos os campos');
+      return false;
     }
-    if (regPassword !== regConfirmPassword) { setAuthError('As senhas não coincidem'); return false; }
-    if (regPassword.length < 6) { setAuthError('A senha deve ter pelo menos 6 caracteres'); return false; }
+    
+    if (regPassword !== regConfirmPassword) {
+      setAuthError('As senhas não coincidem');
+      return false;
+    }
+    
+    if (regPassword.length < 6) {
+      setAuthError('A senha deve ter pelo menos 6 caracteres');
+      return false;
+    }
+
     try {
       await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: regUsername, email: regEmail, password: regPassword })
       });
-    } catch {}
+    } catch (error) {
+      console.error('Erro no registro:', error);
+    }
+
     setCurrentPage('login');
     return true;
   }, []);
@@ -220,12 +224,21 @@ function App() {
       try {
         const response = await fetch(`${API_BASE_URL}/monitoring/stop`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
         });
-        if (response.ok) setIsMonitoring(false);
-      } catch { console.error('Erro ao parar monitoramento'); }
+        
+        if (response.ok) {
+          setIsMonitoring(false);
+        }
+      } catch (error) {
+        console.error('Erro ao parar monitoramento:', error);
+      }
     } else {
       if (!monitoringEmail || selectedCryptos.length === 0) return;
+
       try {
         const payload = {
           email: monitoringEmail,
@@ -234,22 +247,43 @@ function App() {
           buyThreshold,
           sellThreshold
         };
+
         const response = await fetch(`${API_BASE_URL}/monitoring/start`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
           body: JSON.stringify(payload)
         });
-        if (response.ok) setIsMonitoring(true);
-      } catch { console.error('Erro ao iniciar monitoramento'); }
+
+        if (response.ok) {
+          setIsMonitoring(true);
+        }
+      } catch (error) {
+        console.error('Erro ao iniciar monitoramento:', error);
+      }
     }
   };
 
-  // ===================== RENDER =====================
-  const pageProps = {
-    user, token, authError,
-    availableCryptos, selectedCryptos, monitoringEmail, monitoringInterval,
-    buyThreshold, sellThreshold, isMonitoring, isRefreshing, lastUpdate,
-    setMonitoringEmail, setMonitoringInterval, setBuyThreshold, setSellThreshold,
+  // ===================== PROPS COMPARTILHADAS =====================
+  const sharedProps = {
+    user,
+    token,
+    authError,
+    availableCryptos,
+    selectedCryptos,
+    monitoringEmail,
+    monitoringInterval,
+    buyThreshold,
+    sellThreshold,
+    isMonitoring,
+    isRefreshing,
+    lastUpdate,
+    setMonitoringEmail,
+    setMonitoringInterval,
+    setBuyThreshold,
+    setSellThreshold,
     onToggleCryptoSelection: toggleCryptoSelection,
     onStartStopMonitoring: handleStartStopMonitoring,
     onRefresh: fetchAvailableCryptos,
@@ -264,14 +298,15 @@ function App() {
     onBack: () => setCurrentPage('dashboard')
   };
 
+  // ===================== RENDER =====================
   return (
     <ThemeProvider>
       <Suspense fallback={<PageLoader />}>
-        {currentPage === 'login' && <LoginPage {...pageProps} />}
-        {currentPage === 'register' && <RegisterPage {...pageProps} />}
-        {currentPage === 'dashboard' && <DashboardPage {...pageProps} />}
-        {currentPage === 'portfolio' && <PortfolioPage {...pageProps} />}
-        {currentPage === 'bots' && <TradingBotsPage {...pageProps} />}
+        {currentPage === 'login' && <LoginPage {...sharedProps} />}
+        {currentPage === 'register' && <RegisterPage {...sharedProps} />}
+        {currentPage === 'dashboard' && <DashboardPage {...sharedProps} />}
+        {currentPage === 'portfolio' && <PortfolioPage {...sharedProps} />}
+        {currentPage === 'bots' && <TradingBotsPage {...sharedProps} />}
       </Suspense>
     </ThemeProvider>
   );

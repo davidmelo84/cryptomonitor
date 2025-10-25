@@ -1,4 +1,5 @@
 // front/crypto-monitor-frontend/src/components/portfolio/PortfolioChart.jsx
+// ✅ VERSÃO CORRIGIDA - PieChart funcionando
 
 import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
@@ -10,9 +11,7 @@ const COLORS = [
 ];
 
 function PortfolioChart({ portfolio }) {
-  // ============================================
-  // FORMATTERS
-  // ============================================
+  // ✅ Formatador de moeda
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -23,27 +22,25 @@ function PortfolioChart({ portfolio }) {
     }).format(value);
   };
 
-  // ============================================
-  // COMPUTED DATA
-  // ============================================
+  // ✅ Dados do gráfico memoizados
   const chartData = useMemo(() => {
-    const total = portfolio.reduce((sum, item) => sum + parseFloat(item.currentValue), 0);
+    if (!Array.isArray(portfolio) || portfolio.length === 0) return [];
+    
+    const total = portfolio.reduce((sum, item) => sum + parseFloat(item.currentValue || 0), 0);
     
     return portfolio.map((item) => {
-      const value = parseFloat(item.currentValue);
-      const percentage = ((value / total) * 100).toFixed(2);
+      const value = parseFloat(item.currentValue || 0);
+      const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : 0;
       
       return {
-        name: item.coinSymbol,
+        name: item.coinSymbol || 'Unknown',
         value: value,
         percentage: percentage
       };
-    }).sort((a, b) => b.value - a.value); // Ordenar por valor
+    }).sort((a, b) => b.value - a.value);
   }, [portfolio]);
 
-  // ============================================
-  // CUSTOM TOOLTIP
-  // ============================================
+  // ✅ Custom Tooltip
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload || !payload.length) return null;
 
@@ -62,28 +59,18 @@ function PortfolioChart({ portfolio }) {
     );
   };
 
-  // ============================================
-  // RENDER
-  // ============================================
-  if (portfolio.length === 0) {
+  // ✅ Empty state
+  if (chartData.length === 0) {
     return null;
   }
 
   return (
     <div className="portfolio-chart-container">
-      
-      {/* ============================================
-          HEADER
-          ============================================ */}
       <h3 className="portfolio-chart-header">
         📊 Distribuição do Portfolio
       </h3>
 
-      {/* ============================================
-          CHART & LEGEND GRID
-          ============================================ */}
       <div className="portfolio-chart-grid">
-        
         {/* PIE CHART */}
         <div style={{ width: '100%', height: '300px' }}>
           <ResponsiveContainer>
@@ -126,14 +113,10 @@ function PortfolioChart({ portfolio }) {
   );
 }
 
-// ============================================
-// LEGEND ITEM COMPONENT
-// ============================================
+// ✅ Legend Item Component
 function LegendItem({ item, color, formatCurrency }) {
   return (
     <div className="portfolio-chart-legend-item">
-      
-      {/* Left Side: Color + Symbol */}
       <div className="portfolio-chart-legend-left">
         <div
           className="portfolio-chart-legend-color"
@@ -144,7 +127,6 @@ function LegendItem({ item, color, formatCurrency }) {
         </span>
       </div>
 
-      {/* Right Side: Value + Percentage */}
       <div className="portfolio-chart-legend-right">
         <p className="portfolio-chart-legend-value">
           {formatCurrency(item.value)}
