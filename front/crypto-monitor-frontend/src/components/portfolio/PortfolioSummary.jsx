@@ -1,24 +1,38 @@
 // front/crypto-monitor-frontend/src/components/portfolio/PortfolioSummary.jsx
-
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DollarSign, TrendingUp, TrendingDown, Percent } from 'lucide-react';
 
-function PortfolioSummary({ summary }) {
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
+function PortfolioSummary({ portfolio }) {
+  // Memoiza os cálculos do resumo do portfólio
+  const summary = useMemo(() => {
+    const totalInvested = portfolio.reduce(
+      (sum, item) => sum + parseFloat(item.totalInvested || 0), 0
+    );
+    const totalCurrentValue = portfolio.reduce(
+      (sum, item) => sum + parseFloat(item.currentValue || 0), 0
+    );
+    const totalProfitLoss = totalCurrentValue - totalInvested;
+    const totalProfitLossPercent = totalInvested > 0
+      ? ((totalProfitLoss / totalInvested) * 100).toFixed(2)
+      : 0;
+
+    return { totalInvested, totalCurrentValue, totalProfitLoss, totalProfitLossPercent };
+  }, [portfolio]);
+
+  // Funções de formatação
+  const formatCurrency = (value) =>
+    new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     }).format(value);
-  };
 
-  const formatPercent = (value) => {
-    return parseFloat(value).toFixed(2);
-  };
+  const formatPercent = (value) => parseFloat(value).toFixed(2);
 
   const isPositive = summary.totalProfitLoss >= 0;
 
+  // Configuração dos cards
   const cards = [
     {
       icon: <DollarSign size={24} color="#667eea" />,
@@ -33,9 +47,9 @@ function PortfolioSummary({ summary }) {
       color: 'text-gray-800'
     },
     {
-      icon: isPositive ? 
-        <TrendingUp size={24} color="#10b981" /> : 
-        <TrendingDown size={24} color="#ef4444" />,
+      icon: isPositive
+        ? <TrendingUp size={24} color="#10b981" />
+        : <TrendingDown size={24} color="#ef4444" />,
       label: 'Lucro/Prejuízo',
       value: (isPositive ? '+' : '') + formatCurrency(summary.totalProfitLoss),
       color: isPositive ? 'text-green-600' : 'text-red-600'

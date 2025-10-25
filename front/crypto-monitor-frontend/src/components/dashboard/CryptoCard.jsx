@@ -1,30 +1,26 @@
 // front/crypto-monitor-frontend/src/components/dashboard/CryptoCard.jsx
-// ✅ REFATORADO - SEM ESTILOS INLINE
-
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { formatCurrency } from '../../utils/formatters';
 import '../../styles/crypto-card.css';
 
-function CryptoCard({ 
-  crypto, 
-  isSelected, 
+const CryptoCard = memo(({
+  crypto,
+  isSelected,
   onToggle,
   compact = false,
   disabled = false
-}) {
+}) => {
   const { isDark } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
 
-  // Validações
   if (!crypto) return null;
-  
+
   const isPriceUp = (crypto.priceChange24h || 0) >= 0;
-  const marketCapFormatted = crypto.marketCap 
+  const marketCapFormatted = crypto.marketCap
     ? `$${(crypto.marketCap / 1000000000).toFixed(1)}B`
     : null;
 
-  // Combinar classes
   const cardClasses = [
     'crypto-card',
     isDark && 'dark',
@@ -55,51 +51,44 @@ function CryptoCard({
         }
       }}
     >
-      {/* Header: Nome + Checkbox */}
+      {/* Header */}
       <div className="crypto-card-header">
         <div className="crypto-card-info">
-          <h3 className="crypto-card-name">
-            {crypto.name}
-          </h3>
-          <p className="crypto-card-symbol">
-            {(crypto.symbol || '').toUpperCase()}
-          </p>
+          <h3 className="crypto-card-name">{crypto.name}</h3>
+          <p className="crypto-card-symbol">{(crypto.symbol || '').toUpperCase()}</p>
         </div>
-
-        {/* Checkbox de seleção */}
         <div className="crypto-card-checkbox">
-          <span className="crypto-card-checkbox-icon">
-            ✓
-          </span>
+          <span className="crypto-card-checkbox-icon">✓</span>
         </div>
       </div>
-      
-      {/* Preço atual */}
+
+      {/* Preço */}
       <div className="crypto-card-price-section">
-        <p className="crypto-card-price">
-          {formatCurrency(crypto.currentPrice || 0)}
-        </p>
+        <p className="crypto-card-price">{formatCurrency(crypto.currentPrice || 0)}</p>
       </div>
-      
-      {/* Footer: Variação + Market Cap */}
+
+      {/* Footer */}
       <div className="crypto-card-footer">
         <div className={changeBadgeClasses}>
-          <span className="crypto-card-change-arrow">
-            {isPriceUp ? '▲' : '▼'}
-          </span>
-          <span className="crypto-card-change-value">
-            {Math.abs(crypto.priceChange24h || 0).toFixed(2)}%
-          </span>
+          <span className="crypto-card-change-arrow">{isPriceUp ? '▲' : '▼'}</span>
+          <span className="crypto-card-change-value">{Math.abs(crypto.priceChange24h || 0).toFixed(2)}%</span>
         </div>
-        
         {marketCapFormatted && (
-          <div className="crypto-card-market-cap">
-            {marketCapFormatted}
-          </div>
+          <div className="crypto-card-market-cap">{marketCapFormatted}</div>
         )}
       </div>
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // ✅ Evita re-renders desnecessários
+  return (
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.disabled === nextProps.disabled &&
+    prevProps.compact === nextProps.compact &&
+    prevProps.crypto?.currentPrice === nextProps.crypto?.currentPrice &&
+    prevProps.crypto?.priceChange24h === nextProps.crypto?.priceChange24h &&
+    prevProps.crypto?.marketCap === nextProps.crypto?.marketCap
+  );
+});
 
 export default CryptoCard;

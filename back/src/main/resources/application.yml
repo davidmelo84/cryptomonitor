@@ -6,6 +6,22 @@ server:
   servlet:
     context-path: /crypto-monitor
 
+  # ============================================
+  # COMPRESSÃO HTTP
+  # ============================================
+  compression:
+    enabled: true
+    mime-types:
+      - application/json
+      - application/xml
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+      - text/javascript
+      - application/javascript
+    min-response-size: 1024 # Comprime responses > 1KB
+
 spring:
   application:
     name: crypto-monitor
@@ -18,6 +34,17 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${SPRING_DATASOURCE_USERNAME:crypto_user}
     password: ${SPRING_DATASOURCE_PASSWORD:qwe123}
+
+    # ============================================
+    # POOL HIKARI
+    # ============================================
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: CryptoMonitorPool
 
   jpa:
     hibernate:
@@ -59,7 +86,6 @@ spring:
     port: 587
     username: ${MAIL_USERNAME:ddevnordeste@gmail.com}
     password: ${MAIL_PASSWORD:zubnnuqrgxjwuhth}
-
     properties:
       mail:
         smtp:
@@ -71,10 +97,6 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-
-
-
-
 
   # ============================================
   # TAREFAS AGENDADAS (DESABILITADAS)

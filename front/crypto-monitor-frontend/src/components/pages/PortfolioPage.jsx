@@ -1,6 +1,6 @@
 // front/crypto-monitor-frontend/src/components/pages/PortfolioPage.jsx
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Wallet, Plus, PieChart, History } from 'lucide-react';
 import { API_BASE_URL } from '../../utils/constants';
 import AddTransactionModal from '../portfolio/AddTransactionModal';
@@ -9,10 +9,10 @@ import PortfolioChart from '../portfolio/PortfolioChart';
 import PortfolioSummary from '../portfolio/PortfolioSummary';
 import PortfolioTable from '../portfolio/PortfolioTable';
 
+// ✅ Importação do Web Worker no CRA
+import CryptoWorker from '../../workers/crypto.worker.js';
+
 function PortfolioPage({ token, onBack }) {
-  // ============================================
-  // STATE MANAGEMENT
-  // ============================================
   const [portfolio, setPortfolio] = useState([]);
   const [summary, setSummary] = useState(null);
   const [transactions, setTransactions] = useState([]);
@@ -20,29 +20,49 @@ function PortfolioPage({ token, onBack }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeTab, setActiveTab] = useState('portfolio');
 
+  const workerRef = useRef(null);
+
+  // ============================================
+  // WEB WORKER SETUP
+  // ============================================
+  useEffect(() => {
+    workerRef.current = new CryptoWorker();
+
+    workerRef.current.onmessage = (e) => {
+      const { type, result } = e.data;
+      if (type === 'PORTFOLIO_CALCULATED') {
+        setPortfolio(result.portfolio);
+        setSummary(result.summary);
+        setLoading(false);
+      }
+    };
+
+    return () => workerRef.current?.terminate();
+  }, []);
+
+  const processPortfolio = (data) => {
+    setLoading(true);
+    workerRef.current.postMessage({
+      type: 'CALCULATE_PORTFOLIO',
+      data
+    });
+  };
+
   // ============================================
   // DATA FETCHING
   // ============================================
   const fetchPortfolio = useCallback(async () => {
-    setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/portfolio`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.ok) {
         const data = await response.json();
-        setPortfolio(data.portfolio || []);
-        setSummary({
-          totalInvested: data.totalInvested || 0,
-          totalCurrentValue: data.totalCurrentValue || 0,
-          totalProfitLoss: data.totalProfitLoss || 0,
-          totalProfitLossPercent: data.totalProfitLossPercent || 0
-        });
+        processPortfolio(data.portfolio || []);
       }
     } catch (error) {
       console.error('Erro ao buscar portfolio:', error);
-    } finally {
       setLoading(false);
     }
   }, [token]);
@@ -50,7 +70,7 @@ function PortfolioPage({ token, onBack }) {
   const fetchTransactions = useCallback(async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/portfolio/transactions`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` }
       });
 
       if (response.ok) {
@@ -76,7 +96,7 @@ function PortfolioPage({ token, onBack }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(transaction)
       });
@@ -120,10 +140,7 @@ function PortfolioPage({ token, onBack }) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
-        
-        {/* ============================================
-            HEADER
-            ============================================ */}
+        {/* HEADER */}
         <header className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-800 flex items-center gap-3">
@@ -153,14 +170,10 @@ function PortfolioPage({ token, onBack }) {
           </div>
         </header>
 
-        {/* ============================================
-            SUMMARY CARDS
-            ============================================ */}
+        {/* SUMMARY CARDS */}
         {summary && <PortfolioSummary summary={summary} />}
 
-        {/* ============================================
-            TABS
-            ============================================ */}
+        {/* TABS */}
         <div className="flex gap-4 mb-6 border-b-2 border-gray-200">
           <button
             onClick={() => setActiveTab('portfolio')}
@@ -191,9 +204,7 @@ function PortfolioPage({ token, onBack }) {
           </button>
         </div>
 
-        {/* ============================================
-            TAB CONTENT
-            ============================================ */}
+        {/* TAB CONTENT */}
         {activeTab === 'portfolio' ? (
           <>
             {portfolio.length > 0 && <PortfolioChart portfolio={portfolio} />}
@@ -208,9 +219,7 @@ function PortfolioPage({ token, onBack }) {
         )}
       </div>
 
-      {/* ============================================
-          ADD TRANSACTION MODAL
-          ============================================ */}
+      {/* ADD TRANSACTION MODAL */}
       {showAddModal && (
         <AddTransactionModal
           onClose={() => setShowAddModal(false)}

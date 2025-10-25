@@ -1,97 +1,61 @@
-import React, { useState } from 'react';
-import { Zap } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
-import CryptoCard from './CryptoCard';
+// front/crypto-monitor-frontend/src/components/portfolio/PortfolioChart.jsx
+import React, { useMemo } from 'react';
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts';
 
-function CryptocurrenciesCard({
-  availableCryptos,
-  selectedCryptos,
-  onToggleSelection,
-  onClearSelection
-}) {
-  const { isDark } = useTheme();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('marketCap');
+function PortfolioChart({ portfolio }) {
+  // ✅ Normaliza os dados para garantir que não haja undefined ou null
+  const chartData = useMemo(() => {
+    if (!Array.isArray(portfolio)) return [];
+    return portfolio.map(item => ({
+      name: item.name || 'Desconhecido',
+      currentValue: item.currentValue != null ? item.currentValue : 0,
+      profitLoss: item.profitLoss != null ? item.profitLoss : 0
+    }));
+  }, [portfolio]);
 
-  const filteredCryptos = availableCryptos
-    .filter(crypto =>
-      crypto.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      crypto.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === 'marketCap') return (b.marketCap || 0) - (a.marketCap || 0);
-      if (sortBy === 'price') return (b.currentPrice || 0) - (a.currentPrice || 0);
-      if (sortBy === 'change') return (b.priceChange24h || 0) - (a.priceChange24h || 0);
-      return 0;
-    });
+  if (chartData.length === 0) {
+    return (
+      <div className="text-center text-gray-500 my-6">
+        Nenhum dado disponível para exibir o gráfico
+      </div>
+    );
+  }
 
   return (
-    <div className={`cryptocurrencies-card ${isDark ? 'dark' : ''}`}>
-      <div className="cryptocurrencies-header">
-        <div>
-          <h2 className="cryptocurrencies-title">
-            <Zap size={28} color="#667eea" />
-            Criptomoedas Disponíveis
-          </h2>
-          <p className="cryptocurrencies-subtitle">
-            {selectedCryptos.length} de {filteredCryptos.length} selecionadas
-          </p>
-        </div>
-        
-        <div className="cryptocurrencies-actions">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
-            placeholder="🔍 Buscar moeda..."
+    <div className="w-full h-96 mb-8">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={chartData}>
+          <CartesianGrid stroke="#e0e0e0" strokeDasharray="5 5" />
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip
+            formatter={(value) =>
+              new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+              }).format(value)
+            }
           />
-          
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="sort-select"
-          >
-            <option value="marketCap">Market Cap</option>
-            <option value="price">Preço</option>
-            <option value="change">Variação</option>
-          </select>
-          
-          {selectedCryptos.length > 0 && (
-            <button onClick={onClearSelection} className="clear-button">
-              ✕ Limpar
-            </button>
-          )}
-        </div>
-      </div>
-      
-      <div className="cryptocurrencies-grid">
-        {filteredCryptos.map((crypto, index) => {
-          const identifier = crypto.coinId || crypto.name || crypto.symbol;
-          const isSelected = selectedCryptos.some(c => {
-            const selectedId = c.coinId || c.name || c.symbol;
-            return selectedId === identifier;
-          });
-          
-          return (
-            <CryptoCard
-              key={identifier}
-              crypto={crypto}
-              isSelected={isSelected}
-              onToggle={() => onToggleSelection(crypto)}
-            />
-          );
-        })}
-      </div>
-      
-      {filteredCryptos.length === 0 && (
-        <div className="cryptocurrencies-empty">
-          <p>Nenhuma criptomoeda encontrada</p>
-          <p>Tente buscar por outro termo</p>
-        </div>
-      )}
+          <Line
+            type="monotone"
+            dataKey="currentValue"
+            stroke="#667eea"
+            strokeWidth={2}
+            dot={{ r: 3 }}
+            activeDot={{ r: 5 }}
+          />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
 }
 
-export default CryptocurrenciesCard;
+export default PortfolioChart;
