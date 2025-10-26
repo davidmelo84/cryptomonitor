@@ -237,12 +237,14 @@ function App() {
         console.error('Erro ao parar monitoramento:', error);
       }
     } else {
-      if (!monitoringEmail || selectedCryptos.length === 0) return;
-
+      if (!monitoringEmail || selectedCryptos.length === 0) {
+      alert('Configure email e selecione cryptos primeiro!');
+      return;
+      }
       try {
         const payload = {
           email: monitoringEmail,
-          cryptocurrencies: selectedCryptos.map(c => c.coinId || c.name),
+          cryptocurrencies: selectedCryptos.map(c => c.coinId || c.symbol || c.name),
           checkIntervalMinutes: monitoringInterval,
           buyThreshold,
           sellThreshold
@@ -259,9 +261,13 @@ function App() {
 
         if (response.ok) {
           setIsMonitoring(true);
+        } else {
+          console.error('Falha ao iniciar monitoramento');
         }
       } catch (error) {
-        console.error('Erro ao iniciar monitoramento:', error);
+      console.error('❌ Erro:', error);
+      alert('Backend não está respondendo');
+
       }
     }
   };

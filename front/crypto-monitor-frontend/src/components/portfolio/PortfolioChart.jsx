@@ -72,7 +72,7 @@ function PortfolioChart({ portfolio }) {
 
       <div className="portfolio-chart-grid">
         {/* PIE CHART */}
-        <div style={{ width: '100%', height: '300px' }}>
+        <div >
           <ResponsiveContainer>
             <PieChart>
               <Pie
@@ -120,7 +120,7 @@ function LegendItem({ item, color, formatCurrency }) {
       <div className="portfolio-chart-legend-left">
         <div
           className="portfolio-chart-legend-color"
-          style={{ backgroundColor: color }}
+          
         />
         <span className="portfolio-chart-legend-symbol">
           {item.name}

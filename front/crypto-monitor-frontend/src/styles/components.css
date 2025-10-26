@@ -175,28 +175,117 @@
   opacity: 0.9;
 }
 
+/* ============================================
+   STATUS BUTTON - VISUAL MELHORADO
+   ============================================ */
+
 .status-button {
   background: white;
-  padding: 1.125rem 2.8125rem;
+  padding: 16px 40px;
   border-radius: 12px;
-  font-size: 1.125rem;
+  font-size: 18px;
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
   border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
-.status-button:hover {
-  transform: scale(1.05);
+.status-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
 }
 
+.status-button:hover::before {
+  left: 100%;
+}
+
+.status-button:hover:not(:disabled) {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.status-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.status-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e5e7eb;
+  color: #9ca3af;
+  box-shadow: none;
+}
+
+/* Botão ATIVO (verde - para PARAR) */
 .status-button.active {
-  color: #f5576c;
+  color: #dc2626;
+  background: white;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
 }
 
+.status-button.active:hover:not(:disabled) {
+  background: #fee2e2;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+}
+
+/* Botão INATIVO (cinza - para INICIAR) */
 .status-button.inactive {
-  color: #11998e;
+  color: #059669;
+  background: white;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.status-button.inactive:hover:not(:disabled) {
+  background: #d1fae5;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+}
+
+/* Ícone dentro do botão */
+.status-button svg {
+  transition: transform 0.3s ease;
+}
+
+.status-button:hover:not(:disabled) svg {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* Animação de pulsação quando ativo */
+.status-card.active .status-button.active {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+  }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .status-button {
+    padding: 14px 32px;
+    font-size: 16px;
+  }
 }
 
 /* ============================================
@@ -537,25 +626,39 @@
    ============================================ */
 .auth-button {
   width: 100%;
-  padding: 1rem;
+  padding: 0.875rem 1rem;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 10px;
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
   margin-top: 0.625rem;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .auth-button:hover {
-  transform: scale(1.02);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.auth-button:active {
+  transform: translateY(0);
 }
 
 .auth-button.register {
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+.auth-button.register:hover {
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
 }
 
 .auth-link {

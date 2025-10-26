@@ -1,143 +1,183 @@
+// front/crypto-monitor-frontend/src/components/pages/RegisterPage.jsx
+// ✅ VERSÃO CORRIGIDA - Com Dark Mode e Theme Toggle
+
 import React, { useState } from 'react';
-import { User, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, TrendingUp, ArrowLeft } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
 
-function RegisterPage({ authError, onRegister, onNavigateToLogin }) {
+function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
   const { isDark } = useTheme();
-  const [regUsername, setRegUsername] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regPassword, setRegPassword] = useState('');
-  const [regConfirmPassword, setRegConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const handleSubmit = async () => {
-    const success = await onRegister(regUsername, regEmail, regPassword, regConfirmPassword);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setSuccessMessage('');
+
+    const success = await onRegister(username, email, password, confirmPassword);
+
     if (success) {
-      setRegUsername('');
-      setRegEmail('');
-      setRegPassword('');
-      setRegConfirmPassword('');
+      setSuccessMessage('Conta criada com sucesso! Redirecionando...');
+      setTimeout(() => {
+        onNavigateToLogin();
+      }, 2000);
     }
-  };
 
-  const getPasswordStrength = () => {
-    if (regPassword.length < 6) return { label: 'Fraca', color: '#ef4444', width: '33%' };
-    if (regPassword.length < 10) return { label: 'Média', color: '#f59e0b', width: '66%' };
-    return { label: 'Forte', color: '#10b981', width: '100%' };
+    setIsLoading(false);
   };
-
-  const strength = getPasswordStrength();
 
   return (
-    <div className={`auth-container ${isDark ? 'dark' : ''}`}>
-      {/* Theme Toggle */}
-      <div className="theme-toggle-wrapper">
+    <div className={`auth-page ${isDark ? 'dark' : ''}`}>
+      {/* Theme Toggle no canto superior direito */}
+      <div className="auth-theme-toggle">
         <ThemeToggle />
       </div>
 
-      {/* Floating Circle */}
-      <div className="floating-circle medium" />
-
-      <div className={`auth-card ${isDark ? 'dark' : ''}`}>
-        {/* Logo */}
-        <div className="auth-logo-wrapper">
-          <div className="auth-logo register">
-            <User size={40} color="white" />
+      <div className="auth-container">
+        {/* Logo Section */}
+        <div className="auth-logo-section">
+          <div className="auth-logo">
+            <TrendingUp size={48} />
           </div>
+          <h1 className="auth-logo-title">Crypto Monitor</h1>
+          <p className="auth-logo-subtitle">
+            Crie sua conta e comece a monitorar
+          </p>
         </div>
 
-        <h1 className="auth-title register">Criar Conta</h1>
-        <p className="auth-subtitle">Junte-se a milhares de investidores</p>
+        {/* Register Form */}
+        <div className="auth-card">
+          <div className="auth-card-header">
+            <UserPlus size={32} className="auth-card-icon" />
+            <h2 className="auth-card-title">Criar nova conta</h2>
+            <p className="auth-card-subtitle">Preencha os dados abaixo</p>
+          </div>
 
-        {/* Username */}
-        <div className="auth-input-wrapper">
-          <input
-            type="text"
-            value={regUsername}
-            onChange={(e) => setRegUsername(e.target.value)}
-            className="auth-input"
-            placeholder="Usuário"
-          />
-        </div>
-
-        {/* Email */}
-        <div className="auth-input-wrapper">
-          <input
-            type="email"
-            value={regEmail}
-            onChange={(e) => setRegEmail(e.target.value)}
-            className="auth-input"
-            placeholder="E-mail"
-          />
-        </div>
-
-        {/* Password */}
-        <div className="auth-input-wrapper">
-          <input
-            type={showPassword ? 'text' : 'password'}
-            value={regPassword}
-            onChange={(e) => setRegPassword(e.target.value)}
-            className="auth-input"
-            placeholder="Senha"
-          />
-          <button 
-            className="auth-icon" 
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
-        </div>
-
-        {/* Password Strength */}
-        {regPassword && (
-          <div className="password-strength">
-            <div className="password-strength-label">
-              <span>Força da senha: </span>
-              <span className="strength" style={{ color: strength.color }}>
-                {strength.label}
-              </span>
+          {authError && (
+            <div className="auth-error">
+              <span>⚠️</span>
+              {authError}
             </div>
-            <div className="password-strength-bar">
-              <div
-                className="password-strength-fill"
-                style={{
-                  width: strength.width,
-                  backgroundColor: strength.color
-                }}
+          )}
+
+          {successMessage && (
+            <div className="auth-success">
+              <span>✓</span>
+              {successMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="auth-input-group">
+              <label htmlFor="username" className="auth-label">
+                <User size={18} />
+                Usuário
+              </label>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Escolha um nome de usuário"
+                className="auth-input"
+                disabled={isLoading}
+                required
               />
             </div>
-          </div>
-        )}
 
-        {/* Confirm Password */}
-        <div className="auth-input-wrapper">
-          <input
-            type={showPassword ? 'text' : 'password'}
-            value={regConfirmPassword}
-            onChange={(e) => setRegConfirmPassword(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-            className="auth-input"
-            placeholder="Confirmar Senha"
-          />
+            <div className="auth-input-group">
+              <label htmlFor="email" className="auth-label">
+                <Mail size={18} />
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu@email.com"
+                className="auth-input"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <div className="auth-input-group">
+              <label htmlFor="password" className="auth-label">
+                <Lock size={18} />
+                Senha
+              </label>
+              <input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Mínimo 6 caracteres"
+                className="auth-input"
+                disabled={isLoading}
+                required
+                minLength={6}
+              />
+            </div>
+
+            <div className="auth-input-group">
+              <label htmlFor="confirmPassword" className="auth-label">
+                <Lock size={18} />
+                Confirmar Senha
+              </label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Digite a senha novamente"
+                className="auth-input"
+                disabled={isLoading}
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="auth-submit-button"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <span className="spinner-small"></span>
+                  Criando conta...
+                </>
+              ) : (
+                <>
+                  <UserPlus size={20} />
+                  Criar Conta
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="auth-footer">
+            <p>Já tem uma conta?</p>
+            <button
+              onClick={onNavigateToLogin}
+              className="auth-link-button"
+              disabled={isLoading}
+            >
+              <ArrowLeft size={16} />
+              Voltar ao login
+            </button>
+          </div>
         </div>
 
-        {/* Error */}
-        {authError && (
-          <div className="alert alert-error">
-            <AlertCircle size={20} />
-            {authError}
-          </div>
-        )}
-
-        {/* Submit */}
-        <button onClick={handleSubmit} className="auth-button register">
-          Cadastrar
-        </button>
-
-        {/* Login Link */}
-        <div className="auth-link" onClick={onNavigateToLogin}>
-          Já tem conta? <span>Faça login</span>
+        {/* Footer Info */}
+        <div className="auth-info">
+          <p>🔒 Seus dados estão seguros e criptografados</p>
         </div>
       </div>
     </div>

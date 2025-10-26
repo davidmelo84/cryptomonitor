@@ -102,7 +102,7 @@ function MultiCryptoChart({ selectedCryptos }) {
         <p className="text-sm font-bold text-gray-800 mb-3">{label}</p>
         {payload.map((entry, index) => (
           <div key={index} className="flex items-center justify-between gap-4 mb-1">
-            <span className="text-sm font-semibold" style={{ color: entry.color }}>
+            <span className="text-sm font-semibold" >
               {entry.name}:
             </span>
             <span className="text-sm font-bold">
