@@ -1,6 +1,6 @@
 // front/crypto-monitor-frontend/src/components/dashboard/MultiCryptoChart.jsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   LineChart,
   Line,
@@ -34,46 +34,14 @@ function MultiCryptoChart({ selectedCryptos }) {
     { value: 30, label: '30d' }
   ];
 
-  useEffect(() => {
-    if (selectedCryptos.length > 0) {
-      fetchAllData();
-    }
-  }, [selectedCryptos, selectedPeriod]);
-
-  const fetchAllData = async () => {
-    setLoading(true);
-    
-    try {
-      // Buscar dados de todas as cryptos em paralelo
-      const promises = selectedCryptos.map(crypto =>
-        fetch(`${API_BASE_URL}/crypto/history/${crypto.coinId}?days=${selectedPeriod}`)
-          .then(res => res.json())
-          .catch(() => null)
-      );
-
-      const results = await Promise.all(promises);
-
-      // Combinar dados
-      const combinedData = mergeCryptoData(results, selectedCryptos);
-      setChartData(combinedData);
-
-    } catch (error) {
-      console.error('Erro ao buscar dados:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const mergeCryptoData = (results, cryptos) => {
     if (!results || results.length === 0) return [];
 
-    // Usar datas da primeira crypto como base
     const baseData = results[0]?.data || [];
     
     return baseData.map((point, index) => {
       const dataPoint = { date: point.date };
       
-      // Adicionar preço de cada crypto
       results.forEach((result, cryptoIndex) => {
         if (result && result.data && result.data[index]) {
           const cryptoSymbol = cryptos[cryptoIndex].symbol;
@@ -113,6 +81,34 @@ function MultiCryptoChart({ selectedCryptos }) {
       </div>
     );
   };
+
+  // ✅ useCallback para evitar warning
+  const fetchAllData = useCallback(async () => {
+    setLoading(true);
+    
+    try {
+      const promises = selectedCryptos.map(crypto =>
+        fetch(`${API_BASE_URL}/crypto/history/${crypto.coinId}?days=${selectedPeriod}`)
+          .then(res => res.json())
+          .catch(() => null)
+      );
+
+      const results = await Promise.all(promises);
+      const combinedData = mergeCryptoData(results, selectedCryptos);
+      setChartData(combinedData);
+
+    } catch (error) {
+      console.error('Erro ao buscar dados:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedCryptos, selectedPeriod]);
+
+  useEffect(() => {
+    if (selectedCryptos.length > 0) {
+      fetchAllData();
+    }
+  }, [fetchAllData]);
 
   if (selectedCryptos.length === 0) {
     return (

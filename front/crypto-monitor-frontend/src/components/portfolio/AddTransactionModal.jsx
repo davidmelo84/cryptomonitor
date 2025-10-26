@@ -1,7 +1,7 @@
 // front/crypto-monitor-frontend/src/components/portfolio/AddTransactionModal.jsx
 // ✅ REFATORADO - SEM CSS INLINE
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { formatCurrency, formatSymbol } from '../../utils/formatters';
 import '../../styles/AddTransactionModal.css';
 
@@ -19,19 +19,8 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
   const [error, setError] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchAvailableCryptos();
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (formData.cryptoSymbol) {
-      fetchCurrentPrice(formData.cryptoSymbol);
-    }
-  }, [formData.cryptoSymbol]);
-
-  const fetchAvailableCryptos = async () => {
+  // ✅ CORREÇÃO: useCallback para fetchAvailableCryptos
+  const fetchAvailableCryptos = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:8080/api/crypto/list', {
         headers: {
@@ -55,9 +44,10 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
         { symbol: 'BNB', name: 'Binance Coin' }
       ]);
     }
-  };
+  }, [formData.cryptoSymbol]); // ✅ Dependência
 
-  const fetchCurrentPrice = async (symbol) => {
+  // ✅ CORREÇÃO: useCallback para fetchCurrentPrice
+  const fetchCurrentPrice = useCallback(async (symbol) => {
     try {
       const response = await fetch(`http://localhost:8080/api/crypto/${symbol}`, {
         headers: {
@@ -77,7 +67,19 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
       console.error('Error fetching price:', err);
       setCurrentPrice(null);
     }
-  };
+  }, [formData.price]); // ✅ Dependência
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchAvailableCryptos();
+    }
+  }, [isOpen, fetchAvailableCryptos]); // ✅ Corrigido
+
+  useEffect(() => {
+    if (formData.cryptoSymbol) {
+      fetchCurrentPrice(formData.cryptoSymbol);
+    }
+  }, [formData.cryptoSymbol, fetchCurrentPrice]); // ✅ Corrigido
 
   const handleChange = (e) => {
     const { name, value } = e.target;

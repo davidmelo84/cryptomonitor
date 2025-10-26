@@ -1,16 +1,30 @@
 // front/crypto-monitor-frontend/src/App.jsx
-// ✅ VERSÃO CORRIGIDA - Sem loops, com lazy loading
+// ✅ VERSÃO OTIMIZADA - Sem API calls duplicados
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { API_BASE_URL } from './utils/constants';
+import { API_BASE_URL } from './utils/constants'; // ✅ FALTAVA ESTE IMPORT!
 
-// ✅ Lazy loading das páginas
+
+// ✅ Lazy loading das páginas (mantido como estava)
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./components/pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./components/pages/DashboardPage'));
 const PortfolioPage = lazy(() => import('./components/pages/PortfolioPage'));
 const TradingBotsPage = lazy(() => import('./components/pages/TradingBotsPage'));
+
+// ✅ NOVO: Configuração do React Query
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // Evita refetch desnecessários
+      retry: 1,
+      staleTime: 60 * 1000 // 60s
+    }
+  }
+});
 
 // ✅ Fallback de carregamento
 const PageLoader = () => (
@@ -28,17 +42,14 @@ function App() {
   const [token, setToken] = useState(null);
   const [authError, setAuthError] = useState('');
 
-  const [availableCryptos, setAvailableCryptos] = useState([]);
+  // ✅ Estados de seleção (mantidos como estavam)
   const [selectedCryptos, setSelectedCryptos] = useState([]);
   const [monitoringEmail, setMonitoringEmail] = useState('');
   const [monitoringInterval, setMonitoringInterval] = useState(5);
   const [buyThreshold, setBuyThreshold] = useState(5.0);
   const [sellThreshold, setSellThreshold] = useState(10.0);
-  const [isMonitoring, setIsMonitoring] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState(null);
 
-  // ✅ Restaurar sessão ao iniciar (SEM validação com backend)
+  // ✅ Restaurar sessão (SEM MUDANÇAS)
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
@@ -50,8 +61,6 @@ function App() {
 
     try {
       const parsedUser = JSON.parse(savedUser);
-      
-      // ✅ Simplesmente restaurar (sem validar com backend)
       setToken(savedToken);
       setUser(parsedUser);
       setCurrentPage('dashboard');
@@ -60,79 +69,13 @@ function App() {
       localStorage.clear();
       setCurrentPage('login');
     }
-  }, []); // ✅ Executar APENAS uma vez
+  }, []);
 
-  // ✅ Fetch inicial de monitoramento
-  useEffect(() => {
-    if (token) {
-      checkMonitoringStatus();
-    }
-  }, [token]);
+  // ✅ REMOVIDO: fetchAvailableCryptos() - Agora usa React Query no DashboardPage
+  // ✅ REMOVIDO: checkMonitoringStatus() - Agora usa React Query no DashboardPage
+  // ✅ REMOVIDO: Polling de 60s - React Query faz automaticamente
 
-  // ✅ Fetch de cryptos com intervalo
-  useEffect(() => {
-    if (token) {
-      fetchAvailableCryptos();
-      const interval = setInterval(fetchAvailableCryptos, 60000);
-      return () => clearInterval(interval);
-    }
-  }, [token]);
-
-  // ===================== FUNÇÕES =====================
-  const checkMonitoringStatus = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/monitoring/status`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setIsMonitoring(data.active || false);
-      }
-    } catch (error) {
-      console.error('Erro ao verificar status:', error);
-    }
-  };
-
-  const fetchAvailableCryptos = async () => {
-    setIsRefreshing(true);
-    
-    try {
-      const response = await fetch(`${API_BASE_URL}/crypto/current`);
-      
-      if (!response.ok) throw new Error('API falhou');
-      
-      const data = await response.json();
-      
-      const normalized = data.map(c => ({
-        coinId: c.id,
-        name: c.name,
-        symbol: c.symbol,
-        currentPrice: c.current_price || 0,
-        priceChange24h: c.price_change_percentage_24h || 0,
-        marketCap: c.market_cap || 0
-      }));
-      
-      setAvailableCryptos(normalized);
-      setLastUpdate(new Date());
-    } catch (error) {
-      console.error('Erro ao buscar cryptos:', error);
-      
-      // ✅ Fallback mock
-      setAvailableCryptos([
-        { coinId: 'bitcoin', name: 'Bitcoin', symbol: 'BTC', currentPrice: 43250.50, priceChange24h: 2.5, marketCap: 845000000000 },
-        { coinId: 'ethereum', name: 'Ethereum', symbol: 'ETH', currentPrice: 2280.30, priceChange24h: -1.2, marketCap: 274000000000 },
-        { coinId: 'cardano', name: 'Cardano', symbol: 'ADA', currentPrice: 0.58, priceChange24h: 3.8, marketCap: 20000000000 },
-        { coinId: 'polkadot', name: 'Polkadot', symbol: 'DOT', currentPrice: 7.45, priceChange24h: 1.5, marketCap: 9000000000 },
-        { coinId: 'chainlink', name: 'Chainlink', symbol: 'LINK', currentPrice: 14.82, priceChange24h: -0.8, marketCap: 8000000000 },
-        { coinId: 'solana', name: 'Solana', symbol: 'SOL', currentPrice: 98.45, priceChange24h: 5.2, marketCap: 42000000000 }
-      ]);
-      setLastUpdate(new Date());
-    } finally {
-      setTimeout(() => setIsRefreshing(false), 500);
-    }
-  };
-
+  // ===================== FUNÇÕES (sem mudanças) =====================
   const handleLogin = useCallback(async (username, password) => {
     setAuthError('');
     
@@ -160,13 +103,7 @@ function App() {
       }
     } catch (error) {
       console.error('Erro no login:', error);
-      
-      // ✅ Modo demo
-      setToken('demo-token');
-      setUser({ username });
-      localStorage.setItem('token', 'demo-token');
-      localStorage.setItem('user', JSON.stringify({ username }));
-      setCurrentPage('dashboard');
+      setAuthError('Erro ao conectar com servidor');
     }
   }, []);
 
@@ -189,17 +126,21 @@ function App() {
     }
 
     try {
-      await fetch(`${API_BASE_URL}/auth/register`, {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: regUsername, email: regEmail, password: regPassword })
       });
+      
+      if (!response.ok) throw new Error('Registration failed');
+      
+      setCurrentPage('login');
+      return true;
     } catch (error) {
       console.error('Erro no registro:', error);
+      setAuthError('Erro ao criar conta');
+      return false;
     }
-
-    setCurrentPage('login');
-    return true;
   }, []);
 
   const handleLogout = () => {
@@ -208,6 +149,7 @@ function App() {
     setCurrentPage('login');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    queryClient.clear(); // ✅ NOVO: Limpa cache ao fazer logout
   };
 
   const toggleCryptoSelection = (crypto) => {
@@ -219,80 +161,21 @@ function App() {
     });
   };
 
-  const handleStartStopMonitoring = async () => {
-    if (isMonitoring) {
-      try {
-        const response = await fetch(`${API_BASE_URL}/monitoring/stop`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        
-        if (response.ok) {
-          setIsMonitoring(false);
-        }
-      } catch (error) {
-        console.error('Erro ao parar monitoramento:', error);
-      }
-    } else {
-      if (!monitoringEmail || selectedCryptos.length === 0) {
-      alert('Configure email e selecione cryptos primeiro!');
-      return;
-      }
-      try {
-        const payload = {
-          email: monitoringEmail,
-          cryptocurrencies: selectedCryptos.map(c => c.coinId || c.symbol || c.name),
-          checkIntervalMinutes: monitoringInterval,
-          buyThreshold,
-          sellThreshold
-        };
-
-        const response = await fetch(`${API_BASE_URL}/monitoring/start`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        });
-
-        if (response.ok) {
-          setIsMonitoring(true);
-        } else {
-          console.error('Falha ao iniciar monitoramento');
-        }
-      } catch (error) {
-      console.error('❌ Erro:', error);
-      alert('Backend não está respondendo');
-
-      }
-    }
-  };
-
   // ===================== PROPS COMPARTILHADAS =====================
   const sharedProps = {
     user,
     token,
     authError,
-    availableCryptos,
     selectedCryptos,
     monitoringEmail,
     monitoringInterval,
     buyThreshold,
     sellThreshold,
-    isMonitoring,
-    isRefreshing,
-    lastUpdate,
     setMonitoringEmail,
     setMonitoringInterval,
     setBuyThreshold,
     setSellThreshold,
     onToggleCryptoSelection: toggleCryptoSelection,
-    onStartStopMonitoring: handleStartStopMonitoring,
-    onRefresh: fetchAvailableCryptos,
     onLogout: handleLogout,
     onClearSelection: () => setSelectedCryptos([]),
     onNavigateToPortfolio: () => setCurrentPage('portfolio'),
@@ -306,15 +189,20 @@ function App() {
 
   // ===================== RENDER =====================
   return (
-    <ThemeProvider>
-      <Suspense fallback={<PageLoader />}>
-        {currentPage === 'login' && <LoginPage {...sharedProps} />}
-        {currentPage === 'register' && <RegisterPage {...sharedProps} />}
-        {currentPage === 'dashboard' && <DashboardPage {...sharedProps} />}
-        {currentPage === 'portfolio' && <PortfolioPage {...sharedProps} />}
-        {currentPage === 'bots' && <TradingBotsPage {...sharedProps} />}
-      </Suspense>
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <Suspense fallback={<PageLoader />}>
+          {currentPage === 'login' && <LoginPage {...sharedProps} />}
+          {currentPage === 'register' && <RegisterPage {...sharedProps} />}
+          {currentPage === 'dashboard' && <DashboardPage {...sharedProps} />}
+          {currentPage === 'portfolio' && <PortfolioPage {...sharedProps} />}
+          {currentPage === 'bots' && <TradingBotsPage {...sharedProps} />}
+        </Suspense>
+      </ThemeProvider>
+      
+      {/* ✅ NOVO: DevTools do React Query (só em desenvolvimento) */}
+      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+    </QueryClientProvider>
   );
 }
 

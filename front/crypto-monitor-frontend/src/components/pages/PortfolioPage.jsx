@@ -1,7 +1,7 @@
 // front/crypto-monitor-frontend/src/components/pages/PortfolioPage.jsx
-// ✅ VERSÃO CORRIGIDA - Com Dark Mode e Theme Toggle
+// ✅ Versão atualizada com useCallback e dependências corretas
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Plus, TrendingUp, DollarSign, Percent, Wallet } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { API_BASE_URL } from '../../utils/constants';
@@ -21,19 +21,13 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeTab, setActiveTab] = useState('holdings');
 
-  useEffect(() => {
-    if (token) {
-      fetchPortfolio();
-      fetchTransactions();
-    }
-  }, [token]);
-
-  const fetchPortfolio = async () => {
+  // ✅ useCallback para fetchPortfolio
+  const fetchPortfolio = useCallback(async () => {
+    setLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/portfolio`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
       if (response.ok) {
         const data = await response.json();
         setPortfolio(data);
@@ -43,14 +37,14 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
-  const fetchTransactions = async () => {
+  // ✅ useCallback para fetchTransactions
+  const fetchTransactions = useCallback(async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/transactions`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-
       if (response.ok) {
         const data = await response.json();
         setTransactions(data);
@@ -58,7 +52,14 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
     } catch (error) {
       console.error('Erro ao buscar transações:', error);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      fetchPortfolio();
+      fetchTransactions();
+    }
+  }, [token, fetchPortfolio, fetchTransactions]); // ✅ dependências corretas
 
   const handleAddTransaction = async (transactionData) => {
     try {
@@ -70,7 +71,6 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         },
         body: JSON.stringify(transactionData)
       });
-
       if (response.ok) {
         await fetchPortfolio();
         await fetchTransactions();
@@ -81,7 +81,7 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
     }
   };
 
-  // Cálculo do resumo do portfolio
+  // Resumo do portfolio
   const summary = {
     totalInvested: portfolio.reduce((sum, item) => sum + parseFloat(item.totalInvested || 0), 0),
     totalCurrentValue: portfolio.reduce((sum, item) => sum + parseFloat(item.currentValue || 0), 0),
@@ -97,7 +97,7 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
 
   return (
     <div className={`portfolio-page ${isDark ? 'dark' : ''}`}>
-      {/* Header com Theme Toggle */}
+      {/* Header */}
       <div className="portfolio-header">
         <div className="portfolio-header-left">
           <button onClick={onBack} className="back-button">
@@ -116,17 +116,14 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         </div>
         <div className="portfolio-header-right">
           <ThemeToggle />
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="add-transaction-button"
-          >
+          <button onClick={() => setShowAddModal(true)} className="add-transaction-button">
             <Plus size={20} />
             Nova Transação
           </button>
         </div>
       </div>
 
-      {/* Cards de Resumo */}
+      {/* Resumo */}
       <div className="portfolio-summary-cards">
         <div className={`summary-card ${isDark ? 'dark' : ''}`}>
           <div className="summary-card-icon total">
@@ -166,22 +163,13 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
 
       {/* Tabs */}
       <div className="portfolio-tabs">
-        <button
-          onClick={() => setActiveTab('holdings')}
-          className={`portfolio-tab ${activeTab === 'holdings' ? 'active' : ''} ${isDark ? 'dark' : ''}`}
-        >
+        <button onClick={() => setActiveTab('holdings')} className={`portfolio-tab ${activeTab === 'holdings' ? 'active' : ''} ${isDark ? 'dark' : ''}`}>
           Holdings
         </button>
-        <button
-          onClick={() => setActiveTab('chart')}
-          className={`portfolio-tab ${activeTab === 'chart' ? 'active' : ''} ${isDark ? 'dark' : ''}`}
-        >
+        <button onClick={() => setActiveTab('chart')} className={`portfolio-tab ${activeTab === 'chart' ? 'active' : ''} ${isDark ? 'dark' : ''}`}>
           Gráfico
         </button>
-        <button
-          onClick={() => setActiveTab('history')}
-          className={`portfolio-tab ${activeTab === 'history' ? 'active' : ''} ${isDark ? 'dark' : ''}`}
-        >
+        <button onClick={() => setActiveTab('history')} className={`portfolio-tab ${activeTab === 'history' ? 'active' : ''} ${isDark ? 'dark' : ''}`}>
           Histórico
         </button>
       </div>
@@ -196,27 +184,17 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         ) : (
           <>
             {activeTab === 'holdings' && (
-              <PortfolioTable
-                portfolio={portfolio}
-                onRefresh={fetchPortfolio}
-              />
+              <PortfolioTable portfolio={portfolio} onRefresh={fetchPortfolio} />
             )}
-
-            {activeTab === 'chart' && (
-              <PortfolioChart portfolio={portfolio} />
-            )}
-
+            {activeTab === 'chart' && <PortfolioChart portfolio={portfolio} />}
             {activeTab === 'history' && (
-              <TransactionHistory
-                transactions={transactions}
-                onRefresh={fetchTransactions}
-              />
+              <TransactionHistory transactions={transactions} onRefresh={fetchTransactions} />
             )}
           </>
         )}
       </div>
 
-      {/* Modal de Adicionar Transação */}
+      {/* Modal */}
       {showAddModal && (
         <AddTransactionModal
           onClose={() => setShowAddModal(false)}

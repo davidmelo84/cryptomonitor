@@ -18,7 +18,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/mock")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class MockController {
 
     private final CryptoService cryptoService;

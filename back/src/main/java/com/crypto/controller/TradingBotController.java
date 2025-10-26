@@ -18,7 +18,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/bots")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class TradingBotController {
 
     private final TradingBotService tradingBotService;

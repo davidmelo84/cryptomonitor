@@ -12,7 +12,6 @@ const CryptoCard = memo(({
   disabled = false
 }) => {
   const { isDark } = useTheme();
-  const [isHovered, setIsHovered] = useState(false);
 
   if (!crypto) return null;
 
@@ -37,8 +36,6 @@ const CryptoCard = memo(({
   return (
     <div
       onClick={!disabled ? onToggle : undefined}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       className={cardClasses}
       role="button"
       tabIndex={disabled ? -1 : 0}

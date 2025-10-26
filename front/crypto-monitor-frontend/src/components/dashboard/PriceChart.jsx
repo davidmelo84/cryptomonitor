@@ -16,7 +16,7 @@ import {
 } from 'recharts';
 import { TrendingUp, TrendingDown, Activity, BarChart2 } from 'lucide-react';
 import { API_BASE_URL } from '../../utils/constants';
-import { formatCurrency, formatCompactCurrency } from '../../utils/formatters';
+import { formatCurrency } from '../../utils/formatters';
 
 function PriceChart({ coinId, coinName, coinSymbol }) {
   const [chartData, setChartData] = useState([]);

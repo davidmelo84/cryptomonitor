@@ -1,5 +1,5 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
-// ✅ VERSÃO FINAL - Com Modal Telegram + Gráficos + Tudo funcionando
+// ✅ VERSÃO OTIMIZADA - Usando React Query
 
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -10,18 +10,24 @@ import SettingsCard from '../dashboard/SettingsCard';
 import CryptocurrenciesCard from '../dashboard/CryptocurrenciesCard';
 import ChartTabs from '../dashboard/ChartTabs';
 import TelegramConfig from '../telegram/TelegramConfig';
-import '../../styles/TelegramModal.css'; // ✅ IMPORTAR CSS DO MODAL
+
+// ✅ NOVO: Importar hooks do React Query
+import { 
+  useCryptos, 
+  useMonitoringStatus,
+  useStartMonitoring,
+  useStopMonitoring
+} from '../../hooks/useCryptoData';
+
+import '../../styles/TelegramModal.css';
 
 function DashboardPage({
   user,
-  lastUpdate,
-  isRefreshing,
-  onRefresh,
+  token,
   onLogout,
   isMonitoring,
   selectedCryptos,
   monitoringInterval,
-  onStartStopMonitoring,
   monitoringEmail,
   setMonitoringEmail,
   setMonitoringInterval,
@@ -29,74 +35,140 @@ function DashboardPage({
   setBuyThreshold,
   sellThreshold,
   setSellThreshold,
-  availableCryptos,
   onToggleCryptoSelection,
   onClearSelection,
   onNavigateToPortfolio,
   onNavigateToBots
 }) {
   const { isDark } = useTheme();
-  
-  // ✅ ESTADO DO MODAL TELEGRAM
   const [showTelegramConfig, setShowTelegramConfig] = useState(false);
+
+  // ✅ NOVO: Usar React Query para buscar dados (com cache automático)
+  const { 
+    data: availableCryptos = [], 
+    isLoading: cryptosLoading,
+    isRefetching,
+    refetch: refetchCryptos 
+  } = useCryptos();
+
+  const {
+    data: monitoringStatusData,
+    refetch: refetchMonitoringStatus
+  } = useMonitoringStatus(token);
+
+  const startMonitoringMutation = useStartMonitoring();
+  const stopMonitoringMutation = useStopMonitoring();
+
+  // ✅ Derivar estado do monitoramento do cache
+  const isMonitoringActive = monitoringStatusData?.active || false;
+
+  // ✅ Handler para iniciar/parar monitoramento
+  const handleStartStopMonitoring = async () => {
+    if (isMonitoringActive) {
+      // Parar monitoramento
+      try {
+        await stopMonitoringMutation.mutateAsync(token);
+      } catch (error) {
+        alert('Erro ao parar monitoramento: ' + error.message);
+      }
+    } else {
+      // Iniciar monitoramento
+      if (!monitoringEmail || selectedCryptos.length === 0) {
+        alert('Configure o email e selecione pelo menos uma criptomoeda');
+        return;
+      }
+
+      try {
+        await startMonitoringMutation.mutateAsync({
+          email: monitoringEmail,
+          cryptocurrencies: selectedCryptos.map(c => c.coinId || c.name),
+          interval: monitoringInterval,
+          buyThreshold,
+          sellThreshold,
+          token
+        });
+      } catch (error) {
+        alert('Erro ao iniciar monitoramento: ' + error.message);
+      }
+    }
+  };
+
+  // ✅ Handler de refresh (usa refetch do React Query)
+  const handleRefresh = () => {
+    refetchCryptos();
+    refetchMonitoringStatus();
+  };
+
+  // ✅ Último update (derivado dos dados)
+  const lastUpdate = cryptosLoading ? null : new Date();
 
   return (
     <div className={`page-container ${isDark ? 'dark' : ''}`}>
       <Header
         user={user}
         lastUpdate={lastUpdate}
-        isRefreshing={isRefreshing}
-        onRefresh={onRefresh}
+        isRefreshing={isRefetching}
+        onRefresh={handleRefresh}
         onLogout={onLogout}
         onNavigateToPortfolio={onNavigateToPortfolio}
         onNavigateToBots={onNavigateToBots}
-        onOpenTelegramConfig={() => setShowTelegramConfig(true)} // ✅ ABRIR MODAL
+        onOpenTelegramConfig={() => setShowTelegramConfig(true)}
       />
 
       <div className="content-wrapper">
-        {/* Status Card */}
-        <StatusCard
-          isMonitoring={isMonitoring}
-          selectedCryptos={selectedCryptos}
-          monitoringInterval={monitoringInterval}
-          onStartStop={onStartStopMonitoring}
-        />
+        {/* ✅ Loading State */}
+        {cryptosLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4" />
+            <p className="text-gray-600">Carregando criptomoedas...</p>
+          </div>
+        ) : (
+          <>
+            {/* Status Card */}
+            <StatusCard
+              isMonitoring={isMonitoringActive}
+              selectedCryptos={selectedCryptos}
+              monitoringInterval={monitoringInterval}
+              onStartStop={handleStartStopMonitoring}
+            />
 
-        {/* Stats Cards */}
-        {selectedCryptos.length > 0 && (
-          <StatsCards
-            selectedCryptos={selectedCryptos}
-            isMonitoring={isMonitoring}
-          />
+            {/* Stats Cards */}
+            {selectedCryptos.length > 0 && (
+              <StatsCards
+                selectedCryptos={selectedCryptos}
+                isMonitoring={isMonitoringActive}
+              />
+            )}
+
+            {/* Gráficos */}
+            {selectedCryptos.length > 0 && (
+              <ChartTabs selectedCryptos={selectedCryptos} />
+            )}
+
+            {/* Settings Card */}
+            <SettingsCard
+              monitoringEmail={monitoringEmail}
+              setMonitoringEmail={setMonitoringEmail}
+              monitoringInterval={monitoringInterval}
+              setMonitoringInterval={setMonitoringInterval}
+              buyThreshold={buyThreshold}
+              setBuyThreshold={setBuyThreshold}
+              sellThreshold={sellThreshold}
+              setSellThreshold={setSellThreshold}
+            />
+
+            {/* Cryptocurrencies Card */}
+            <CryptocurrenciesCard
+              availableCryptos={availableCryptos}
+              selectedCryptos={selectedCryptos}
+              onToggleSelection={onToggleCryptoSelection}
+              onClearSelection={onClearSelection}
+            />
+          </>
         )}
-
-        {/* Gráficos */}
-        {selectedCryptos.length > 0 && (
-          <ChartTabs selectedCryptos={selectedCryptos} />
-        )}
-
-        {/* Settings Card */}
-        <SettingsCard
-          monitoringEmail={monitoringEmail}
-          setMonitoringEmail={setMonitoringEmail}
-          monitoringInterval={monitoringInterval}
-          setMonitoringInterval={setMonitoringInterval}
-          buyThreshold={buyThreshold}
-          setBuyThreshold={setBuyThreshold}
-          sellThreshold={sellThreshold}
-          setSellThreshold={setSellThreshold}
-        />
-
-        {/* Cryptocurrencies Card */}
-        <CryptocurrenciesCard
-          availableCryptos={availableCryptos}
-          selectedCryptos={selectedCryptos}
-          onToggleSelection={onToggleCryptoSelection}
-          onClearSelection={onClearSelection}
-        />
       </div>
 
-      {/* ✅ MODAL TELEGRAM CONFIG */}
+      {/* Modal Telegram Config */}
       {showTelegramConfig && (
         <div 
           className="telegram-modal-overlay" 
@@ -106,7 +178,6 @@ function DashboardPage({
             className={`telegram-modal-content ${isDark ? 'dark' : ''}`}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header do Modal */}
             <div className="telegram-modal-header">
               <h2 className="telegram-modal-title">
                 📱 Configuração do Telegram
@@ -120,11 +191,10 @@ function DashboardPage({
               </button>
             </div>
 
-            {/* Body do Modal */}
             <div className="telegram-modal-body">
               <TelegramConfig 
                 userEmail={monitoringEmail}
-                token={localStorage.getItem('token')}
+                token={token}
               />
             </div>
           </div>

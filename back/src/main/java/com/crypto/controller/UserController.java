@@ -13,7 +13,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000") // libera acesso do React
 public class UserController {
 
     private final UserRepository userRepository;

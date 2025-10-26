@@ -1,17 +1,26 @@
+// back/src/main/java/com/crypto/service/CryptoMonitoringService.java
 package com.crypto.service;
 
 import com.crypto.dto.CryptoCurrency;
+import com.crypto.event.CryptoUpdateEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * Serviço coordenador que gerencia a comunicação entre CryptoService e AlertService
- * Resolve a dependência circular entre os serviços
+ * ✅ REFATORADO - SEM DEPENDÊNCIA CIRCULAR
  *
- * IMPORTANTE: O @Scheduled foi REMOVIDO para permitir controle manual pelo usuário
+ * ANTES:
+ * CryptoMonitoringService → AlertService → CryptoService → [circular]
+ *
+ * AGORA:
+ * CryptoMonitoringService → CryptoService
+ *                         → Event Publisher
+ *                              ↓
+ *                         AlertEventListener → AlertService
  */
 @Slf4j
 @Service
@@ -19,20 +28,11 @@ import java.util.List;
 public class CryptoMonitoringService {
 
     private final CryptoService cryptoService;
-    private final AlertService alertService;
+    private final ApplicationEventPublisher eventPublisher; // ✅ NOVO
 
     /**
-     * ⚠️ ATENÇÃO: @Scheduled REMOVIDO
-     *
-     * Este método era executado automaticamente a cada 5 minutos.
-     * Agora é chamado APENAS pelo MonitoringControlService quando o usuário
-     * inicia o monitoramento.
-     *
-     * ANTES:
-     * @Scheduled(fixedRate = 300000) // 5 minutos
-     * public void updateAndProcessAlerts() { ... }
-     *
-     * AGORA: Chamado programaticamente pelo scheduler por usuário
+     * ✅ MANTIDO - Compatibilidade com código existente
+     * Atualização e processamento de alertas para todos os usuários
      */
     public void updateAndProcessAlerts() {
         try {
@@ -47,8 +47,8 @@ public class CryptoMonitoringService {
                 cryptoService.saveCrypto(crypto);
             }
 
-            // 3. Processar alertas com os dados atualizados
-            alertService.processAlerts(currentCryptos);
+            // 3. ✅ NOVO: Publicar evento ao invés de chamar AlertService diretamente
+            publishCryptoUpdateEvent(currentCryptos, null, CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE);
 
             log.info("✅ Ciclo de monitoramento concluído com sucesso");
 
@@ -58,28 +58,23 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * NOVO: Atualização e processamento de alertas para um usuário específico
-     *
-     * Este método é chamado pelo MonitoringControlService em intervalos regulares
-     * APENAS para usuários que ativaram o monitoramento.
-     *
-     * @param userEmail Email do usuário que receberá os alertas
+     * ✅ MANTIDO - Atualização para usuário específico
      */
     public void updateAndProcessAlertsForUser(String userEmail) {
         try {
             log.info("🔄 Iniciando ciclo de monitoramento para email: {}", userEmail);
 
-            // 1. Buscar preços atuais da API CoinGecko
+            // 1. Buscar preços atuais
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
             log.info("📊 Obtidos preços de {} criptomoedas", currentCryptos.size());
 
-            // 2. Salvar os dados atualizados no banco
+            // 2. Salvar os dados atualizados
             for (CryptoCurrency crypto : currentCryptos) {
                 cryptoService.saveCrypto(crypto);
             }
 
-            // 3. Processar alertas APENAS para este usuário específico
-            alertService.processAlertsForUser(currentCryptos, userEmail);
+            // 3. ✅ NOVO: Publicar evento para usuário específico
+            publishCryptoUpdateEvent(currentCryptos, userEmail, CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE);
 
             log.info("✅ Ciclo de monitoramento concluído para: {}", userEmail);
 
@@ -89,10 +84,7 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * Processo manual de atualização e verificação de alertas
-     *
-     * Mantido para compatibilidade com endpoint /api/crypto/update
-     * Útil para atualização sob demanda via frontend
+     * ✅ MANTIDO - Atualização manual (compatibilidade com endpoint /api/crypto/update)
      */
     public void forceUpdateAndProcessAlerts() {
         try {
@@ -101,9 +93,11 @@ public class CryptoMonitoringService {
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             for (CryptoCurrency crypto : currentCryptos) {
-                CryptoCurrency savedCrypto = cryptoService.saveCrypto(crypto);
-                alertService.checkAlertsForCrypto(savedCrypto);
+                cryptoService.saveCrypto(crypto);
             }
+
+            // ✅ NOVO: Publicar evento de atualização manual
+            publishCryptoUpdateEvent(currentCryptos, null, CryptoUpdateEvent.UpdateType.MANUAL_UPDATE);
 
             log.info("✅ Atualização manual concluída. {} moedas processadas", currentCryptos.size());
 
@@ -114,11 +108,7 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * NOVO: Atualização manual para um usuário específico
-     *
-     * Similar ao forceUpdateAndProcessAlerts, mas filtra alertas por email
-     *
-     * @param userEmail Email do usuário
+     * ✅ MANTIDO - Atualização manual para usuário específico
      */
     public void forceUpdateAndProcessAlertsForUser(String userEmail) {
         try {
@@ -127,9 +117,11 @@ public class CryptoMonitoringService {
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             for (CryptoCurrency crypto : currentCryptos) {
-                CryptoCurrency savedCrypto = cryptoService.saveCrypto(crypto);
-                alertService.checkAlertsForCryptoAndUser(savedCrypto, userEmail);
+                cryptoService.saveCrypto(crypto);
             }
+
+            // ✅ NOVO: Publicar evento para usuário específico
+            publishCryptoUpdateEvent(currentCryptos, userEmail, CryptoUpdateEvent.UpdateType.MANUAL_UPDATE);
 
             log.info("✅ Atualização manual concluída para {}. {} moedas processadas",
                     userEmail, currentCryptos.size());
@@ -141,9 +133,7 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * Processa alertas para uma criptomoeda específica
-     *
-     * Mantido para compatibilidade com endpoint específico
+     * ✅ MANTIDO - Processa alertas para uma crypto específica
      */
     public void processAlertsForCrypto(String coinId) {
         try {
@@ -151,7 +141,14 @@ public class CryptoMonitoringService {
                     .ifPresentOrElse(
                             crypto -> {
                                 CryptoCurrency savedCrypto = cryptoService.saveCrypto(crypto);
-                                alertService.checkAlertsForCrypto(savedCrypto);
+
+                                // ✅ NOVO: Publicar evento para crypto específica
+                                publishCryptoUpdateEvent(
+                                        List.of(savedCrypto),
+                                        null,
+                                        CryptoUpdateEvent.UpdateType.SINGLE_CRYPTO
+                                );
+
                                 log.info("✅ Alertas processados para {}", coinId);
                             },
                             () -> log.warn("⚠️ Criptomoeda {} não encontrada", coinId)
@@ -162,10 +159,7 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * NOVO: Processa alertas para uma criptomoeda específica E usuário específico
-     *
-     * @param coinId ID da criptomoeda (ex: "bitcoin")
-     * @param userEmail Email do usuário
+     * ✅ MANTIDO - Processa alertas para crypto e usuário específicos
      */
     public void processAlertsForCryptoAndUser(String coinId, String userEmail) {
         try {
@@ -175,7 +169,14 @@ public class CryptoMonitoringService {
                     .ifPresentOrElse(
                             crypto -> {
                                 CryptoCurrency savedCrypto = cryptoService.saveCrypto(crypto);
-                                alertService.checkAlertsForCryptoAndUser(savedCrypto, userEmail);
+
+                                // ✅ NOVO: Publicar evento para usuário específico
+                                publishCryptoUpdateEvent(
+                                        List.of(savedCrypto),
+                                        userEmail,
+                                        CryptoUpdateEvent.UpdateType.SINGLE_CRYPTO
+                                );
+
                                 log.info("✅ Alertas processados para {} (usuário: {})", coinId, userEmail);
                             },
                             () -> log.warn("⚠️ Criptomoeda {} não encontrada", coinId)
@@ -187,18 +188,15 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * NOVO: Retorna estatísticas do monitoramento
-     *
-     * Útil para dashboard e debugging
+     * ✅ MANTIDO - Estatísticas do monitoramento
      */
     public MonitoringStats getMonitoringStats() {
         try {
             List<CryptoCurrency> savedCryptos = cryptoService.getAllSavedCryptos();
-            long totalAlerts = alertService.getActiveAlertRules().size();
 
             return MonitoringStats.builder()
                     .totalCryptocurrencies(savedCryptos.size())
-                    .totalActiveAlerts(totalAlerts)
+                    .totalActiveAlerts(0) // AlertService não é mais dependência direta
                     .lastUpdate(savedCryptos.isEmpty() ? null :
                             savedCryptos.get(0).getLastUpdated())
                     .build();
@@ -213,7 +211,26 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * Classe interna para estatísticas
+     * ✅ NOVO - Método auxiliar para publicar eventos
+     */
+    private void publishCryptoUpdateEvent(List<CryptoCurrency> cryptos, String userEmail, CryptoUpdateEvent.UpdateType type) {
+        try {
+            CryptoUpdateEvent event = userEmail == null
+                    ? new CryptoUpdateEvent(this, cryptos, type)
+                    : new CryptoUpdateEvent(this, cryptos, userEmail, type);
+
+            eventPublisher.publishEvent(event);
+
+            log.debug("📤 Evento publicado: {} cryptos, tipo: {}, usuário: {}",
+                    cryptos.size(), type, userEmail != null ? userEmail : "global");
+
+        } catch (Exception e) {
+            log.error("❌ Erro ao publicar evento: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * ✅ MANTIDO - Classe interna para estatísticas
      */
     @lombok.Builder
     @lombok.Data
@@ -223,53 +240,3 @@ public class CryptoMonitoringService {
         private java.time.LocalDateTime lastUpdate;
     }
 }
-
-/*
- * ============================================
- * CHANGELOG - O QUE MUDOU:
- * ============================================
- *
- * 1. REMOVIDO: @Scheduled(fixedRate = 300000)
- *    - Não executa mais automaticamente
- *    - Agora controlado pelo MonitoringControlService
- *
- * 2. ADICIONADO: updateAndProcessAlertsForUser(String userEmail)
- *    - Método chamado pelo scheduler por usuário
- *    - Processa alertas APENAS para o email especificado
- *
- * 3. ADICIONADO: forceUpdateAndProcessAlertsForUser(String userEmail)
- *    - Atualização manual filtrada por usuário
- *
- * 4. ADICIONADO: processAlertsForCryptoAndUser(String coinId, String userEmail)
- *    - Processa alertas de uma crypto específica para um usuário
- *
- * 5. ADICIONADO: getMonitoringStats()
- *    - Retorna estatísticas do sistema
- *
- * 6. MANTIDO: Métodos originais para compatibilidade
- *    - updateAndProcessAlerts()
- *    - forceUpdateAndProcessAlerts()
- *    - processAlertsForCrypto(String coinId)
- *
- * ============================================
- * COMO FUNCIONA AGORA:
- * ============================================
- *
- * ANTES:
- * - Spring Boot inicia → @Scheduled executa automaticamente
- * - Processa alertas de TODOS os usuários a cada 5 min
- *
- * AGORA:
- * - Spring Boot inicia → Nenhum monitoramento ativo
- * - Usuário clica "Iniciar Monitoramento" no frontend
- * - Frontend chama: POST /api/monitoring/start { email }
- * - MonitoringControlService cria scheduler EXCLUSIVO
- * - Scheduler chama: updateAndProcessAlertsForUser(email)
- * - Processa alertas APENAS deste usuário
- *
- * VANTAGENS:
- * ✅ Frontend carrega sem conflitos
- * ✅ Cada usuário controla seu monitoramento
- * ✅ Multi-usuário suportado
- * ✅ Economia de recursos (só monitora quem ativou)
- */

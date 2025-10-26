@@ -21,7 +21,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/crypto")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // Para desenvolvimento - configure adequadamente em produção
 public class CryptoController {
 
     private final CryptoService cryptoService;

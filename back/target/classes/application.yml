@@ -75,8 +75,9 @@ spring:
   # CONFIGURAÇÃO DE JWT
   # ============================================
   jwt:
-    secret: ${JWT_SECRET:crypto-monitor-super-secret-key-that-should-be-changed-in-production-environment}
-    expiration: ${JWT_EXPIRATION:86400000} # 24 horas
+    secret: ${JWT_SECRET}  # ⚠️ OBRIGATÓRIO via .env
+    expiration: 86400000   # 24 horas
+    issuer: crypto-monitor
 
   # ============================================
   # CONFIGURAÇÃO DE EMAIL
@@ -104,6 +105,18 @@ spring:
   task:
     scheduling:
       enabled: false
+
+  # ============================================
+  # SEGURANÇA ADICIONAL
+  # ============================================
+  main:
+    banner-mode: off  # ✅ Desabilitar banner (evita info leak)
+
+  mvc:
+    throw-exception-if-no-handler-found: true  # ✅ Evitar stacktrace em produção
+  web:
+    resources:
+      add-mappings: false
 
 # ============================================
 # CONFIGURAÇÕES ESPECÍFICAS DA APLICAÇÃO
@@ -153,12 +166,13 @@ coingecko:
   rate-limit: 30
 
 # ============================================
-# LOGS
+# LOGS (ajustado para versão segura)
 # ============================================
 logging:
   level:
     com.crypto: INFO
-    com.crypto.service.MonitoringControlService: DEBUG
+    org.springframework.security: WARN  # ✅ Não logar detalhes de auth
+    org.hibernate.SQL: ERROR            # ✅ Não logar queries com dados
     org.springframework.web: DEBUG
     org.springframework.mail: DEBUG
     org.flywaydb: DEBUG
@@ -172,17 +186,17 @@ logging:
     max-history: 7
 
 # ============================================
-# ACTUATOR (MONITORAMENTO)
+# ACTUATOR (ajustado para segurança)
 # ============================================
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health  # ✅ Apenas health
       base-path: /actuator
   endpoint:
     health:
-      show-details: always
+      show-details: when-authorized  # ✅ Detalhes apenas para autenticados
   health:
     mail:
       enabled: false
@@ -207,3 +221,22 @@ info:
     version: "17.0.16"
   build:
     timestamp: ${TIMESTAMP}
+
+# ============================================
+# CONFIGURAÇÃO DE SEGURANÇA (ADICIONADA)
+# ============================================
+app:
+  cors:
+    allowed-origins: "http://localhost:3000,http://localhost:3001,http://localhost:8080"
+    # Produção:
+    # allowed-origins: "https://crypto-monitor.com,https://www.crypto-monitor.com"
+  security:
+    enabled: true
+
+# ============================================
+# JWT SEGURO (mantido/espelhado)
+# ============================================
+jwt:
+  secret: ${JWT_SECRET}  # ⚠️ OBRIGATÓRIO via .env
+  expiration: 86400000
+  issuer: crypto-monitor

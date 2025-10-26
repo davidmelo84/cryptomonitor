@@ -5,7 +5,7 @@ import com.crypto.repository.CryptoCurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.*;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -157,7 +157,8 @@ public class CryptoService {
     // MÉTODOS COM CACHE
     // =============================
 
-    @Cacheable(value = "cryptoPrices", key = "#coinId")
+    /** ✅ Adiciona cache e retry à busca por ID */
+    @Cacheable(value = "cryptoPrices", key = "#coinId", unless = "#result == null || #result.isEmpty()")
     @Retryable(value = {Exception.class}, maxAttempts = 3, backoff = @Backoff(delay = 2000))
     public Optional<CryptoCurrency> getCryptoByCoinId(String coinId) {
         if (USE_MOCK_FOR_BOTS && MOCK_CONFIGS.containsKey(coinId.toLowerCase())) {
@@ -189,7 +190,8 @@ public class CryptoService {
         return Optional.empty();
     }
 
-    @Cacheable(value = "allCryptoPrices", unless = "#result.isEmpty()")
+    /** ✅ Cache com duração curta para todas as cryptos */
+    @Cacheable(value = "allCryptoPrices", unless = "#result == null || #result.isEmpty()")
     @Retryable(value = {Exception.class}, maxAttempts = 3, backoff = @Backoff(delay = 2000))
     public List<CryptoCurrency> getCurrentPrices() {
         try {
@@ -214,7 +216,6 @@ public class CryptoService {
             throw new RuntimeException("Erro interno ao buscar cotações", e);
         }
 
-        // Fallback para mock caso a API não retorne dados
         List<CryptoCurrency> mockList = new ArrayList<>();
         if (USE_MOCK_FOR_BOTS) {
             MOCK_CONFIGS.forEach((coinId, config) -> mockList.add(getMockCrypto(coinId)));
@@ -224,6 +225,11 @@ public class CryptoService {
         return mockList;
     }
 
+    /** ✅ Invalida cache ao salvar crypto */
+    @Caching(evict = {
+            @CacheEvict(value = "cryptoPrices", key = "#crypto.coinId"),
+            @CacheEvict(value = "allCryptoPrices", allEntries = true)
+    })
     public CryptoCurrency saveCrypto(CryptoCurrency crypto) {
         return cryptoRepository.findByCoinId(crypto.getCoinId())
                 .map(existing -> {
@@ -246,6 +252,30 @@ public class CryptoService {
         return cryptoRepository.findByCoinId(coinId);
     }
 
+    /** ✅ Limpar cache manualmente */
+    @CacheEvict(value = {"cryptoPrices", "allCryptoPrices"}, allEntries = true)
+    public void clearCache() {
+        log.info("🗑️ Cache de criptomoedas limpo manualmente");
+    }
+
+    /** ✅ Atualizar cache manualmente */
+    @CachePut(value = "cryptoPrices", key = "#crypto.coinId", unless = "#crypto == null")
+    public CryptoCurrency updateCache(CryptoCurrency crypto) {
+        log.debug("🔄 Cache atualizado para: {}", crypto.getCoinId());
+        return crypto;
+    }
+
+    /** ✅ Preaquecer cache após startup/deploy */
+    public void warmUpCache() {
+        log.info("🔥 Aquecendo cache...");
+        try {
+            List<CryptoCurrency> cryptos = getCurrentPrices();
+            log.info("✅ Cache aquecido com {} criptomoedas", cryptos.size());
+        } catch (Exception e) {
+            log.error("❌ Erro ao aquecer cache: {}", e.getMessage());
+        }
+    }
+
     // =============================
     // SISTEMA DE MOCK DINÂMICO
     // =============================
@@ -254,11 +284,10 @@ public class CryptoService {
         MockCryptoConfig config = MOCK_CONFIGS.get(coinId);
         if (config == null) return null;
 
-        double percentVariation = (random.nextDouble() - 0.5) * 0.02; // -1% a +1%
+        double percentVariation = (random.nextDouble() - 0.5) * 0.02;
         double variation = config.currentPrice * percentVariation;
         config.currentPrice += variation;
 
-        // Limitar preço dentro do range
         config.currentPrice = Math.max(config.minPrice, Math.min(config.currentPrice, config.maxPrice));
 
         BigDecimal currentPrice = BigDecimal.valueOf(config.currentPrice);
@@ -268,15 +297,14 @@ public class CryptoService {
         mock.setSymbol(config.symbol);
         mock.setName(config.name);
         mock.setCurrentPrice(currentPrice);
-        mock.setPriceChange24h(random.nextDouble() * 6 - 3); // -3% a +3%
-        mock.setPriceChange1h(random.nextDouble() * 2 - 1);  // -1% a +1%
-        mock.setPriceChange7d(random.nextDouble() * 20 - 10); // -10% a +10%
+        mock.setPriceChange24h(random.nextDouble() * 6 - 3);
+        mock.setPriceChange1h(random.nextDouble() * 2 - 1);
+        mock.setPriceChange7d(random.nextDouble() * 20 - 10);
         mock.setMarketCap(config.marketCap);
         mock.setTotalVolume(config.marketCap.divide(BigDecimal.valueOf(30), RoundingMode.HALF_UP));
         mock.setLastUpdated(LocalDateTime.now());
 
         log.info("🎮 Mock {} @ ${} (variação: ${})", config.symbol, currentPrice, variation);
-
         return mock;
     }
 

@@ -23,7 +23,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/debug")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class DebugController {
 
     private final AlertService alertService;
