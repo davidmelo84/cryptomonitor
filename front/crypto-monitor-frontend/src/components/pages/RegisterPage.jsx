@@ -1,4 +1,3 @@
-/ front/crypto-monitor-frontend/src/components/pages/RegisterPage.jsx
 // ✅ VERSÃO COMPLETA - Visual idêntico ao Login (cor verde)
 
 import React, { useState } from 'react';

@@ -1,5 +1,5 @@
 // front/crypto-monitor-frontend/src/components/pages/PortfolioPage.jsx
-// ✅ Versão atualizada com useCallback e dependências corretas
+// ✅ VERSÃO CORRIGIDA - Backend retorna objeto, não array
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { ArrowLeft, Plus, TrendingUp, DollarSign, Percent, Wallet } from 'lucide-react';
@@ -15,7 +15,16 @@ import '../../styles/portfolio.css';
 
 function PortfolioPage({ token, user, onBack, availableCryptos }) {
   const { isDark } = useTheme();
-  const [portfolio, setPortfolio] = useState([]);
+  
+  // ✅ CORREÇÃO: Backend retorna objeto { portfolio: [], totalInvested, ... }
+  const [portfolioData, setPortfolioData] = useState({
+    portfolio: [],
+    totalInvested: 0,
+    totalCurrentValue: 0,
+    totalProfitLoss: 0,
+    totalProfitLossPercent: 0
+  });
+  
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -28,12 +37,24 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
       const response = await fetch(`${API_BASE_URL}/portfolio`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
       if (response.ok) {
         const data = await response.json();
-        setPortfolio(data);
+        console.log('📦 Portfolio recebido:', data);
+        
+        // ✅ CORREÇÃO: Validar estrutura
+        if (data && typeof data === 'object') {
+          setPortfolioData({
+            portfolio: Array.isArray(data.portfolio) ? data.portfolio : [],
+            totalInvested: data.totalInvested || 0,
+            totalCurrentValue: data.totalCurrentValue || 0,
+            totalProfitLoss: data.totalProfitLoss || 0,
+            totalProfitLossPercent: data.totalProfitLossPercent || 0
+          });
+        }
       }
     } catch (error) {
-      console.error('Erro ao buscar portfolio:', error);
+      console.error('❌ Erro ao buscar portfolio:', error);
     } finally {
       setLoading(false);
     }
@@ -47,7 +68,7 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
       });
       if (response.ok) {
         const data = await response.json();
-        setTransactions(data);
+        setTransactions(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error('Erro ao buscar transações:', error);
@@ -59,7 +80,7 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
       fetchPortfolio();
       fetchTransactions();
     }
-  }, [token, fetchPortfolio, fetchTransactions]); // ✅ dependências corretas
+  }, [token, fetchPortfolio, fetchTransactions]);
 
   const handleAddTransaction = async (transactionData) => {
     try {
@@ -71,6 +92,7 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         },
         body: JSON.stringify(transactionData)
       });
+      
       if (response.ok) {
         await fetchPortfolio();
         await fetchTransactions();
@@ -81,19 +103,8 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
     }
   };
 
-  // Resumo do portfolio
-  const summary = {
-    totalInvested: portfolio.reduce((sum, item) => sum + parseFloat(item.totalInvested || 0), 0),
-    totalCurrentValue: portfolio.reduce((sum, item) => sum + parseFloat(item.currentValue || 0), 0),
-    get totalProfitLoss() {
-      return this.totalCurrentValue - this.totalInvested;
-    },
-    get totalProfitLossPercent() {
-      return this.totalInvested > 0 ? ((this.totalProfitLoss / this.totalInvested) * 100).toFixed(2) : 0;
-    }
-  };
-
-  const isProfitable = summary.totalProfitLoss >= 0;
+  // ✅ CORREÇÃO: Usar portfolioData ao invés de portfolio
+  const isProfitable = portfolioData.totalProfitLoss >= 0;
 
   return (
     <div className={`portfolio-page ${isDark ? 'dark' : ''}`}>
@@ -131,7 +142,9 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
           </div>
           <div className="summary-card-content">
             <p className="summary-card-label">Total Investido</p>
-            <p className="summary-card-value">{formatCurrency(summary.totalInvested)}</p>
+            <p className="summary-card-value">
+              {formatCurrency(portfolioData.totalInvested)}
+            </p>
           </div>
         </div>
 
@@ -141,7 +154,9 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
           </div>
           <div className="summary-card-content">
             <p className="summary-card-label">Valor Atual</p>
-            <p className="summary-card-value">{formatCurrency(summary.totalCurrentValue)}</p>
+            <p className="summary-card-value">
+              {formatCurrency(portfolioData.totalCurrentValue)}
+            </p>
           </div>
         </div>
 
@@ -152,10 +167,10 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
           <div className="summary-card-content">
             <p className="summary-card-label">Lucro/Prejuízo</p>
             <p className={`summary-card-value ${isProfitable ? 'profit' : 'loss'}`}>
-              {isProfitable ? '+' : ''}{formatCurrency(summary.totalProfitLoss)}
+              {isProfitable ? '+' : ''}{formatCurrency(portfolioData.totalProfitLoss)}
             </p>
             <p className={`summary-card-percent ${isProfitable ? 'profit' : 'loss'}`}>
-              {isProfitable ? '▲' : '▼'} {Math.abs(summary.totalProfitLossPercent)}%
+              {isProfitable ? '▲' : '▼'} {Math.abs(portfolioData.totalProfitLossPercent)}%
             </p>
           </div>
         </div>
@@ -163,13 +178,22 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
 
       {/* Tabs */}
       <div className="portfolio-tabs">
-        <button onClick={() => setActiveTab('holdings')} className={`portfolio-tab ${activeTab === 'holdings' ? 'active' : ''} ${isDark ? 'dark' : ''}`}>
+        <button 
+          onClick={() => setActiveTab('holdings')} 
+          className={`portfolio-tab ${activeTab === 'holdings' ? 'active' : ''} ${isDark ? 'dark' : ''}`}
+        >
           Holdings
         </button>
-        <button onClick={() => setActiveTab('chart')} className={`portfolio-tab ${activeTab === 'chart' ? 'active' : ''} ${isDark ? 'dark' : ''}`}>
+        <button 
+          onClick={() => setActiveTab('chart')} 
+          className={`portfolio-tab ${activeTab === 'chart' ? 'active' : ''} ${isDark ? 'dark' : ''}`}
+        >
           Gráfico
         </button>
-        <button onClick={() => setActiveTab('history')} className={`portfolio-tab ${activeTab === 'history' ? 'active' : ''} ${isDark ? 'dark' : ''}`}>
+        <button 
+          onClick={() => setActiveTab('history')} 
+          className={`portfolio-tab ${activeTab === 'history' ? 'active' : ''} ${isDark ? 'dark' : ''}`}
+        >
           Histórico
         </button>
       </div>
@@ -184,11 +208,19 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         ) : (
           <>
             {activeTab === 'holdings' && (
-              <PortfolioTable portfolio={portfolio} onRefresh={fetchPortfolio} />
+              <PortfolioTable 
+                portfolio={portfolioData.portfolio} 
+                onRefresh={fetchPortfolio} 
+              />
             )}
-            {activeTab === 'chart' && <PortfolioChart portfolio={portfolio} />}
+            {activeTab === 'chart' && (
+              <PortfolioChart portfolio={portfolioData.portfolio} />
+            )}
             {activeTab === 'history' && (
-              <TransactionHistory transactions={transactions} onRefresh={fetchTransactions} />
+              <TransactionHistory 
+                transactions={transactions} 
+                onRefresh={fetchTransactions} 
+              />
             )}
           </>
         )}
@@ -197,9 +229,9 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
       {/* Modal */}
       {showAddModal && (
         <AddTransactionModal
+          isOpen={showAddModal}
           onClose={() => setShowAddModal(false)}
-          onSubmit={handleAddTransaction}
-          availableCryptos={availableCryptos}
+          onTransactionAdded={handleAddTransaction}
         />
       )}
     </div>
