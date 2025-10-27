@@ -1,24 +1,25 @@
 // front/crypto-monitor-frontend/src/components/bots/CreateBotModal.jsx
-// ✅ MODAL DE CRIAÇÃO DE BOT
+// ✅ MODAL DE CRIAÇÃO DE BOT - COM DARK MODE
 
 import React, { useState } from 'react';
+import { useTheme } from '../../contexts/ThemeContext';
+import ThemeToggle from '../common/ThemeToggle';
 import '../../styles/CreateBotModal.css';
 
 function CreateBotModal({ token, onClose, onBotCreated }) {
+  const { isDark } = useTheme(); // ✅ HOOK DE TEMA
+  
   const [formData, setFormData] = useState({
     name: '',
     coinSymbol: 'BTC',
     strategy: 'GRID_TRADING',
     isSimulation: true,
-    // Grid Trading
     gridLowerPrice: '',
     gridUpperPrice: '',
     gridLevels: '10',
     amountPerGrid: '',
-    // DCA
     dcaAmount: '',
     dcaIntervalMinutes: '60',
-    // Stop Loss / Take Profit
     stopLossPercent: '',
     takeProfitPercent: ''
   });
@@ -32,9 +33,7 @@ function CreateBotModal({ token, onClose, onBotCreated }) {
     { value: 'STOP_LOSS', label: 'Stop Loss / Take Profit', description: 'Gestão de risco automática' }
   ];
 
-  const cryptos = [
-    'BTC', 'ETH', 'ADA', 'DOT', 'LINK', 'SOL', 'AVAX', 'MATIC', 'LTC', 'BCH'
-  ];
+  const cryptos = ['BTC', 'ETH', 'ADA', 'DOT', 'LINK', 'SOL', 'AVAX', 'MATIC', 'LTC', 'BCH'];
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -64,12 +63,10 @@ function CreateBotModal({ token, onClose, onBotCreated }) {
       }
     }
 
-    if (formData.strategy === 'DCA') {
-      if (!formData.dcaAmount) {
-        setError('Valor do DCA é obrigatório');
-        setLoading(false);
-        return;
-      }
+    if (formData.strategy === 'DCA' && !formData.dcaAmount) {
+      setError('Valor do DCA é obrigatório');
+      setLoading(false);
+      return;
     }
 
     if (formData.strategy === 'STOP_LOSS') {
@@ -117,7 +114,15 @@ function CreateBotModal({ token, onClose, onBotCreated }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="create-bot-modal" onClick={e => e.stopPropagation()}>
+      <div 
+        className={`create-bot-modal ${isDark ? 'dark' : ''}`} 
+        onClick={e => e.stopPropagation()}
+      >
+        
+        {/* ✅ Theme Toggle no Modal */}
+        <div className="theme-toggle-wrapper">
+          <ThemeToggle />
+        </div>
         
         {/* Header */}
         <div className="modal-header">
@@ -199,7 +204,7 @@ function CreateBotModal({ token, onClose, onBotCreated }) {
             </div>
           </div>
 
-          {/* Strategy Config */}
+          {/* Strategy Config - Grid Trading */}
           {formData.strategy === 'GRID_TRADING' && (
             <div className="form-section">
               <h3>📊 Configurações Grid Trading</h3>
@@ -263,6 +268,7 @@ function CreateBotModal({ token, onClose, onBotCreated }) {
             </div>
           )}
 
+          {/* Strategy Config - DCA */}
           {formData.strategy === 'DCA' && (
             <div className="form-section">
               <h3>💰 Configurações DCA</h3>
@@ -297,6 +303,7 @@ function CreateBotModal({ token, onClose, onBotCreated }) {
             </div>
           )}
 
+          {/* Strategy Config - Stop Loss */}
           {formData.strategy === 'STOP_LOSS' && (
             <div className="form-section">
               <h3>🛡️ Configurações Stop Loss / Take Profit</h3>
@@ -337,10 +344,19 @@ function CreateBotModal({ token, onClose, onBotCreated }) {
 
           {/* Actions */}
           <div className="form-actions">
-            <button type="button" className="btn btn-secondary" onClick={onClose} disabled={loading}>
+            <button 
+              type="button" 
+              className="btn btn-secondary" 
+              onClick={onClose} 
+              disabled={loading}
+            >
               Cancelar
             </button>
-            <button type="submit" className="btn btn-primary" disabled={loading}>
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              disabled={loading}
+            >
               {loading ? 'Criando...' : '✅ Criar Bot'}
             </button>
           </div>

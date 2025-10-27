@@ -1,9 +1,5 @@
-/* front/crypto-monitor-frontend/src/styles/CreateBotModal.css */
-/* ✅ VERSÃO CORRIGIDA - Layout responsivo sem comer laterais */
+/* CreateBotModal.css - Dark Mode Completo */
 
-/* ============================================
-   MODAL OVERLAY
-   ============================================ */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -16,63 +12,50 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 20px; /* ✅ Espaçamento nas laterais */
+  padding: 20px;
   animation: fadeIn 0.2s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* ============================================
-   MODAL CONTENT
-   ============================================ */
 .create-bot-modal {
   background: white;
   border-radius: 20px;
   max-width: 700px;
-  width: 100%; /* ✅ Responsivo */
+  width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
-  position: relative; /* ✅ Para ThemeToggle */
+  position: relative;
 }
 
-@keyframes slideUp {
-  from {
-    transform: translateY(30px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+/* ✅ DARK MODE */
+.create-bot-modal.dark {
+  background: #1f2937;
+  color: #f3f4f6;
 }
 
-/* ============================================
-   THEME TOGGLE NO MODAL
-   ============================================ */
+/* Theme Toggle no Modal */
 .create-bot-modal .theme-toggle-wrapper {
   position: absolute;
   top: 20px;
-  right: 70px; /* ✅ Deixa espaço pro botão X */
+  right: 70px;
   z-index: 10;
 }
 
-/* ============================================
-   MODAL HEADER
-   ============================================ */
+/* Header */
 .create-bot-modal .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px; /* ✅ Mais espaço interno */
+  padding: 24px;
   border-bottom: 2px solid #e5e7eb;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 20px 20px 0 0;
   color: white;
+}
+
+.create-bot-modal.dark .modal-header {
+  border-bottom-color: #374151;
 }
 
 .create-bot-modal .modal-header h2 {
@@ -80,12 +63,8 @@
   font-size: 24px;
   font-weight: bold;
   color: white;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
-/* ✅ BOTÃO FECHAR - Visível e funcional */
 .create-bot-modal .modal-close-btn {
   background: rgba(255, 255, 255, 0.2);
   color: white;
@@ -94,13 +73,11 @@
   height: 36px;
   border-radius: 8px;
   font-size: 24px;
-  font-weight: bold;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  line-height: 1;
 }
 
 .create-bot-modal .modal-close-btn:hover {
@@ -108,16 +85,12 @@
   transform: scale(1.1);
 }
 
-/* ============================================
-   MODAL BODY
-   ============================================ */
+/* Body */
 .create-bot-modal .bot-form {
-  padding: 24px; /* ✅ Padding consistente */
+  padding: 24px;
 }
 
-/* ============================================
-   FORM SECTIONS
-   ============================================ */
+/* Form Section */
 .form-section {
   margin-bottom: 24px;
   padding: 20px;
@@ -126,19 +99,23 @@
   border-left: 4px solid #667eea;
 }
 
+.create-bot-modal.dark .form-section {
+  background: #111827;
+  border-left-color: #8b5cf6;
+}
+
 .form-section h3 {
   margin: 0 0 16px 0;
   font-size: 18px;
   font-weight: bold;
   color: #1f2937;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-/* ============================================
-   FORM GROUPS
-   ============================================ */
+.create-bot-modal.dark .form-section h3 {
+  color: #f3f4f6;
+}
+
+/* Form Groups */
 .form-group {
   margin-bottom: 16px;
 }
@@ -151,9 +128,13 @@
   color: #374151;
 }
 
+.create-bot-modal.dark .form-group label {
+  color: #e5e7eb;
+}
+
 .form-group input,
 .form-group select {
-  width: 100%; /* ✅ Ocupa toda largura disponível */
+  width: 100%;
   padding: 12px;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
@@ -161,7 +142,14 @@
   transition: all 0.3s ease;
   background: white;
   color: #1f2937;
-  box-sizing: border-box; /* ✅ CRÍTICO para não estourar */
+  box-sizing: border-box;
+}
+
+.create-bot-modal.dark .form-group input,
+.create-bot-modal.dark .form-group select {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
 }
 
 .form-group input:focus,
@@ -171,18 +159,19 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-/* ============================================
-   FORM ROW (2 colunas)
-   ============================================ */
+.create-bot-modal.dark .form-group input::placeholder,
+.create-bot-modal.dark .form-group select::placeholder {
+  color: #6b7280;
+}
+
+/* Form Row (2 colunas) */
 .form-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
 }
 
-/* ============================================
-   CHECKBOX
-   ============================================ */
+/* Checkbox */
 .checkbox-label {
   display: flex;
   align-items: center;
@@ -195,9 +184,19 @@
   transition: all 0.3s ease;
 }
 
+.create-bot-modal.dark .checkbox-label {
+  background: #374151;
+  border-color: #4b5563;
+}
+
 .checkbox-label:hover {
   border-color: #667eea;
   background: #f9fafb;
+}
+
+.create-bot-modal.dark .checkbox-label:hover {
+  border-color: #8b5cf6;
+  background: #4b5563;
 }
 
 .checkbox-label input[type="checkbox"] {
@@ -207,9 +206,15 @@
   accent-color: #667eea;
 }
 
-/* ============================================
-   ERROR MESSAGE
-   ============================================ */
+.checkbox-label span {
+  color: #374151;
+}
+
+.create-bot-modal.dark .checkbox-label span {
+  color: #e5e7eb;
+}
+
+/* Error Message */
 .error-message {
   background: #fee2e2;
   color: #991b1b;
@@ -224,15 +229,17 @@
   border-left: 4px solid #ef4444;
 }
 
-/* ============================================
-   FORM ACTIONS
-   ============================================ */
+/* Form Actions */
 .form-actions {
   display: flex;
   gap: 12px;
   margin-top: 24px;
   padding-top: 20px;
   border-top: 2px solid #e5e7eb;
+}
+
+.create-bot-modal.dark .form-actions {
+  border-top-color: #374151;
 }
 
 .form-actions .btn {
@@ -254,6 +261,12 @@
   background: #f3f4f6;
   color: #374151;
   border: 2px solid #e5e7eb;
+}
+
+.create-bot-modal.dark .btn-secondary {
+  background: #374151;
+  color: #e5e7eb;
+  border-color: #4b5563;
 }
 
 .form-actions .btn-secondary:hover:not(:disabled) {
@@ -278,59 +291,7 @@
   transform: none !important;
 }
 
-/* ============================================
-   DARK MODE
-   ============================================ */
-.create-bot-modal.dark {
-  background: #1f2937;
-}
-
-.create-bot-modal.dark .modal-header {
-  border-bottom-color: #374151;
-}
-
-.create-bot-modal.dark .form-section {
-  background: #111827;
-}
-
-.create-bot-modal.dark .form-section h3 {
-  color: #f3f4f6;
-}
-
-.create-bot-modal.dark .form-group label {
-  color: #e5e7eb;
-}
-
-.create-bot-modal.dark .form-group input,
-.create-bot-modal.dark .form-group select {
-  background: #374151;
-  border-color: #4b5563;
-  color: #f3f4f6;
-}
-
-.create-bot-modal.dark .checkbox-label {
-  background: #374151;
-  border-color: #4b5563;
-}
-
-.create-bot-modal.dark .checkbox-label:hover {
-  border-color: #667eea;
-  background: #4b5563;
-}
-
-.create-bot-modal.dark .form-actions {
-  border-top-color: #374151;
-}
-
-.create-bot-modal.dark .btn-secondary {
-  background: #374151;
-  color: #e5e7eb;
-  border-color: #4b5563;
-}
-
-/* ============================================
-   SCROLLBAR
-   ============================================ */
+/* Scrollbar */
 .create-bot-modal::-webkit-scrollbar {
   width: 8px;
 }
@@ -345,12 +306,35 @@
   border-radius: 10px;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+.create-bot-modal.dark::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+.create-bot-modal.dark::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8b5cf6, #a78bfa);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   .modal-overlay {
-    padding: 10px; /* ✅ Menos padding em mobile */
+    padding: 10px;
   }
 
   .create-bot-modal {
@@ -366,11 +350,11 @@
   }
 
   .form-row {
-    grid-template-columns: 1fr; /* ✅ 1 coluna em mobile */
+    grid-template-columns: 1fr;
   }
 
   .form-actions {
-    flex-direction: column; /* ✅ Botões empilhados */
+    flex-direction: column;
   }
 
   .form-actions .btn {
