@@ -1,7 +1,7 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
-// ✅ VERSÃO OTIMIZADA - Usando React Query
+// ✅ VERSÃO CORRIGIDA - Com monitoramento funcionando
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import Header from '../dashboard/Header';
 import StatusCard from '../dashboard/StatusCard';
@@ -11,7 +11,7 @@ import CryptocurrenciesCard from '../dashboard/CryptocurrenciesCard';
 import ChartTabs from '../dashboard/ChartTabs';
 import TelegramConfig from '../telegram/TelegramConfig';
 
-// ✅ NOVO: Importar hooks do React Query
+// ✅ React Query hooks
 import { 
   useCryptos, 
   useMonitoringStatus,
@@ -25,7 +25,6 @@ function DashboardPage({
   user,
   token,
   onLogout,
-  isMonitoring,
   selectedCryptos,
   monitoringInterval,
   monitoringEmail,
@@ -43,7 +42,7 @@ function DashboardPage({
   const { isDark } = useTheme();
   const [showTelegramConfig, setShowTelegramConfig] = useState(false);
 
-  // ✅ NOVO: Usar React Query para buscar dados (com cache automático)
+  // ✅ React Query - buscar dados com cache
   const { 
     data: availableCryptos = [], 
     isLoading: cryptosLoading,
@@ -59,47 +58,103 @@ function DashboardPage({
   const startMonitoringMutation = useStartMonitoring();
   const stopMonitoringMutation = useStopMonitoring();
 
-  // ✅ Derivar estado do monitoramento do cache
+  // ✅ Derivar estado do monitoramento
   const isMonitoringActive = monitoringStatusData?.active || false;
 
-  // ✅ Handler para iniciar/parar monitoramento
-  const handleStartStopMonitoring = async () => {
+  // ✅ CORREÇÃO: Handler completo para start/stop
+  const handleStartStopMonitoring = useCallback(async () => {
+    console.log('🔘 handleStartStopMonitoring chamado');
+    console.log('   isMonitoringActive:', isMonitoringActive);
+    console.log('   monitoringEmail:', monitoringEmail);
+    console.log('   selectedCryptos:', selectedCryptos.length);
+
     if (isMonitoringActive) {
-      // Parar monitoramento
+      // ========== PARAR MONITORAMENTO ==========
+      console.log('🛑 Tentando parar monitoramento...');
+      
       try {
-        await stopMonitoringMutation.mutateAsync(token);
+        const result = await stopMonitoringMutation.mutateAsync(token);
+        console.log('✅ Monitoramento parado:', result);
+        
+        // Atualizar status
+        refetchMonitoringStatus();
+        
       } catch (error) {
+        console.error('❌ Erro ao parar:', error);
         alert('Erro ao parar monitoramento: ' + error.message);
       }
+      
     } else {
-      // Iniciar monitoramento
-      if (!monitoringEmail || selectedCryptos.length === 0) {
-        alert('Configure o email e selecione pelo menos uma criptomoeda');
+      // ========== INICIAR MONITORAMENTO ==========
+      console.log('▶️ Tentando iniciar monitoramento...');
+      
+      // ✅ VALIDAÇÃO COMPLETA
+      if (!monitoringEmail || monitoringEmail.trim() === '') {
+        alert('⚠️ Configure um email válido antes de iniciar!');
+        return;
+      }
+
+      if (selectedCryptos.length === 0) {
+        alert('⚠️ Selecione pelo menos uma criptomoeda!');
         return;
       }
 
       try {
-        await startMonitoringMutation.mutateAsync({
+        // ✅ Extrair coinIds das cryptos selecionadas
+        const cryptocurrencies = selectedCryptos.map(c => {
+          // Tentar obter coinId de várias formas
+          return c.coinId || c.id || c.symbol?.toLowerCase() || c.name?.toLowerCase();
+        });
+
+        console.log('📤 Enviando dados:', {
           email: monitoringEmail,
-          cryptocurrencies: selectedCryptos.map(c => c.coinId || c.name),
+          cryptocurrencies,
+          interval: monitoringInterval,
+          buyThreshold,
+          sellThreshold
+        });
+
+        const result = await startMonitoringMutation.mutateAsync({
+          email: monitoringEmail,
+          cryptocurrencies,
           interval: monitoringInterval,
           buyThreshold,
           sellThreshold,
           token
         });
+
+        console.log('✅ Monitoramento iniciado:', result);
+        
+        // Atualizar status
+        refetchMonitoringStatus();
+        
+        alert(`✅ Monitoramento iniciado!\n\n• Email: ${monitoringEmail}\n• Moedas: ${cryptocurrencies.length}\n• Intervalo: ${monitoringInterval} min`);
+        
       } catch (error) {
+        console.error('❌ Erro ao iniciar:', error);
         alert('Erro ao iniciar monitoramento: ' + error.message);
       }
     }
-  };
+  }, [
+    isMonitoringActive,
+    monitoringEmail,
+    selectedCryptos,
+    monitoringInterval,
+    buyThreshold,
+    sellThreshold,
+    token,
+    startMonitoringMutation,
+    stopMonitoringMutation,
+    refetchMonitoringStatus
+  ]);
 
-  // ✅ Handler de refresh (usa refetch do React Query)
+  // ✅ Handler de refresh
   const handleRefresh = () => {
     refetchCryptos();
     refetchMonitoringStatus();
   };
 
-  // ✅ Último update (derivado dos dados)
+  // ✅ Último update
   const lastUpdate = cryptosLoading ? null : new Date();
 
   return (
@@ -116,7 +171,6 @@ function DashboardPage({
       />
 
       <div className="content-wrapper">
-        {/* ✅ Loading State */}
         {cryptosLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4" />
@@ -124,15 +178,14 @@ function DashboardPage({
           </div>
         ) : (
           <>
-            {/* Status Card */}
+            {/* ✅ CORREÇÃO: Passar handler correto */}
             <StatusCard
               isMonitoring={isMonitoringActive}
-              selectedCryptos={selectedCryptos}
-              monitoringInterval={monitoringInterval}
               onStartStop={handleStartStopMonitoring}
+              selectedCryptos={selectedCryptos}
+              monitoringEmail={monitoringEmail}
             />
 
-            {/* Stats Cards */}
             {selectedCryptos.length > 0 && (
               <StatsCards
                 selectedCryptos={selectedCryptos}
@@ -140,12 +193,10 @@ function DashboardPage({
               />
             )}
 
-            {/* Gráficos */}
             {selectedCryptos.length > 0 && (
               <ChartTabs selectedCryptos={selectedCryptos} />
             )}
 
-            {/* Settings Card */}
             <SettingsCard
               monitoringEmail={monitoringEmail}
               setMonitoringEmail={setMonitoringEmail}
@@ -157,7 +208,6 @@ function DashboardPage({
               setSellThreshold={setSellThreshold}
             />
 
-            {/* Cryptocurrencies Card */}
             <CryptocurrenciesCard
               availableCryptos={availableCryptos}
               selectedCryptos={selectedCryptos}
@@ -168,7 +218,7 @@ function DashboardPage({
         )}
       </div>
 
-      {/* Modal Telegram Config */}
+      {/* Modal Telegram */}
       {showTelegramConfig && (
         <div 
           className="telegram-modal-overlay" 
@@ -185,7 +235,6 @@ function DashboardPage({
               <button 
                 className="telegram-modal-close"
                 onClick={() => setShowTelegramConfig(false)}
-                aria-label="Fechar"
               >
                 ✕
               </button>

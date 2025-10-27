@@ -10,12 +10,22 @@ import com.crypto.service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -27,6 +37,10 @@ public class CryptoController {
     private final AlertService alertService;
     private final NotificationService notificationService;
     private final CryptoMonitoringService monitoringService;
+    private final WebClient webClient; // ✅ Injetado via Spring
+
+    @Value("${coingecko.api.url:https://api.coingecko.com/api/v3}")
+    private String coinGeckoApiUrl; // ✅ URL da API CoinGecko
 
     @GetMapping("/current")
     public ResponseEntity<List<CryptoCurrency>> getCurrentPrices() {
@@ -77,7 +91,6 @@ public class CryptoController {
     @PostMapping("/update")
     public ResponseEntity<Map<String, Object>> forceUpdate() {
         try {
-            // Agora usa o serviço coordenador para atualização manual
             monitoringService.forceUpdateAndProcessAlerts();
 
             Map<String, Object> response = Map.of(
@@ -183,9 +196,78 @@ public class CryptoController {
         }
     }
 
-    /**
-     * Novo endpoint para processar alertas de uma criptomoeda específica
-     */
+    @GetMapping("/history/{coinId}")
+    public ResponseEntity<Map<String, Object>> getCryptoHistory(
+            @PathVariable String coinId,
+            @RequestParam(defaultValue = "7") int days
+    ) {
+        try {
+            String url = String.format(
+                    "%s/coins/%s/market_chart?vs_currency=usd&days=%d",
+                    coinGeckoApiUrl, coinId, days
+            );
+
+            Map<String, Object> response = webClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .block();
+
+            if (response == null || !response.containsKey("prices")) {
+                return ResponseEntity.notFound().build();
+            }
+
+            List<List<Object>> prices = (List<List<Object>>) response.get("prices");
+
+            List<Map<String, ? extends Serializable>> formattedData = prices.stream()
+                    .map(price -> {
+                        long timestamp = ((Number) price.get(0)).longValue();
+                        double priceValue = ((Number) price.get(1)).doubleValue();
+
+                        LocalDateTime date = LocalDateTime.ofInstant(
+                                Instant.ofEpochMilli(timestamp),
+                                ZoneId.systemDefault()
+                        );
+
+                        return Map.of(
+                                "date", date.format(DateTimeFormatter.ofPattern("dd/MM")),
+                                "price", priceValue,
+                                "volume", 0
+                        );
+                    })
+                    .collect(Collectors.toList());
+
+            double min = prices.stream()
+                    .mapToDouble(p -> ((Number) p.get(1)).doubleValue())
+                    .min()
+                    .orElse(0);
+
+            double max = prices.stream()
+                    .mapToDouble(p -> ((Number) p.get(1)).doubleValue())
+                    .max()
+                    .orElse(0);
+
+            double current = ((Number) prices.get(prices.size() - 1).get(1)).doubleValue();
+            double change = ((current - min) / min) * 100;
+
+            return ResponseEntity.ok(Map.of(
+                    "data", formattedData,
+                    "stats", Map.of(
+                            "min", min,
+                            "max", max,
+                            "current", current,
+                            "change", change
+                    )
+            ));
+
+        } catch (Exception e) {
+            log.error("Erro ao buscar histórico de {}: {}", coinId, e.getMessage());
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @PostMapping("/process-alerts/{coinId}")
     public ResponseEntity<Map<String, String>> processAlertsForCrypto(@PathVariable String coinId) {
         try {

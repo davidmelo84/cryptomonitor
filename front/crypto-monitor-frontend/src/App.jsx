@@ -1,5 +1,5 @@
 // front/crypto-monitor-frontend/src/App.jsx
-// ✅ VERSÃO OTIMIZADA - Sem API calls duplicados
+// ✅ VERSÃO CORRIGIDA - Com import do API_BASE_URL
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,26 +7,24 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { API_BASE_URL } from './utils/constants'; // ✅ FALTAVA ESTE IMPORT!
 
-
-// ✅ Lazy loading das páginas (mantido como estava)
+// Lazy loading das páginas
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./components/pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./components/pages/DashboardPage'));
 const PortfolioPage = lazy(() => import('./components/pages/PortfolioPage'));
 const TradingBotsPage = lazy(() => import('./components/pages/TradingBotsPage'));
 
-// ✅ NOVO: Configuração do React Query
+// Configuração do React Query
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false, // Evita refetch desnecessários
+      refetchOnWindowFocus: false,
       retry: 1,
-      staleTime: 60 * 1000 // 60s
+      staleTime: 60 * 1000
     }
   }
 });
 
-// ✅ Fallback de carregamento
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="text-center">
@@ -42,14 +40,14 @@ function App() {
   const [token, setToken] = useState(null);
   const [authError, setAuthError] = useState('');
 
-  // ✅ Estados de seleção (mantidos como estavam)
+  // Estados de seleção
   const [selectedCryptos, setSelectedCryptos] = useState([]);
   const [monitoringEmail, setMonitoringEmail] = useState('');
   const [monitoringInterval, setMonitoringInterval] = useState(5);
   const [buyThreshold, setBuyThreshold] = useState(5.0);
   const [sellThreshold, setSellThreshold] = useState(10.0);
 
-  // ✅ Restaurar sessão (SEM MUDANÇAS)
+  // Restaurar sessão
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
@@ -71,11 +69,6 @@ function App() {
     }
   }, []);
 
-  // ✅ REMOVIDO: fetchAvailableCryptos() - Agora usa React Query no DashboardPage
-  // ✅ REMOVIDO: checkMonitoringStatus() - Agora usa React Query no DashboardPage
-  // ✅ REMOVIDO: Polling de 60s - React Query faz automaticamente
-
-  // ===================== FUNÇÕES (sem mudanças) =====================
   const handleLogin = useCallback(async (username, password) => {
     setAuthError('');
     
@@ -149,7 +142,7 @@ function App() {
     setCurrentPage('login');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    queryClient.clear(); // ✅ NOVO: Limpa cache ao fazer logout
+    queryClient.clear();
   };
 
   const toggleCryptoSelection = (crypto) => {
@@ -161,7 +154,6 @@ function App() {
     });
   };
 
-  // ===================== PROPS COMPARTILHADAS =====================
   const sharedProps = {
     user,
     token,
@@ -187,7 +179,6 @@ function App() {
     onBack: () => setCurrentPage('dashboard')
   };
 
-  // ===================== RENDER =====================
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -200,7 +191,6 @@ function App() {
         </Suspense>
       </ThemeProvider>
       
-      {/* ✅ NOVO: DevTools do React Query (só em desenvolvimento) */}
       {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
