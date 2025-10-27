@@ -1405,3 +1405,225 @@ org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying
 2025-10-27 11:36:29 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
 2025-10-27 11:36:29 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=114932, priceChange1 (truncated)...]
 2025-10-27 11:36:29 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:36:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:36:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:37:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:37:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:38:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:38:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:39:43 [crypto-monitor-1] INFO  c.c.service.CryptoMonitoringService - 🔄 Iniciando ciclo de monitoramento para email: melodavid84@icloud.com
+2025-10-27 11:39:43 [crypto-monitor-1] INFO  c.c.service.CryptoMonitoringService - 📊 Obtidos preços de 9 criptomoedas
+2025-10-27 11:39:43 [crypto-monitor-1] INFO  c.c.service.CryptoMonitoringService - ✅ Ciclo de monitoramento concluído para: melodavid84@icloud.com
+2025-10-27 11:39:43 [crypto-async-1] INFO  com.crypto.service.AlertService - 🔍 Processando alertas para email: melodavid84@icloud.com
+2025-10-27 11:39:43 [crypto-async-1] INFO  com.crypto.service.AlertService - ✅ 0 alertas disparados para melodavid84@icloud.com
+2025-10-27 11:39:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:39:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:40:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:40:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:41:45 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-27 11:41:45 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-27 11:41:45 [http-nio-8080-exec-3] DEBUG o.s.w.r.f.client.ExchangeFunctions - [6b3c9d36] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-27 11:41:45 [reactor-http-nio-4] DEBUG o.s.w.r.f.client.ExchangeFunctions - [6b3c9d36] [68c87979-4] Response 200 OK
+2025-10-27 11:41:45 [reactor-http-nio-4] DEBUG org.springframework.web.HttpLogging - [6b3c9d36] [68c87979-4] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=115013, priceChange1 (truncated)...]
+2025-10-27 11:41:45 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:41:45 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=115013, priceChange1 (truncated)...]
+2025-10-27 11:41:45 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:41:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:41:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:42:13 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-27 11:42:13 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-27 11:42:13 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:13 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=115013, priceChange1 (truncated)...]
+2025-10-27 11:42:13 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:14 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:42:14 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:42:14 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:14 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=melodavid84@icloud.com, startedAt=1761575683241, username=teste, timestamp=1761576134183, tot (truncated)...]
+2025-10-27 11:42:14 [http-nio-8080-exec-2] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:24 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/monitoring/stop", parameters={}
+2025-10-27 11:42:24 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#stopMonitoring(Authentication)
+2025-10-27 11:42:24 [http-nio-8080-exec-4] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:24 [http-nio-8080-exec-4] INFO  c.c.controller.MonitoringController - 🛑 REQUISIÇÃO PARA PARAR MONITORAMENTO
+2025-10-27 11:42:24 [http-nio-8080-exec-4] INFO  c.c.controller.MonitoringController -    👤 Usuário: teste
+2025-10-27 11:42:24 [http-nio-8080-exec-4] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:24 [http-nio-8080-exec-4] INFO  c.c.service.MonitoringControlService - 🛑 Monitoramento PARADO para: teste
+2025-10-27 11:42:24 [http-nio-8080-exec-4] INFO  c.c.controller.MonitoringController - ✅ MONITORAMENTO PARADO COM SUCESSO!
+2025-10-27 11:42:24 [http-nio-8080-exec-4] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:24 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:24 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{active=false, username=teste, message=Monitoramento parado com sucesso}]
+2025-10-27 11:42:24 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:24 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:42:24 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:42:24 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:24 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=N/A, startedAt=0, username=teste, timestamp=1761576144700, totalActiveMonitors=0, active=fals (truncated)...]
+2025-10-27 11:42:24 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:24 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:42:24 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:42:24 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:24 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=N/A, startedAt=0, username=teste, timestamp=1761576144785, totalActiveMonitors=0, active=fals (truncated)...]
+2025-10-27 11:42:24 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:34 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/monitoring/start", parameters={}
+2025-10-27 11:42:34 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#startMonitoring(Map, Authentication)
+2025-10-27 11:42:34 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [{email=melodavid84@icloud.com, cryptocurrencies=[bitcoin], checkIntervalMinutes=5, buyThreshold=0.5, (truncated)...]
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - 📥 REQUISIÇÃO PARA INICIAR MONITORAMENTO
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    👤 Usuário: teste
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    📧 Email: melodavid84@icloud.com
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    📊 Criptomoedas recebidas: [bitcoin]
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    📊 Quantidade: 1
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    ⏱️  Intervalo: 5 minutos
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    📉 Threshold compra: -0.5%
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    📈 Threshold venda: +1.0%
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - 🗑️  Deletando alertas antigos do email: melodavid84@icloud.com
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  com.crypto.service.AlertService - 🗑️  Desativando todos os alertas para: melodavid84@icloud.com
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  com.crypto.service.AlertService - ✅ Total de 2 alertas desativados para melodavid84@icloud.com
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - 🔧 Iniciando criação de alertas para 1 cryptos
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    🔹 Criando alertas para:
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -       - CoinId recebido: bitcoin
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -       - Símbolo mapeado: BTC
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  com.crypto.service.AlertService - 📝 Criando nova regra de alerta
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  com.crypto.service.AlertService - ✅ Regra de alerta criada com sucesso: ID 139
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    ✅ Regra de COMPRA criada:
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -       - Símbolo: BTC
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -       - Email: melodavid84@icloud.com
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -       - Threshold: -0.5%
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  com.crypto.service.AlertService - 📝 Criando nova regra de alerta
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  com.crypto.service.AlertService - ✅ Regra de alerta criada com sucesso: ID 140
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -    ✅ Regra de VENDA criada:
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -       - Símbolo: BTC
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -       - Email: melodavid84@icloud.com
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController -       - Threshold: +1.0%
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - 🎯 Total de alertas criados: 2
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - 📋 TOTAL DE REGRAS CRIADAS: 2
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.service.MonitoringControlService - 🚀 Iniciando monitoramento para: teste (email: melodavid84@icloud.com)
+2025-10-27 11:42:34 [crypto-monitor-2] WARN  c.c.service.MonitoringControlService - ⚠️ Monitoramento não está mais ativo para: teste
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.service.MonitoringControlService - ✅ Monitoramento INICIADO para: teste (email: melodavid84@icloud.com)
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - ✅ MONITORAMENTO INICIADO COM SUCESSO!
+2025-10-27 11:42:34 [http-nio-8080-exec-7] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:34 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:34 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{alertRulesCreated=2, interval=5, username=teste, active=true, cryptocurrencies=[bitcoin], message=M (truncated)...]
+2025-10-27 11:42:34 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:34 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:42:34 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:42:34 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:34 [http-nio-8080-exec-8] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=melodavid84@icloud.com, startedAt=1761576154603, username=teste, timestamp=1761576154945, tot (truncated)...]
+2025-10-27 11:42:34 [http-nio-8080-exec-8] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:35 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:42:35 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:42:35 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:35 [http-nio-8080-exec-9] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=melodavid84@icloud.com, startedAt=1761576154603, username=teste, timestamp=1761576155197, tot (truncated)...]
+2025-10-27 11:42:35 [http-nio-8080-exec-9] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:36 [FirstCheck-teste] INFO  c.c.service.CryptoMonitoringService - 🔄 Iniciando ciclo de monitoramento para email: melodavid84@icloud.com
+2025-10-27 11:42:36 [FirstCheck-teste] INFO  c.c.service.CryptoMonitoringService - 📊 Obtidos preços de 9 criptomoedas
+2025-10-27 11:42:36 [FirstCheck-teste] INFO  c.c.service.CryptoMonitoringService - ✅ Ciclo de monitoramento concluído para: melodavid84@icloud.com
+2025-10-27 11:42:36 [crypto-async-2] INFO  com.crypto.service.AlertService - 🔍 Processando alertas para email: melodavid84@icloud.com
+2025-10-27 11:42:36 [crypto-async-1] INFO  c.crypto.service.NotificationService - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:36 [crypto-async-2] INFO  com.crypto.service.AlertService - 🔔 Alerta disparado: btc - PERCENT_CHANGE_24H -> ⚡ Bitcoin (BTC) variou 1,05% nas últimas 24h (limite: 1,00%) (Email: melodavid84@icloud.com)
+2025-10-27 11:42:36 [crypto-async-1] INFO  c.crypto.service.NotificationService - 📬 ENVIANDO NOTIFICAÇÃO
+2025-10-27 11:42:36 [crypto-async-1] INFO  c.crypto.service.NotificationService -    📧 Para: melodavid84@icloud.com
+2025-10-27 11:42:36 [crypto-async-2] INFO  com.crypto.service.AlertService - ✅ 1 alertas disparados para melodavid84@icloud.com
+2025-10-27 11:42:36 [crypto-async-1] INFO  c.crypto.service.NotificationService -    🪙 Crypto: Bitcoin (BTC)
+2025-10-27 11:42:36 [crypto-async-1] INFO  c.crypto.service.NotificationService -    🔔 Tipo: PERCENT_CHANGE_24H
+2025-10-27 11:42:36 [crypto-async-1] INFO  c.crypto.service.NotificationService -    💰 Preço: $115.013,00
+2025-10-27 11:42:36 [crypto-async-1] INFO  c.crypto.service.NotificationService -    📊 Variação: 1,05%
+2025-10-27 11:42:36 [crypto-async-1] INFO  c.crypto.service.NotificationService - 📧 Preparando email...
+2025-10-27 11:42:37 [crypto-async-1] INFO  c.crypto.service.NotificationService - 📤 Enviando email para: melodavid84@icloud.com
+2025-10-27 11:42:40 [crypto-async-1] INFO  c.crypto.service.NotificationService - ✅ Email ENVIADO com sucesso para melodavid84@icloud.com
+2025-10-27 11:42:40 [crypto-async-1] DEBUG o.s.w.r.f.client.ExchangeFunctions - [249aa97] HTTP POST https://api.telegram.org/bot8269152459:AAGQrbIUj8lu095pGziqM0SjDVjWe36p5ok/sendMessage
+2025-10-27 11:42:40 [crypto-async-1] INFO  c.crypto.service.NotificationService - ✅ NOTIFICAÇÃO ENVIADA COM SUCESSO!
+2025-10-27 11:42:40 [crypto-async-1] INFO  c.crypto.service.NotificationService - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:41 [reactor-http-nio-5] DEBUG org.springframework.web.HttpLogging - [249aa97] Encoding [{chat_id=8489653452, text=⚡ *VARIAÇÃO PERCENTUAL 24H*<EOL><EOL>💰 *Bitcoin (BTC)*<EOL>💵 Preço: `$115.013,00`<EOL>📈 (truncated)...]
+2025-10-27 11:42:42 [reactor-http-nio-5] DEBUG o.s.w.r.f.client.ExchangeFunctions - [249aa97] [3ce22b49-1] Response 400 BAD_REQUEST
+2025-10-27 11:42:42 [reactor-http-nio-5] DEBUG org.springframework.web.HttpLogging - [249aa97] [3ce22b49-1] Read 73 bytes
+2025-10-27 11:42:42 [reactor-http-nio-5] ERROR c.crypto.service.NotificationService - ❌ Erro ao enviar mensagem Telegram: 400 Bad Request from POST https://api.telegram.org/bot8269152459:AAGQrbIUj8lu095pGziqM0SjDVjWe36p5ok/sendMessage
+2025-10-27 11:42:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:42:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:42:56 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/monitoring/stop", parameters={}
+2025-10-27 11:42:56 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#stopMonitoring(Authentication)
+2025-10-27 11:42:56 [http-nio-8080-exec-10] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:56 [http-nio-8080-exec-10] INFO  c.c.controller.MonitoringController - 🛑 REQUISIÇÃO PARA PARAR MONITORAMENTO
+2025-10-27 11:42:56 [http-nio-8080-exec-10] INFO  c.c.controller.MonitoringController -    👤 Usuário: teste
+2025-10-27 11:42:56 [http-nio-8080-exec-10] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:56 [http-nio-8080-exec-10] INFO  c.c.service.MonitoringControlService - 🛑 Monitoramento PARADO para: teste
+2025-10-27 11:42:56 [http-nio-8080-exec-10] INFO  c.c.controller.MonitoringController - ✅ MONITORAMENTO PARADO COM SUCESSO!
+2025-10-27 11:42:56 [http-nio-8080-exec-10] INFO  c.c.controller.MonitoringController - ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2025-10-27 11:42:56 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:56 [http-nio-8080-exec-10] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{active=false, username=teste, message=Monitoramento parado com sucesso}]
+2025-10-27 11:42:56 [http-nio-8080-exec-10] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:56 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:42:56 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:42:56 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:56 [http-nio-8080-exec-3] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=N/A, startedAt=0, username=teste, timestamp=1761576176387, totalActiveMonitors=0, active=fals (truncated)...]
+2025-10-27 11:42:56 [http-nio-8080-exec-3] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:42:56 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:42:56 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:42:56 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:42:56 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=N/A, startedAt=0, username=teste, timestamp=1761576176652, totalActiveMonitors=0, active=fals (truncated)...]
+2025-10-27 11:42:56 [http-nio-8080-exec-1] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:43:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:43:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:44:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:44:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:45:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:45:55 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:46:45 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/auth/login", parameters={}
+2025-10-27 11:46:45 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.AuthController#login(User)
+2025-10-27 11:46:45 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [User(id=null, username=teste, password=cyb3rdefense, email=null, role=USER)]
+2025-10-27 11:46:45 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:46:45 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImNyeXB0by1tb25pdG9yIiwiaWF0IjoxNzYxNTc2NDA1 (truncated)...]
+2025-10-27 11:46:45 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:46:46 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-27 11:46:46 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-27 11:46:46 [http-nio-8080-exec-6] DEBUG o.s.w.r.f.client.ExchangeFunctions - [610b0fa7] HTTP GET https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d
+2025-10-27 11:46:46 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:46:46 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:46:46 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:46:46 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=N/A, startedAt=0, username=teste, timestamp=1761576406309, totalActiveMonitors=0, active=fals (truncated)...]
+2025-10-27 11:46:46 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:46:46 [reactor-http-nio-4] DEBUG o.s.w.r.f.client.ExchangeFunctions - [610b0fa7] [68c87979-5] Response 200 OK
+2025-10-27 11:46:46 [reactor-http-nio-4] DEBUG org.springframework.web.HttpLogging - [610b0fa7] [68c87979-5] Decoded [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=114913, priceChange1 (truncated)...]
+2025-10-27 11:46:46 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:46:46 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=114913, priceChange1 (truncated)...]
+2025-10-27 11:46:46 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:46:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:46:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:47:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:47:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:48:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:48:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:49:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:49:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:50:11 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-27 11:50:11 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-27 11:50:11 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:50:11 [http-nio-8080-exec-4] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=114913, priceChange1 (truncated)...]
+2025-10-27 11:50:11 [http-nio-8080-exec-4] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:50:26 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - POST "/crypto-monitor/api/auth/login", parameters={}
+2025-10-27 11:50:26 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.AuthController#login(User)
+2025-10-27 11:50:26 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [User(id=null, username=teste, password=cyb3rdefense, email=null, role=USER)]
+2025-10-27 11:50:27 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:50:27 [http-nio-8080-exec-5] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0ZSIsImlzcyI6ImNyeXB0by1tb25pdG9yIiwiaWF0IjoxNzYxNTc2NjI3 (truncated)...]
+2025-10-27 11:50:27 [http-nio-8080-exec-5] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:50:27 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/crypto/current", parameters={}
+2025-10-27 11:50:27 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.CryptoController#getCurrentPrices()
+2025-10-27 11:50:27 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:50:27 [http-nio-8080-exec-7] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [[CryptoCurrency(id=null, coinId=bitcoin, symbol=btc, name=Bitcoin, currentPrice=114913, priceChange1 (truncated)...]
+2025-10-27 11:50:27 [http-nio-8080-exec-7] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:50:27 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - GET "/crypto-monitor/api/monitoring/status", parameters={}
+2025-10-27 11:50:27 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.crypto.controller.MonitoringController#getStatus(Authentication)
+2025-10-27 11:50:27 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-10-27 11:50:27 [http-nio-8080-exec-6] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [{email=N/A, startedAt=0, username=teste, timestamp=1761576627485, totalActiveMonitors=0, active=fals (truncated)...]
+2025-10-27 11:50:27 [http-nio-8080-exec-6] DEBUG o.s.web.servlet.DispatcherServlet - Completed 200 OK
+2025-10-27 11:50:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-27 11:50:56 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'taskExecutor'
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] INFO  c.c.service.MonitoringControlService - 🔌 Encerrando MonitoringControlService...
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] INFO  c.c.service.MonitoringControlService - 🛑 Parando todos os monitoramentos ativos (0 usuários)...
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] INFO  c.c.service.MonitoringControlService - ✅ Todos os monitoramentos parados
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] INFO  c.c.service.MonitoringControlService - ✅ MonitoringControlService encerrado
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - CryptoMonitorPool - Shutdown initiated...
+2025-10-27 11:51:21 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - CryptoMonitorPool - Shutdown completed.

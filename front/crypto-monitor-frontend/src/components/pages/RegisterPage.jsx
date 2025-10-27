@@ -1,10 +1,12 @@
-// front/crypto-monitor-frontend/src/components/pages/RegisterPage.jsx
-// ✅ VERSÃO CORRIGIDA - Com Dark Mode e Theme Toggle
+/ front/crypto-monitor-frontend/src/components/pages/RegisterPage.jsx
+// ✅ VERSÃO COMPLETA - Visual idêntico ao Login (cor verde)
 
 import React, { useState } from 'react';
-import { UserPlus, Mail, Lock, User, TrendingUp, ArrowLeft } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, TrendingUp } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
+import PasswordStrength from '../auth/PasswordStrength';
+import '../../styles/components.css';
 
 function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
   const { isDark } = useTheme();
@@ -13,171 +15,163 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setSuccessMessage('');
-
+    
     const success = await onRegister(username, email, password, confirmPassword);
-
+    
     if (success) {
-      setSuccessMessage('Conta criada com sucesso! Redirecionando...');
-      setTimeout(() => {
-        onNavigateToLogin();
-      }, 2000);
+      // Limpar form e redirecionar
+      setUsername('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
     }
-
+    
     setIsLoading(false);
   };
 
   return (
-    <div className={`auth-page ${isDark ? 'dark' : ''}`}>
-      {/* Theme Toggle no canto superior direito */}
-      <div className="auth-theme-toggle">
+    <div className={`auth-container register ${isDark ? 'dark' : ''}`}>
+      {/* Theme Toggle */}
+      <div className="theme-toggle-wrapper">
         <ThemeToggle />
       </div>
 
-      <div className="auth-container">
-        {/* Logo Section */}
-        <div className="auth-logo-section">
-          <div className="auth-logo">
-            <TrendingUp size={48} />
-          </div>
-          <h1 className="auth-logo-title">Crypto Monitor</h1>
-          <p className="auth-logo-subtitle">
-            Crie sua conta e comece a monitorar
-          </p>
-        </div>
+      {/* Círculos flutuantes (verde) */}
+      <div className="floating-circle large"></div>
+      <div className="floating-circle medium"></div>
 
-        {/* Register Form */}
-        <div className="auth-card">
-          <div className="auth-card-header">
-            <UserPlus size={32} className="auth-card-icon" />
-            <h2 className="auth-card-title">Criar nova conta</h2>
-            <p className="auth-card-subtitle">Preencha os dados abaixo</p>
-          </div>
-
-          {authError && (
-            <div className="auth-error">
-              <span>⚠️</span>
-              {authError}
-            </div>
-          )}
-
-          {successMessage && (
-            <div className="auth-success">
-              <span>✓</span>
-              {successMessage}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="auth-form">
-            <div className="auth-input-group">
-              <label htmlFor="username" className="auth-label">
-                <User size={18} />
-                Usuário
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Escolha um nome de usuário"
-                className="auth-input"
-                disabled={isLoading}
-                required
-              />
-            </div>
-
-            <div className="auth-input-group">
-              <label htmlFor="email" className="auth-label">
-                <Mail size={18} />
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                className="auth-input"
-                disabled={isLoading}
-                required
-              />
-            </div>
-
-            <div className="auth-input-group">
-              <label htmlFor="password" className="auth-label">
-                <Lock size={18} />
-                Senha
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Mínimo 6 caracteres"
-                className="auth-input"
-                disabled={isLoading}
-                required
-                minLength={6}
-              />
-            </div>
-
-            <div className="auth-input-group">
-              <label htmlFor="confirmPassword" className="auth-label">
-                <Lock size={18} />
-                Confirmar Senha
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Digite a senha novamente"
-                className="auth-input"
-                disabled={isLoading}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="auth-submit-button"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <span className="spinner-small"></span>
-                  Criando conta...
-                </>
-              ) : (
-                <>
-                  <UserPlus size={20} />
-                  Criar Conta
-                </>
-              )}
-            </button>
-          </form>
-
-          <div className="auth-footer">
-            <p>Já tem uma conta?</p>
-            <button
-              onClick={onNavigateToLogin}
-              className="auth-link-button"
-              disabled={isLoading}
-            >
-              <ArrowLeft size={16} />
-              Voltar ao login
-            </button>
+      {/* Card de Registro */}
+      <div className={`auth-card ${isDark ? 'dark' : ''}`}>
+        {/* Logo Verde */}
+        <div className="auth-logo-wrapper">
+          <div className="auth-logo register">
+            <TrendingUp size={40} color="white" />
           </div>
         </div>
 
-        {/* Footer Info */}
-        <div className="auth-info">
-          <p>🔒 Seus dados estão seguros e criptografados</p>
+        {/* Título */}
+        <h1 className="auth-title register">Criar Conta</h1>
+        <p className="auth-subtitle">
+          Cadastre-se para começar a monitorar criptomoedas
+        </p>
+
+        {/* Erro */}
+        {authError && (
+          <div className="alert alert-error">
+            ⚠️ {authError}
+          </div>
+        )}
+
+        {/* Formulário */}
+        <form onSubmit={handleSubmit}>
+          {/* Usuário */}
+          <div className="auth-input-wrapper">
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Escolha um nome de usuário"
+              className="auth-input"
+              disabled={isLoading}
+              required
+              minLength={3}
+            />
+            <button type="button" className="auth-icon" tabIndex="-1">
+              <User size={20} />
+            </button>
+          </div>
+
+          {/* Email */}
+          <div className="auth-input-wrapper">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Digite seu email"
+              className="auth-input"
+              disabled={isLoading}
+              required
+            />
+            <button type="button" className="auth-icon" tabIndex="-1">
+              <Mail size={20} />
+            </button>
+          </div>
+
+          {/* Senha */}
+          <div className="auth-input-wrapper">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Crie uma senha (mín. 6 caracteres)"
+              className="auth-input"
+              disabled={isLoading}
+              required
+              minLength={6}
+            />
+            <button type="button" className="auth-icon" tabIndex="-1">
+              <Lock size={20} />
+            </button>
+          </div>
+
+          {/* Password Strength */}
+          {password && <PasswordStrength password={password} />}
+
+          {/* Confirmar Senha */}
+          <div className="auth-input-wrapper">
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirme sua senha"
+              className="auth-input"
+              disabled={isLoading}
+              required
+            />
+            <button type="button" className="auth-icon" tabIndex="-1">
+              <Lock size={20} />
+            </button>
+          </div>
+
+          {/* Validação visual de senhas */}
+          {confirmPassword && password !== confirmPassword && (
+            <p style={{ 
+              color: '#ef4444', 
+              fontSize: '0.875rem', 
+              marginTop: '-0.5rem',
+              marginBottom: '0.5rem' 
+            }}>
+              ⚠️ As senhas não coincidem
+            </p>
+          )}
+
+          {/* Botão Cadastrar (VERDE) */}
+          <button
+            type="submit"
+            className="auth-button register"
+            disabled={isLoading || (password && confirmPassword && password !== confirmPassword)}
+          >
+            {isLoading ? (
+              <>
+                <div className="spinner" style={{ width: '20px', height: '20px' }}></div>
+                Criando conta...
+              </>
+            ) : (
+              <>
+                <UserPlus size={20} />
+                Criar Conta
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Link para Login */}
+        <div className="auth-link" onClick={isLoading ? undefined : onNavigateToLogin}>
+          Já tem uma conta? <span>Faça login</span>
         </div>
       </div>
     </div>

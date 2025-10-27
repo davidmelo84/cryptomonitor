@@ -1302,3 +1302,37 @@
 .dark::-webkit-scrollbar-track {
   background: #1f2937;
 }
+
+/* ✅ CSS ADICIONAL PARA REGISTER PAGE (adicionar em components.css) */
+
+/* Wrapper register tem gradiente verde */
+.auth-container.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.auth-container.dark.register {
+  background: linear-gradient(135deg, #0f4c42 0%, #1a5c4f 100%);
+}
+
+/* Logo verde */
+.auth-logo.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+/* Título verde */
+.auth-title.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Botão verde */
+.auth-button.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+.auth-button.register:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+}

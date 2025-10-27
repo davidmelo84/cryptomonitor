@@ -1,5 +1,5 @@
 // front/crypto-monitor-frontend/src/components/dashboard/PriceChart.jsx
-// ✅ REFATORADO - Usando formatters.js
+// ✅ VERSÃO FINAL - SEM MOCK, APENAS DADOS REAIS
 
 import React, { useState, useEffect, useCallback } from 'react';
 import {
@@ -34,61 +34,48 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
     { value: 365, label: '1y' }
   ];
 
-  const generateMockData = useCallback((days) => {
-    const data = [];
-    const now = Date.now();
-    const basePrice = 43000;
-    
-    for (let i = days; i >= 0; i--) {
-      const date = new Date(now - i * 24 * 60 * 60 * 1000);
-      const randomChange = (Math.random() - 0.5) * 2000;
-      
-      data.push({
-        date: date.toLocaleDateString('pt-BR'),
-        price: basePrice + randomChange,
-        volume: Math.random() * 1000000000
-      });
-    }
-    
-    return data;
-  }, []);
-
   const fetchChartData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
+      console.log(`📊 Buscando histórico de ${coinId} (${selectedPeriod}d)`);
+      
       const response = await fetch(
         `${API_BASE_URL}/crypto/history/${coinId}?days=${selectedPeriod}`
       );
       
-      if (!response.ok) throw new Error('Falha ao buscar dados');
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
       
       const data = await response.json();
+      
+      console.log('✅ Dados recebidos:', data);
+      
+      // ✅ CRÍTICO: Validar estrutura dos dados
+      if (!data.data || !Array.isArray(data.data) || data.data.length === 0) {
+        throw new Error('Dados vazios ou formato inválido');
+      }
       
       setChartData(data.data);
       setStats(data.stats);
       
     } catch (err) {
-      console.error('Erro ao buscar histórico:', err);
+      console.error('❌ Erro ao buscar histórico:', err);
       setError(err.message);
-      // Mock data para demonstração
-      const mockData = generateMockData(selectedPeriod);
-      setChartData(mockData);
-      setStats({
-        min: 40000,
-        max: 45000,
-        current: 43250,
-        change: 2.5
-      });
+      setChartData([]);
+      setStats(null);
     } finally {
       setLoading(false);
     }
-  }, [coinId, selectedPeriod, generateMockData]);
+  }, [coinId, selectedPeriod]);
 
   useEffect(() => {
-    fetchChartData();
-  }, [fetchChartData]);
+    if (coinId) {
+      fetchChartData();
+    }
+  }, [coinId, selectedPeriod, fetchChartData]);
 
   const formatVolume = (value) => {
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
@@ -116,12 +103,39 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
     );
   };
 
+  // ✅ LOADING STATE
   if (loading) {
     return (
       <div className="bg-white p-8 rounded-[20px] shadow-md flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <Activity className="animate-spin mx-auto mb-4" size={40} color="#667eea" />
-          <p className="text-gray-600">Carregando gráfico...</p>
+          <p className="text-gray-600">Carregando histórico de {coinName}...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ ERROR STATE - SEM FALLBACK PARA MOCK
+  if (error || chartData.length === 0) {
+    return (
+      <div className="bg-white p-8 rounded-[20px] shadow-md">
+        <div className="text-center py-12">
+          <Activity size={48} className="mx-auto mb-4 text-red-400" />
+          <h3 className="text-xl font-bold text-gray-800 mb-2">
+            Erro ao Carregar Histórico
+          </h3>
+          <p className="text-gray-600 mb-4">
+            {error || 'Não foi possível obter dados históricos desta criptomoeda.'}
+          </p>
+          <p className="text-sm text-gray-500 mb-4">
+            CoinId: <code className="bg-gray-100 px-2 py-1 rounded">{coinId}</code>
+          </p>
+          <button
+            onClick={fetchChartData}
+            className="px-6 py-3 bg-indigo-500 text-white rounded-lg font-bold hover:bg-indigo-600 transition-all"
+          >
+            🔄 Tentar Novamente
+          </button>
         </div>
       </div>
     );
@@ -240,7 +254,7 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
       )}
 
       {/* Chart */}
-      <div >
+      <div style={{ width: '100%', height: '400px' }}>
         <ResponsiveContainer>
           {chartType === 'line' ? (
             <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
@@ -309,13 +323,11 @@ function PriceChart({ coinId, coinName, coinSymbol }) {
         </ResponsiveContainer>
       </div>
 
-      {error && (
-        <div className="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded">
-          <p className="text-yellow-700 text-sm">
-            ⚠️ Usando dados de demonstração. Configure o backend para dados reais.
-          </p>
-        </div>
-      )}
+      {/* Debug Info */}
+      <div className="mt-4 p-3 bg-gray-50 rounded-lg text-xs text-gray-600">
+        <p>📊 {chartData.length} pontos de dados • Período: {selectedPeriod} dias</p>
+        <p>🔄 Última atualização: {new Date().toLocaleTimeString('pt-BR')}</p>
+      </div>
     </div>
   );
 }
