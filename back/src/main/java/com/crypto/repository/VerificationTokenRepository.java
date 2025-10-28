@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/repository/VerificationTokenRepository.java
 package com.crypto.repository;
 
 import com.crypto.model.VerificationToken;

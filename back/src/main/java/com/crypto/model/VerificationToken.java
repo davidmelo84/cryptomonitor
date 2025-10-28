@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/model/VerificationToken.java
 package com.crypto.model;
 
 import jakarta.persistence.*;
@@ -21,7 +20,7 @@ public class VerificationToken {
     private String token;
 
     @Column(nullable = false, length = 6)
-    private String code; // Código de 6 dígitos
+    private String code;
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
@@ -35,7 +34,6 @@ public class VerificationToken {
 
     @PrePersist
     protected void onCreate() {
-        // Token válido por 24 horas
         expiryDate = LocalDateTime.now().plusHours(24);
     }
 
