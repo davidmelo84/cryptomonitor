@@ -28,44 +28,63 @@ public class UserController {
     // ------------------ REGISTRO COM VERIFICAÇÃO ------------------
     @PostMapping
     public ResponseEntity<?> register(@RequestBody User newUser) {
-        log.info("📝 Tentativa de registro: {}", newUser.getEmail());
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        log.info("📝 TENTATIVA DE REGISTRO");
+        log.info("   👤 Username: {}", newUser.getUsername());
+        log.info("   📧 Email: {}", newUser.getEmail());
 
-        // valida formato de email
+        // ✅ Valida formato de email
         if (!isValidEmail(newUser.getEmail())) {
+            log.warn("❌ Email inválido");
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email inválido"));
         }
 
-        // verifica se usuário já existe
-        Optional<User> existingUser = userRepository.findByUsername(newUser.getUsername());
-        if (existingUser.isPresent()) {
+        // ✅ Verifica se usuário já existe
+        if (userRepository.findByUsername(newUser.getUsername()).isPresent()) {
+            log.warn("❌ Username já existe");
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Usuário já existe"));
         }
 
-        // verifica se email já está cadastrado
-        Optional<User> existingEmail = userRepository.findByEmail(newUser.getEmail());
-        if (existingEmail.isPresent()) {
+        // ✅ Verifica se email já está cadastrado
+        if (userRepository.findByEmail(newUser.getEmail()).isPresent()) {
+            log.warn("❌ Email já cadastrado");
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email já cadastrado"));
         }
 
-        // cria usuário desativado
-        newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-        newUser.setEnabled(false);
-        User savedUser = userRepository.save(newUser);
+        try {
+            // ✅ Cria usuário desativado
+            newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+            newUser.setEnabled(false);
+            newUser.setRole("USER");
+            User savedUser = userRepository.save(newUser);
+            log.info("✅ Usuário criado no banco - ID: {}", savedUser.getId());
 
-        // gera e envia código de verificação
-        String token = verificationService.createVerificationToken(savedUser);
+            // ✅ Gera e envia código de verificação
+            String token = verificationService.createVerificationToken(savedUser);
+            log.info("✅ Token gerado: {}", token);
 
-        log.info("✅ Usuário registrado (aguardando verificação): {}", savedUser.getEmail());
+            log.info("🎉 REGISTRO CONCLUÍDO!");
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Usuário criado! Verifique seu email para ativar a conta.",
-                "email", savedUser.getEmail(),
-                "requiresVerification", true
-        ));
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Usuário criado! Verifique seu email para ativar a conta.",
+                    "email", savedUser.getEmail(),
+                    "requiresVerification", true
+            ));
+
+        } catch (Exception e) {
+            log.error("❌ ERRO no registro:", e);
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            return ResponseEntity.internalServerError()
+                    .body(Map.of(
+                            "error", "Erro ao criar conta",
+                            "message", e.getMessage()
+                    ));
+        }
     }
 
     // ------------------ VERIFICAR CÓDIGO ------------------
@@ -73,7 +92,12 @@ public class UserController {
     public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> request) {
         String code = request.get("code");
 
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        log.info("🔍 TENTATIVA DE VERIFICAÇÃO");
+        log.info("   Código recebido: {}", code);
+
         if (code == null || code.length() != 6) {
+            log.warn("❌ Código inválido (tamanho)");
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Código inválido"));
         }
@@ -94,31 +118,36 @@ public class UserController {
         }
     }
 
-    // ------------------ REENVIAR CÓDIGO ------------------
+    // ------------------ REENVIAR CÓDIGO - CORRIGIDO ------------------
     @PostMapping("/resend-code")
     public ResponseEntity<?> resendCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
 
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        log.info("🔄 REQUISIÇÃO DE REENVIO DE CÓDIGO");
+        log.info("   Email: {}", email);
+
         if (email == null || !isValidEmail(email)) {
+            log.warn("❌ Email inválido");
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email inválido"));
         }
 
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isEmpty()) {
+        // ✅ CORREÇÃO: Chamar método correto do service
+        boolean sent = verificationService.resendCode(email);
+
+        if (sent) {
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Novo código enviado para seu email!"
+            ));
+        } else {
             return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Usuário não encontrado"));
+                    .body(Map.of(
+                            "error", "Não foi possível reenviar o código",
+                            "message", "Verifique se o email está correto ou se a conta já foi verificada."
+                    ));
         }
-
-        User user = userOpt.get();
-        String token = verificationService.createVerificationToken(user);
-
-        log.info("📩 Novo código enviado para {}", email);
-
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Novo código enviado para seu email"
-        ));
     }
 
     // ------------------ PERFIL ------------------
