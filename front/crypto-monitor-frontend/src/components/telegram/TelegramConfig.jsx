@@ -1,6 +1,5 @@
-// TelegramConfig.jsx
-// Componente para configuração do Telegram no Frontend
 // front/crypto-monitor-frontend/src/components/telegram/TelegramConfig.jsx
+// ✅ VERSÃO CORRIGIDA - Tratamento de erros adequado
 
 import React, { useState, useEffect } from 'react';
 import '../../styles/TelegramConfig.css';
@@ -27,6 +26,7 @@ const TelegramConfig = ({ userEmail, token }) => {
   });
 
   const [showInstructions, setShowInstructions] = useState(false);
+  const [error, setError] = useState('');
 
   // ============================================
   // LOAD SAVED CONFIG
@@ -36,14 +36,18 @@ const TelegramConfig = ({ userEmail, token }) => {
   }, []);
 
   const loadSavedConfig = () => {
-    const saved = localStorage.getItem('telegram_config');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setConfig(parsed);
-      setNotifications(prev => ({
-        ...prev,
-        telegram: parsed.enabled
-      }));
+    try {
+      const saved = localStorage.getItem('telegram_config');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setConfig(parsed);
+        setNotifications(prev => ({
+          ...prev,
+          telegram: parsed.enabled
+        }));
+      }
+    } catch (error) {
+      console.error('Erro ao carregar config:', error);
     }
   };
 
@@ -51,55 +55,93 @@ const TelegramConfig = ({ userEmail, token }) => {
   // SAVE CONFIG
   // ============================================
   const saveConfig = () => {
-    localStorage.setItem('telegram_config', JSON.stringify(config));
-    alert('✅ Configurações do Telegram salvas!');
+    try {
+      localStorage.setItem('telegram_config', JSON.stringify(config));
+      alert('✅ Configurações do Telegram salvas!');
+      setError('');
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+      setError('Erro ao salvar configurações');
+    }
   };
 
   // ============================================
-  // TEST TELEGRAM CONNECTION
+  // TEST TELEGRAM CONNECTION - CORRIGIDO
   // ============================================
   const testConnection = async () => {
     if (!config.botToken || !config.chatId) {
-      alert('⚠️ Preencha o Token do Bot e o Chat ID');
+      setError('⚠️ Preencha o Token do Bot e o Chat ID');
       return;
     }
 
     setStatus(prev => ({ ...prev, testing: true }));
+    setError('');
 
     try {
-      // Enviar mensagem de teste via backend
-      const response = await fetch('http://localhost:8080/crypto-monitor/api/telegram/test', {
+      console.log('🧪 Testando conexão Telegram...');
+      console.log('   Token:', config.botToken.substring(0, 10) + '...');
+      console.log('   Chat ID:', config.chatId);
+
+      // ✅ CORREÇÃO: Enviar via Telegram API diretamente
+      // Isso evita depender de um endpoint backend que pode não existir
+      const telegramApiUrl = `https://api.telegram.org/bot${config.botToken}/sendMessage`;
+      
+      const response = await fetch(telegramApiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          botToken: config.botToken,
-          chatId: config.chatId
+          chat_id: config.chatId,
+          text: '🧪 Teste de Conexão do Crypto Monitor\n\n✅ Se você recebeu esta mensagem, o Telegram está configurado corretamente!',
+          parse_mode: 'Markdown'
         })
       });
 
       const data = await response.json();
 
-      if (response.ok && data.success) {
+      console.log('📡 Resposta Telegram:', data);
+
+      if (response.ok && data.ok) {
         setStatus({
           isConnected: true,
           lastTest: new Date().toLocaleString('pt-BR'),
           testing: false
         });
+        
+        // Salvar automaticamente se conectou
+        const updatedConfig = { ...config, enabled: true };
+        setConfig(updatedConfig);
+        localStorage.setItem('telegram_config', JSON.stringify(updatedConfig));
+        
         alert('✅ Conexão com Telegram estabelecida!\n\nVerifique sua mensagem de teste.');
+        setError('');
       } else {
-        throw new Error(data.message || 'Falha ao conectar');
+        throw new Error(data.description || 'Falha ao conectar');
       }
     } catch (error) {
-      console.error('Erro ao testar Telegram:', error);
+      console.error('❌ Erro:', error);
+      
       setStatus(prev => ({
         ...prev,
         isConnected: false,
         testing: false
       }));
-      alert('❌ Erro ao conectar com Telegram:\n' + error.message);
+      
+      // ✅ Mensagens de erro mais específicas
+      let errorMessage = 'Erro ao conectar com Telegram';
+      
+      if (error.message.includes('Unauthorized')) {
+        errorMessage = '❌ Token do Bot inválido. Verifique o token com @BotFather';
+      } else if (error.message.includes('chat not found')) {
+        errorMessage = '❌ Chat ID inválido. Verifique com @userinfobot';
+      } else if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+        errorMessage = '❌ Erro de conexão. Verifique sua internet';
+      } else {
+        errorMessage = `❌ ${error.message}`;
+      }
+      
+      setError(errorMessage);
     }
   };
 
@@ -126,9 +168,7 @@ const TelegramConfig = ({ userEmail, token }) => {
   return (
     <div className="telegram-config">
       
-      {/* ============================================
-          HEADER
-          ============================================ */}
+      {/* HEADER */}
       <div className="telegram-header">
         <h2 className="telegram-title">
           <span className="telegram-icon">📱</span>
@@ -139,9 +179,24 @@ const TelegramConfig = ({ userEmail, token }) => {
         </p>
       </div>
 
-      {/* ============================================
-          NOTIFICATION CHANNELS
-          ============================================ */}
+      {/* ERROR MESSAGE */}
+      {error && (
+        <div style={{
+          background: '#fee2e2',
+          color: '#991b1b',
+          padding: '12px 16px',
+          borderRadius: '10px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          fontWeight: '500'
+        }}>
+          ⚠️ {error}
+        </div>
+      )}
+
+      {/* NOTIFICATION CHANNELS */}
       <div className="telegram-section">
         <h3 className="section-title">Canais de Notificação</h3>
         
@@ -180,9 +235,7 @@ const TelegramConfig = ({ userEmail, token }) => {
         </div>
       </div>
 
-      {/* ============================================
-          TELEGRAM CONFIGURATION
-          ============================================ */}
+      {/* TELEGRAM CONFIGURATION */}
       {notifications.telegram && (
         <div className="telegram-section">
           <h3 className="section-title">Credenciais do Bot</h3>
@@ -202,10 +255,10 @@ const TelegramConfig = ({ userEmail, token }) => {
             <input
               type="text"
               value={config.botToken}
-              onChange={(e) => setConfig(prev => ({ 
-                ...prev, 
-                botToken: e.target.value 
-              }))}
+              onChange={(e) => {
+                setConfig(prev => ({ ...prev, botToken: e.target.value }));
+                setError('');
+              }}
               placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
               className="telegram-input"
             />
@@ -217,10 +270,10 @@ const TelegramConfig = ({ userEmail, token }) => {
             <input
               type="text"
               value={config.chatId}
-              onChange={(e) => setConfig(prev => ({ 
-                ...prev, 
-                chatId: e.target.value 
-              }))}
+              onChange={(e) => {
+                setConfig(prev => ({ ...prev, chatId: e.target.value }));
+                setError('');
+              }}
               placeholder="123456789"
               className="telegram-input"
             />
@@ -230,7 +283,7 @@ const TelegramConfig = ({ userEmail, token }) => {
           <div className="button-group">
             <button 
               onClick={testConnection}
-              disabled={status.testing}
+              disabled={status.testing || !config.botToken || !config.chatId}
               className={`telegram-button primary ${status.testing ? 'disabled' : ''}`}
             >
               {status.testing ? '⏳ Testando...' : '🧪 Testar Conexão'}
@@ -238,6 +291,7 @@ const TelegramConfig = ({ userEmail, token }) => {
 
             <button 
               onClick={saveConfig}
+              disabled={!config.botToken || !config.chatId}
               className="telegram-button success"
             >
               💾 Salvar Configurações
@@ -257,9 +311,7 @@ const TelegramConfig = ({ userEmail, token }) => {
         </div>
       )}
 
-      {/* ============================================
-          INSTRUCTIONS
-          ============================================ */}
+      {/* INSTRUCTIONS */}
       {showInstructions && (
         <div className="instructions">
           <h3 className="instructions-title">
@@ -306,9 +358,7 @@ const TelegramConfig = ({ userEmail, token }) => {
         </div>
       )}
 
-      {/* ============================================
-          TIPS
-          ============================================ */}
+      {/* TIPS */}
       <div className="tips-section">
         <h3 className="tips-title">💡 Dicas</h3>
         <ul className="tips-list">
@@ -316,6 +366,7 @@ const TelegramConfig = ({ userEmail, token }) => {
           <li>🔒 Suas credenciais ficam salvas localmente no navegador</li>
           <li>🧪 Teste a conexão antes de ativar o monitoramento</li>
           <li>📱 Garanta que iniciou conversa com o bot no Telegram</li>
+          <li>🌐 A conexão é testada diretamente via API do Telegram</li>
         </ul>
       </div>
     </div>

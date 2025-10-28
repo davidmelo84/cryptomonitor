@@ -1,10 +1,12 @@
-// ✅ VERSÃO COMPLETA - Visual idêntico ao Login (cor verde)
+// front/crypto-monitor-frontend/src/components/pages/RegisterPage.jsx
+// ✅ VERSÃO COMPLETA — Com redirecionamento para verificação e visual verde
 
 import React, { useState } from 'react';
 import { UserPlus, Mail, Lock, User, TrendingUp } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
 import PasswordStrength from '../auth/PasswordStrength';
+import VerifyEmailPage from '../auth/VerifyEmailPage'; // ✅ Import da tela de verificação
 import '../../styles/components.css';
 
 function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
@@ -14,24 +16,38 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showVerification, setShowVerification] = useState(false); // ✅ novo estado
 
+  // ✅ Lógica do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     const success = await onRegister(username, email, password, confirmPassword);
-    
+
     if (success) {
-      // Limpar form e redirecionar
-      setUsername('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
+      // ✅ Redirecionar para verificação de email
+      setShowVerification(true);
     }
-    
+
     setIsLoading(false);
   };
 
+  // ✅ Renderiza a tela de verificação caso necessário
+  if (showVerification) {
+    return (
+      <VerifyEmailPage
+        email={email}
+        onVerified={() => {
+          alert('✅ Email verificado! Você já pode fazer login.');
+          onNavigateToLogin();
+        }}
+        onBack={() => setShowVerification(false)}
+      />
+    );
+  }
+
+  // ✅ Layout padrão do registro (idêntico ao anterior)
   return (
     <div className={`auth-container register ${isDark ? 'dark' : ''}`}>
       {/* Theme Toggle */}
@@ -138,12 +154,14 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
 
           {/* Validação visual de senhas */}
           {confirmPassword && password !== confirmPassword && (
-            <p style={{ 
-              color: '#ef4444', 
-              fontSize: '0.875rem', 
-              marginTop: '-0.5rem',
-              marginBottom: '0.5rem' 
-            }}>
+            <p
+              style={{
+                color: '#ef4444',
+                fontSize: '0.875rem',
+                marginTop: '-0.5rem',
+                marginBottom: '0.5rem',
+              }}
+            >
               ⚠️ As senhas não coincidem
             </p>
           )}
@@ -152,7 +170,10 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
           <button
             type="submit"
             className="auth-button register"
-            disabled={isLoading || (password && confirmPassword && password !== confirmPassword)}
+            disabled={
+              isLoading ||
+              (password && confirmPassword && password !== confirmPassword)
+            }
           >
             {isLoading ? (
               <>
@@ -169,7 +190,10 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
         </form>
 
         {/* Link para Login */}
-        <div className="auth-link" onClick={isLoading ? undefined : onNavigateToLogin}>
+        <div
+          className="auth-link"
+          onClick={isLoading ? undefined : onNavigateToLogin}
+        >
           Já tem uma conta? <span>Faça login</span>
         </div>
       </div>

@@ -196,7 +196,7 @@ public class CryptoController {
         }
     }
 
-    @GetMapping("/history/{coinId}")
+        @GetMapping("/history/{coinId}")
     public ResponseEntity<Map<String, Object>> getCryptoHistory(
             @PathVariable String coinId,
             @RequestParam(defaultValue = "7") int days

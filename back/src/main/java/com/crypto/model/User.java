@@ -1,3 +1,4 @@
+// back/src/main/java/com/crypto/model/User.java
 package com.crypto.model;
 
 import jakarta.persistence.*;
@@ -21,7 +22,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String role = "USER";
+
+    // ✅ NOVO: Campo para verificação
+    @Column(nullable = false)
+    private Boolean enabled = false; // Inicia como false
 }

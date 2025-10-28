@@ -1,11 +1,11 @@
 // front/crypto-monitor-frontend/src/App.jsx
-// ✅ VERSÃO CORRIGIDA - Com import do API_BASE_URL
+// ✅ VERSÃO ATUALIZADA — Registro com verificação de e-mail e import do API_BASE_URL
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { API_BASE_URL } from './utils/constants'; // ✅ FALTAVA ESTE IMPORT!
+import { API_BASE_URL } from './utils/constants'; // ✅ Import corrigido
 
 // Lazy loading das páginas
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
@@ -20,9 +20,9 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false,
       retry: 1,
-      staleTime: 60 * 1000
-    }
-  }
+      staleTime: 60 * 1000,
+    },
+  },
 });
 
 const PageLoader = () => (
@@ -40,14 +40,14 @@ function App() {
   const [token, setToken] = useState(null);
   const [authError, setAuthError] = useState('');
 
-  // Estados de seleção
+  // Estados de seleção e monitoramento
   const [selectedCryptos, setSelectedCryptos] = useState([]);
   const [monitoringEmail, setMonitoringEmail] = useState('');
   const [monitoringInterval, setMonitoringInterval] = useState(5);
   const [buyThreshold, setBuyThreshold] = useState(5.0);
   const [sellThreshold, setSellThreshold] = useState(10.0);
 
-  // Restaurar sessão
+  // ✅ Restaurar sessão ao carregar
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
@@ -69,9 +69,10 @@ function App() {
     }
   }, []);
 
+  // ✅ Login
   const handleLogin = useCallback(async (username, password) => {
     setAuthError('');
-    
+
     if (!username || !password) {
       setAuthError('Preencha todos os campos');
       return;
@@ -81,7 +82,7 @@ function App() {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
       });
 
       if (response.ok) {
@@ -96,23 +97,25 @@ function App() {
       }
     } catch (error) {
       console.error('Erro no login:', error);
-      setAuthError('Erro ao conectar com servidor');
+      setAuthError('Erro ao conectar com o servidor');
     }
   }, []);
 
+  // ✅ Registro (com suporte à verificação de e-mail)
   const handleRegister = useCallback(async (regUsername, regEmail, regPassword, regConfirmPassword) => {
     setAuthError('');
-    
+
+    // Validações básicas
     if (!regUsername || !regEmail || !regPassword || !regConfirmPassword) {
       setAuthError('Preencha todos os campos');
       return false;
     }
-    
+
     if (regPassword !== regConfirmPassword) {
       setAuthError('As senhas não coincidem');
       return false;
     }
-    
+
     if (regPassword.length < 6) {
       setAuthError('A senha deve ter pelo menos 6 caracteres');
       return false;
@@ -122,20 +125,31 @@ function App() {
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: regUsername, email: regEmail, password: regPassword })
+        body: JSON.stringify({
+          username: regUsername,
+          email: regEmail,
+          password: regPassword,
+        }),
       });
-      
-      if (!response.ok) throw new Error('Registration failed');
-      
-      setCurrentPage('login');
-      return true;
+
+      const data = await response.json();
+
+      if (!response.ok) throw new Error(data.error || 'Falha no registro');
+
+      // ✅ NOVO: Caso o backend exija verificação
+      if (data.requiresVerification) {
+        alert(`📧 Código de verificação enviado para ${regEmail}!`);
+      }
+
+      return true; // ✅ Mantém fluxo da tela de verificação
     } catch (error) {
       console.error('Erro no registro:', error);
-      setAuthError('Erro ao criar conta');
+      setAuthError(error.message || 'Erro ao criar conta');
       return false;
     }
   }, []);
 
+  // ✅ Logout
   const handleLogout = () => {
     setUser(null);
     setToken(null);
@@ -145,15 +159,17 @@ function App() {
     queryClient.clear();
   };
 
+  // ✅ Seleção de criptos
   const toggleCryptoSelection = (crypto) => {
-    setSelectedCryptos(prev => {
+    setSelectedCryptos((prev) => {
       const id = crypto.coinId || crypto.name || crypto.symbol;
-      return prev.some(c => (c.coinId || c.name || c.symbol) === id)
-        ? prev.filter(c => (c.coinId || c.name || c.symbol) !== id)
+      return prev.some((c) => (c.coinId || c.name || c.symbol) === id)
+        ? prev.filter((c) => (c.coinId || c.name || c.symbol) !== id)
         : [...prev, crypto];
     });
   };
 
+  // ✅ Props compartilhadas entre as páginas
   const sharedProps = {
     user,
     token,
@@ -174,9 +190,15 @@ function App() {
     onNavigateToBots: () => setCurrentPage('bots'),
     onLogin: handleLogin,
     onRegister: handleRegister,
-    onNavigateToLogin: () => { setCurrentPage('login'); setAuthError(''); },
-    onNavigateToRegister: () => { setCurrentPage('register'); setAuthError(''); },
-    onBack: () => setCurrentPage('dashboard')
+    onNavigateToLogin: () => {
+      setCurrentPage('login');
+      setAuthError('');
+    },
+    onNavigateToRegister: () => {
+      setCurrentPage('register');
+      setAuthError('');
+    },
+    onBack: () => setCurrentPage('dashboard'),
   };
 
   return (
@@ -190,8 +212,11 @@ function App() {
           {currentPage === 'bots' && <TradingBotsPage {...sharedProps} />}
         </Suspense>
       </ThemeProvider>
-      
-      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
+
+      {/* DevTools React Query */}
+      {process.env.NODE_ENV === 'development' && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
     </QueryClientProvider>
   );
 }
