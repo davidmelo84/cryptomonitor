@@ -99,14 +99,7 @@ public class VerificationService {
                 }).orElse(false);
     }
 
-    /**
-     * Retorna o usuário associado a um código de verificação
-     */
-    @Transactional(readOnly = true)
-    public User getUserByCode(String code) {
-        return tokenRepository.findByCode(code)
-                .map(VerificationToken::getUser)
-                .orElseThrow(() -> new RuntimeException("Código inválido ou não encontrado"));
+    public User getUserByCode(@NotBlank(message = "Código é obrigatório") @Size(min = 6, max = 6, message = "Código deve ter 6 dígitos") String code) {
+        return null;
     }
-
 }

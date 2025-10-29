@@ -1,20 +1,20 @@
 // front/crypto-monitor-frontend/src/App.jsx
-// ✅ VERSÃO ATUALIZADA — Registro com verificação de e-mail e import do API_BASE_URL
+// ✅ VERSÃO FINAL — Registro com verificação de e-mail + TelegramProvider + React Query
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { API_BASE_URL } from './utils/constants'; // ✅ Import corrigido
+import { TelegramProvider } from './contexts/TelegramContext'; // ✅ NOVO
+import { API_BASE_URL } from './utils/constants';
 
-// Lazy loading das páginas
+// ✅ Lazy loading das páginas
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./components/pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./components/pages/DashboardPage'));
 const PortfolioPage = lazy(() => import('./components/pages/PortfolioPage'));
 const TradingBotsPage = lazy(() => import('./components/pages/TradingBotsPage'));
 
-// Configuração do React Query
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -40,14 +40,14 @@ function App() {
   const [token, setToken] = useState(null);
   const [authError, setAuthError] = useState('');
 
-  // Estados de seleção e monitoramento
+  // Configurações gerais
   const [selectedCryptos, setSelectedCryptos] = useState([]);
   const [monitoringEmail, setMonitoringEmail] = useState('');
   const [monitoringInterval, setMonitoringInterval] = useState(5);
   const [buyThreshold, setBuyThreshold] = useState(5.0);
   const [sellThreshold, setSellThreshold] = useState(10.0);
 
-  // ✅ Restaurar sessão ao carregar
+  // ✅ Restaurar sessão
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
@@ -101,11 +101,10 @@ function App() {
     }
   }, []);
 
-  // ✅ Registro (com suporte à verificação de e-mail)
+  // ✅ Registro com verificação de e-mail
   const handleRegister = useCallback(async (regUsername, regEmail, regPassword, regConfirmPassword) => {
     setAuthError('');
 
-    // Validações básicas
     if (!regUsername || !regEmail || !regPassword || !regConfirmPassword) {
       setAuthError('Preencha todos os campos');
       return false;
@@ -136,12 +135,11 @@ function App() {
 
       if (!response.ok) throw new Error(data.error || 'Falha no registro');
 
-      // ✅ NOVO: Caso o backend exija verificação
       if (data.requiresVerification) {
         alert(`📧 Código de verificação enviado para ${regEmail}!`);
       }
 
-      return true; // ✅ Mantém fluxo da tela de verificação
+      return true;
     } catch (error) {
       console.error('Erro no registro:', error);
       setAuthError(error.message || 'Erro ao criar conta');
@@ -169,7 +167,7 @@ function App() {
     });
   };
 
-  // ✅ Props compartilhadas entre as páginas
+  // ✅ Props compartilhadas
   const sharedProps = {
     user,
     token,
@@ -204,13 +202,16 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <Suspense fallback={<PageLoader />}>
-          {currentPage === 'login' && <LoginPage {...sharedProps} />}
-          {currentPage === 'register' && <RegisterPage {...sharedProps} />}
-          {currentPage === 'dashboard' && <DashboardPage {...sharedProps} />}
-          {currentPage === 'portfolio' && <PortfolioPage {...sharedProps} />}
-          {currentPage === 'bots' && <TradingBotsPage {...sharedProps} />}
-        </Suspense>
+        {/* ✅ Adicionado TelegramProvider */}
+        <TelegramProvider>
+          <Suspense fallback={<PageLoader />}>
+            {currentPage === 'login' && <LoginPage {...sharedProps} />}
+            {currentPage === 'register' && <RegisterPage {...sharedProps} />}
+            {currentPage === 'dashboard' && <DashboardPage {...sharedProps} />}
+            {currentPage === 'portfolio' && <PortfolioPage {...sharedProps} />}
+            {currentPage === 'bots' && <TradingBotsPage {...sharedProps} />}
+          </Suspense>
+        </TelegramProvider>
       </ThemeProvider>
 
       {/* DevTools React Query */}

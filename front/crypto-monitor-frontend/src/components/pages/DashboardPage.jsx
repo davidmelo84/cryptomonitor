@@ -1,8 +1,9 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
-// ✅ VERSÃO CORRIGIDA - Com monitoramento funcionando
+// ✅ VERSÃO COM INTEGRAÇÃO TELEGRAM CONTEXT
 
 import React, { useState, useCallback } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useTelegram } from '../../contexts/TelegramContext';
 import Header from '../dashboard/Header';
 import StatusCard from '../dashboard/StatusCard';
 import StatsCards from '../dashboard/StatsCards';
@@ -11,7 +12,6 @@ import CryptocurrenciesCard from '../dashboard/CryptocurrenciesCard';
 import ChartTabs from '../dashboard/ChartTabs';
 import TelegramConfig from '../telegram/TelegramConfig';
 
-// ✅ React Query hooks
 import { 
   useCryptos, 
   useMonitoringStatus,
@@ -40,9 +40,12 @@ function DashboardPage({
   onNavigateToBots
 }) {
   const { isDark } = useTheme();
+  
+  // ✅ USAR TELEGRAM CONTEXT
+  const { telegramConfig, isConfigured } = useTelegram();
+  
   const [showTelegramConfig, setShowTelegramConfig] = useState(false);
 
-  // ✅ React Query - buscar dados com cache
   const { 
     data: availableCryptos = [], 
     isLoading: cryptosLoading,
@@ -58,15 +61,16 @@ function DashboardPage({
   const startMonitoringMutation = useStartMonitoring();
   const stopMonitoringMutation = useStopMonitoring();
 
-  // ✅ Derivar estado do monitoramento
   const isMonitoringActive = monitoringStatusData?.active || false;
 
-  // ✅ CORREÇÃO: Handler completo para start/stop
+  // ✅ HANDLER COM INTEGRAÇÃO TELEGRAM
   const handleStartStopMonitoring = useCallback(async () => {
     console.log('🔘 handleStartStopMonitoring chamado');
     console.log('   isMonitoringActive:', isMonitoringActive);
     console.log('   monitoringEmail:', monitoringEmail);
     console.log('   selectedCryptos:', selectedCryptos.length);
+    console.log('   Telegram configurado?', isConfigured());
+    console.log('   Telegram habilitado?', telegramConfig.enabled);
 
     if (isMonitoringActive) {
       // ========== PARAR MONITORAMENTO ==========
@@ -75,10 +79,7 @@ function DashboardPage({
       try {
         const result = await stopMonitoringMutation.mutateAsync(token);
         console.log('✅ Monitoramento parado:', result);
-        
-        // Atualizar status
         refetchMonitoringStatus();
-        
       } catch (error) {
         console.error('❌ Erro ao parar:', error);
         alert('Erro ao parar monitoramento: ' + error.message);
@@ -88,7 +89,7 @@ function DashboardPage({
       // ========== INICIAR MONITORAMENTO ==========
       console.log('▶️ Tentando iniciar monitoramento...');
       
-      // ✅ VALIDAÇÃO COMPLETA
+      // ✅ VALIDAÇÕES
       if (!monitoringEmail || monitoringEmail.trim() === '') {
         alert('⚠️ Configure um email válido antes de iniciar!');
         return;
@@ -99,36 +100,68 @@ function DashboardPage({
         return;
       }
 
+      // ✅ AVISO SE TELEGRAM HABILITADO MAS NÃO TESTADO
+      if (telegramConfig.enabled && !telegramConfig.isConnected) {
+        const confirmStart = window.confirm(
+          '⚠️ Telegram está habilitado mas não foi testado.\n\n' +
+          'Deseja continuar mesmo assim?\n\n' +
+          'Clique em "Cancelar" para testar a conexão primeiro.'
+        );
+        
+        if (!confirmStart) {
+          setShowTelegramConfig(true);
+          return;
+        }
+      }
+
       try {
-        // ✅ Extrair coinIds das cryptos selecionadas
         const cryptocurrencies = selectedCryptos.map(c => {
-          // Tentar obter coinId de várias formas
           return c.coinId || c.id || c.symbol?.toLowerCase() || c.name?.toLowerCase();
         });
 
-        console.log('📤 Enviando dados:', {
-          email: monitoringEmail,
-          cryptocurrencies,
-          interval: monitoringInterval,
-          buyThreshold,
-          sellThreshold
-        });
-
-        const result = await startMonitoringMutation.mutateAsync({
+        // ✅ PREPARAR PAYLOAD COM TELEGRAM
+        const monitoringPayload = {
           email: monitoringEmail,
           cryptocurrencies,
           interval: monitoringInterval,
           buyThreshold,
           sellThreshold,
           token
+        };
+
+        // ✅ ADICIONAR CONFIGS DO TELEGRAM SE HABILITADO
+        if (telegramConfig.enabled && isConfigured()) {
+          monitoringPayload.telegramConfig = {
+            botToken: telegramConfig.botToken,
+            chatId: telegramConfig.chatId,
+            enabled: true
+          };
+          
+          console.log('📱 Telegram será usado para notificações');
+        }
+
+        console.log('📤 Enviando dados:', {
+          ...monitoringPayload,
+          telegramConfig: monitoringPayload.telegramConfig 
+            ? '***CONFIGURADO***' 
+            : 'NÃO CONFIGURADO'
         });
 
+        const result = await startMonitoringMutation.mutateAsync(monitoringPayload);
+
         console.log('✅ Monitoramento iniciado:', result);
-        
-        // Atualizar status
         refetchMonitoringStatus();
         
-        alert(`✅ Monitoramento iniciado!\n\n• Email: ${monitoringEmail}\n• Moedas: ${cryptocurrencies.length}\n• Intervalo: ${monitoringInterval} min`);
+        let alertMessage = `✅ Monitoramento iniciado!\n\n` +
+                          `• Email: ${monitoringEmail}\n` +
+                          `• Moedas: ${cryptocurrencies.length}\n` +
+                          `• Intervalo: ${monitoringInterval} min`;
+        
+        if (telegramConfig.enabled && isConfigured()) {
+          alertMessage += `\n• Telegram: Habilitado ✅`;
+        }
+        
+        alert(alertMessage);
         
       } catch (error) {
         console.error('❌ Erro ao iniciar:', error);
@@ -143,18 +176,18 @@ function DashboardPage({
     buyThreshold,
     sellThreshold,
     token,
+    telegramConfig,
+    isConfigured,
     startMonitoringMutation,
     stopMonitoringMutation,
     refetchMonitoringStatus
   ]);
 
-  // ✅ Handler de refresh
   const handleRefresh = () => {
     refetchCryptos();
     refetchMonitoringStatus();
   };
 
-  // ✅ Último update
   const lastUpdate = cryptosLoading ? null : new Date();
 
   return (
@@ -178,7 +211,6 @@ function DashboardPage({
           </div>
         ) : (
           <>
-            {/* ✅ CORREÇÃO: Passar handler correto */}
             <StatusCard
               isMonitoring={isMonitoringActive}
               onStartStop={handleStartStopMonitoring}
@@ -218,7 +250,7 @@ function DashboardPage({
         )}
       </div>
 
-      {/* Modal Telegram */}
+      {/* ✅ Modal Telegram - Agora persiste dados */}
       {showTelegramConfig && (
         <div 
           className="telegram-modal-overlay" 
@@ -243,7 +275,6 @@ function DashboardPage({
             <div className="telegram-modal-body">
               <TelegramConfig 
                 userEmail={monitoringEmail}
-                token={token}
               />
             </div>
           </div>
