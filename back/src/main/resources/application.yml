@@ -195,7 +195,7 @@ info:
 # ============================================
 app:
   cors:
-    allowed-origins: ${CORS_ORIGINS:https://cryptomonitor-theta.vercel.app/}
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:https://cryptomonitor-theta.vercel.app/}
   security:
     enabled: true
 
