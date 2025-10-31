@@ -2,6 +2,7 @@ com\crypto\service\CryptoService$2.class
 com\crypto\config\WebClientConfig.class
 com\crypto\controller\MockController.class
 com\crypto\controller\AuthController.class
+com\crypto\service\VerificationService.class
 com\crypto\config\AsyncConfig.class
 com\crypto\event\CryptoUpdateEvent.class
 com\crypto\model\Portfolio.class
@@ -36,6 +37,7 @@ com\crypto\security\JwtUtil.class
 com\crypto\CryptoMonitorApplication.class
 com\crypto\controller\DebugController.class
 com\crypto\model\TradingBot$TradingStrategy.class
+com\crypto\model\VerificationToken$VerificationTokenBuilder.class
 com\crypto\config\DotEnvConfig.class
 com\crypto\model\AlertRule$TimePeriod.class
 com\crypto\service\MonitoringControlService.class
@@ -45,15 +47,19 @@ com\crypto\service\NotificationService.class
 com\crypto\controller\UserController.class
 com\crypto\model\dto\CoinGeckoResponse.class
 com\crypto\model\User.class
+com\crypto\repository\VerificationTokenRepository.class
 com\crypto\controller\CacheAdminController.class
+com\crypto\model\VerificationToken.class
 com\crypto\service\TradingBotService$1.class
 com\crypto\controller\PortfolioController.class
+com\crypto\controller\CryptoController$1.class
 com\crypto\repository\PortfolioRepository.class
 com\crypto\model\BotTrade$TradeSide.class
 com\crypto\service\PortfolioService.class
 com\crypto\service\CryptoService$MockCryptoConfig.class
 com\crypto\service\CryptoMonitoringService.class
 com\crypto\service\CryptoService$1.class
+com\crypto\model\dto\VerificationRequest.class
 com\crypto\service\CryptoMonitoringService$MonitoringStats.class
 com\crypto\model\Transaction$TransactionBuilder.class
 com\crypto\security\JwtAuthenticationFilter.class

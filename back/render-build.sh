@@ -2,9 +2,16 @@
 # exit on error
 set -o errexit
 
-echo "🚀 Iniciando build do projeto..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "🚀 CRYPTO MONITOR - BUILD SCRIPT"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Instalar dependências e compilar
+# Garantir permissões do mvnw
+chmod +x mvnw
+
+echo "📦 Instalando dependências..."
 ./mvnw clean install -DskipTests
 
-echo "✅ Build concluído com sucesso!"
+echo ""
+echo "✅ BUILD CONCLUÍDO COM SUCESSO!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
