@@ -2,13 +2,10 @@
 # CONFIGURAÇÕES GERAIS DO SERVIDOR
 # ============================================
 server:
-  port: 8080
+  port: ${PORT:8080} # ✅ Render define automaticamente a porta
   servlet:
     context-path: /crypto-monitor
 
-  # ============================================
-  # COMPRESSÃO HTTP
-  # ============================================
   compression:
     enabled: true
     mime-types:
@@ -22,22 +19,19 @@ server:
       - application/javascript
     min-response-size: 1024 # Comprime responses > 1KB
 
+# ============================================
+# CONFIGURAÇÃO SPRING / BANCO DE DADOS
+# ============================================
 spring:
   application:
     name: crypto-monitor
 
-  # ============================================
-  # CONFIGURAÇÃO DO BANCO DE DADOS
-  # ============================================
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
     driver-class-name: org.postgresql.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:crypto_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:qwe123}
+    username: ${PGUSER:crypto_user}
+    password: ${PGPASSWORD:qwe123}
 
-    # ============================================
-    # POOL HIKARI
-    # ============================================
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
@@ -48,8 +42,8 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
-    show-sql: true
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update} # ⚠️ use 'validate' em produção
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -58,30 +52,21 @@ spring:
 
   database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-  # ============================================
-  # MIGRAÇÕES (FLYWAY)
-  # ============================================
   flyway:
     enabled: true
     locations: classpath:db/migration
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
-    user: ${SPRING_DATASOURCE_USERNAME:crypto_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:qwe123}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
+    user: ${PGUSER:crypto_user}
+    password: ${PGPASSWORD:qwe123}
     baseline-on-migrate: true
     validate-on-migrate: true
     out-of-order: false
 
-  # ============================================
-  # CONFIGURAÇÃO DE JWT
-  # ============================================
   jwt:
-    secret: ${JWT_SECRET}  # ⚠️ OBRIGATÓRIO via .env
+    secret: ${JWT_SECRET}  # ⚠️ Definir no ambiente (.env ou Render)
     expiration: 86400000   # 24 horas
     issuer: crypto-monitor
 
-  # ============================================
-  # CONFIGURAÇÃO DE EMAIL
-  # ============================================
   mail:
     host: smtp.gmail.com
     port: 587
@@ -99,21 +84,16 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
-  # ============================================
-  # TAREFAS AGENDADAS (DESABILITADAS)
-  # ============================================
   task:
     scheduling:
       enabled: false
 
-  # ============================================
-  # SEGURANÇA ADICIONAL
-  # ============================================
   main:
-    banner-mode: off  # ✅ Desabilitar banner (evita info leak)
+    banner-mode: off
 
   mvc:
-    throw-exception-if-no-handler-found: true  # ✅ Evitar stacktrace em produção
+    throw-exception-if-no-handler-found: true
+
   web:
     resources:
       add-mappings: false
@@ -124,9 +104,6 @@ spring:
 crypto:
   coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash
 
-# ============================================
-# ALERTAS AUTOMÁTICOS
-# ============================================
 alert:
   buy:
     threshold: -1.0
@@ -134,9 +111,6 @@ alert:
     threshold: 1.0
   check-interval: 300000
 
-# ============================================
-# NOTIFICAÇÕES
-# ============================================
 notification:
   email:
     enabled: true
@@ -149,30 +123,24 @@ notification:
     bot-token: ${TELEGRAM_BOT_TOKEN:}
     chat-id: ${TELEGRAM_CHAT_ID:}
 
-# ============================================
-# SISTEMA DE MONITORAMENTO
-# ============================================
 monitoring:
   max-concurrent-users: 50
   thread-pool-size: 10
   shutdown-timeout: 60
 
-# ============================================
-# API COINGECKO
-# ============================================
 coingecko:
   api:
     url: https://api.coingecko.com/api/v3
   rate-limit: 30
 
 # ============================================
-# LOGS (ajustado para versão segura)
+# LOGGING
 # ============================================
 logging:
   level:
     com.crypto: INFO
-    org.springframework.security: WARN  # ✅ Não logar detalhes de auth
-    org.hibernate.SQL: ERROR            # ✅ Não logar queries com dados
+    org.springframework.security: WARN
+    org.hibernate.SQL: ERROR
     org.springframework.web: DEBUG
     org.springframework.mail: DEBUG
     org.flywaydb: DEBUG
@@ -186,17 +154,17 @@ logging:
     max-history: 7
 
 # ============================================
-# ACTUATOR (ajustado para segurança)
+# ACTUATOR
 # ============================================
 management:
   endpoints:
     web:
       exposure:
-        include: health  # ✅ Apenas health
+        include: health
       base-path: /actuator
   endpoint:
     health:
-      show-details: when-authorized  # ✅ Detalhes apenas para autenticados
+      show-details: when-authorized
   health:
     mail:
       enabled: false
@@ -223,20 +191,18 @@ info:
     timestamp: ${TIMESTAMP}
 
 # ============================================
-# CONFIGURAÇÃO DE SEGURANÇA (ADICIONADA)
+# CONFIGURAÇÃO DE SEGURANÇA / CORS
 # ============================================
 app:
   cors:
-    allowed-origins: "http://localhost:3000,http://localhost:3001,http://localhost:8080"
-    # Produção:
-    # allowed-origins: "https://crypto-monitor.com,https://www.crypto-monitor.com"
+    allowed-origins: ${CORS_ORIGINS:https://seu-app.vercel.app,http://localhost:3000,http://localhost:3001}
   security:
     enabled: true
 
 # ============================================
-# JWT SEGURO (mantido/espelhado)
+# JWT (espelhado para compatibilidade)
 # ============================================
 jwt:
-  secret: ${JWT_SECRET}  # ⚠️ OBRIGATÓRIO via .env
+  secret: ${JWT_SECRET}
   expiration: 86400000
   issuer: crypto-monitor
