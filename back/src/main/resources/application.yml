@@ -2,7 +2,7 @@
 # CONFIGURAÇÕES GERAIS DO SERVIDOR
 # ============================================
 server:
-  port: ${PORT:8080} # ✅ Render define automaticamente a porta
+  port: ${PORT:8080}
   servlet:
     context-path: /crypto-monitor
 
@@ -17,7 +17,7 @@ server:
       - text/css
       - text/javascript
       - application/javascript
-    min-response-size: 1024 # Comprime responses > 1KB
+    min-response-size: 1024
 
 # ============================================
 # CONFIGURAÇÃO SPRING / BANCO DE DADOS
@@ -27,10 +27,10 @@ spring:
     name: crypto-monitor
 
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
+    url: ${SPRING_DATASOURCE_URL:${DATABASE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}}
     driver-class-name: org.postgresql.Driver
-    username: ${PGUSER:crypto_user}
-    password: ${PGPASSWORD:qwe123}
+    username: ${SPRING_DATASOURCE_USERNAME:${PGUSER:crypto_user}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${PGPASSWORD:qwe123}}
 
     hikari:
       maximum-pool-size: 10
@@ -42,7 +42,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update} # ⚠️ use 'validate' em produção
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: false
     properties:
       hibernate:
@@ -55,16 +55,16 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
-    user: ${PGUSER:crypto_user}
-    password: ${PGPASSWORD:qwe123}
+    url: ${SPRING_DATASOURCE_URL:${DATABASE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}}
+    user: ${SPRING_DATASOURCE_USERNAME:${PGUSER:crypto_user}}
+    password: ${SPRING_DATASOURCE_PASSWORD:${PGPASSWORD:qwe123}}
     baseline-on-migrate: true
     validate-on-migrate: true
     out-of-order: false
 
   jwt:
-    secret: ${JWT_SECRET}  # ⚠️ Definir no ambiente (.env ou Render)
-    expiration: 86400000   # 24 horas
+    secret: ${JWT_SECRET}
+    expiration: 86400000
     issuer: crypto-monitor
 
   mail:
@@ -188,14 +188,14 @@ info:
   java:
     version: "17.0.16"
   build:
-    timestamp: ${TIMESTAMP}
+    timestamp: ${TIMESTAMP:2025-10-31T00:00:00Z}
 
 # ============================================
 # CONFIGURAÇÃO DE SEGURANÇA / CORS
 # ============================================
 app:
   cors:
-    allowed-origins: ${CORS_ORIGINS:https://seu-app.vercel.app,http://localhost:3000,http://localhost:3001}
+    allowed-origins: ${CORS_ORIGINS:https://cryptomonitor-agvuuzvwc-davidmelo84s-projects.vercel.app/}
   security:
     enabled: true
 
