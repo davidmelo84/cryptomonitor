@@ -1,15 +1,15 @@
-// back/src/main/java/com/crypto/config/SecurityConfig.java
 package com.crypto.config;
 
 import com.crypto.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,118 +20,75 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
-/**
- * ✅ CONFIGURAÇÃO DE SEGURANÇA CORRIGIDA
- *
- * Melhorias implementadas:
- * - CORS configurável e restrito
- * - Headers de segurança (XSS, Clickjacking, CSP)
- * - BCrypt com força 12
- * - Session stateless (JWT)
- */
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
-@EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
-
-    @Value("${app.cors.allowed-origins:http://localhost:3000}")
-    private String[] allowedOrigins;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // ✅ CORS configurado
+                .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // ✅ CSRF desabilitado para API REST (stateless)
-                .csrf(csrf -> csrf.disable())
-
-                // ✅ Security Headers - CORRIGIDO
-                .headers(headers -> headers
-                        // Previne Clickjacking
-                        .frameOptions(frame -> frame.deny())
-
-                        // XSS Protection - ✅ MÉTODO CORRETO
-                        .xssProtection(xss -> xss
-                                .headerValue(org.springframework.security.web.header.writers.XXssProtectionHeaderWriter.HeaderValue.ENABLED_MODE_BLOCK)
-                        )
-
-                        // Content Security Policy
-                        .contentSecurityPolicy(csp -> csp.policyDirectives(
-                                "default-src 'self'; " +
-                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
-                                        "style-src 'self' 'unsafe-inline'; " +
-                                        "img-src 'self' data: https:; " +
-                                        "font-src 'self' data:;"
-                        ))
-
-                        // Previne MIME sniffing
-                        .contentTypeOptions(contentType -> {})
-                )
-
-                // ✅ Autorização de rotas
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Rotas públicas (SEM autenticação)
+                        // Permitir OPTIONS para preflight CORS
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Endpoints públicos
                         .requestMatchers(
-                                "/api/auth/**",           // Login/Register
-                                "/api/user",              // Criar usuário
-                                "/api/crypto/current/**", // Cotações públicas
-                                "/actuator/health",       // Health check
-                                "/h2-console/**"          // H2 Console (dev)
+                                "/api/auth/**",
+                                "/api/crypto/status",
+                                "/actuator/health",
+                                "/actuator/info"
                         ).permitAll()
-
-                        // Rotas administrativas (APENAS ADMIN)
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // Todas as outras rotas exigem autenticação
+                        // Todos os outros precisam autenticação
                         .anyRequest().authenticated()
                 )
-
-                // ✅ Session stateless (JWT)
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // ✅ JWT Filter
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /**
-     * ✅ CORS CONFIGURÁVEL (não mais "*")
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Origins configuráveis via application.yml
-        configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins));
+        // Permitir todas as origens do Vercel + localhost
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "https://cryptomonitor-theta.vercel.app",
+                "https://www.cryptomonitor-theta.vercel.app",
+                "https://*.vercel.app",  // Todos os previews do Vercel
+                "http://localhost:*",     // Qualquer porta local
+                "http://127.0.0.1:*"
+        ));
 
-        // Métodos permitidos
+        // Métodos HTTP permitidos
         configuration.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
         ));
 
         // Headers permitidos
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Authorization", "Content-Type", "X-Requested-With",
-                "Accept", "Origin", "Access-Control-Request-Method",
-                "Access-Control-Request-Headers"
-        ));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
 
-        // Headers expostos ao frontend
-        configuration.setExposedHeaders(Arrays.asList(
-                "Authorization", "Content-Disposition"
-        ));
-
-        // Permitir credenciais (cookies, auth headers)
+        // Permitir credenciais (cookies, authorization headers)
         configuration.setAllowCredentials(true);
 
-        // Cache de preflight (OPTIONS) por 1 hora
+        // Expor headers de resposta
+        configuration.setExposedHeaders(Arrays.asList(
+                "Authorization",
+                "Content-Type",
+                "X-Total-Count"
+        ));
+
+        // Cache do preflight (1 hora)
         configuration.setMaxAge(3600L);
 
+        // Aplicar para todos os endpoints
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
@@ -140,8 +97,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // BCrypt com força 12 (mais seguro que padrão 10)
-        return new BCryptPasswordEncoder(12);
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
