@@ -1,16 +1,22 @@
 // front/crypto-monitor-frontend/src/hooks/useCryptoData.js
-// ✅ CORRIGIDO - Normalização adequada dos dados
+// ✅ VERSÃO CORRIGIDA - Envia token JWT corretamente
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_BASE_URL } from '../utils/constants';
 
 // ============================================
-// FETCH FUNCTIONS
+// FETCH FUNCTIONS - COM TOKEN JWT
 // ============================================
 
-const fetchCryptos = async () => {
+const fetchCryptos = async (token) => {
   console.log('🔍 Buscando criptomoedas...');
-  const response = await fetch(`${API_BASE_URL}/crypto/current`);
+  
+  // ✅ ADICIONAR TOKEN NO HEADER
+  const response = await fetch(`${API_BASE_URL}/crypto/current`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
   
   if (!response.ok) {
     const error = await response.text();
@@ -41,22 +47,22 @@ const fetchMonitoringStatus = async (token) => {
 };
 
 // ============================================
-// HOOKS
+// HOOKS - ✅ RECEBEM TOKEN COMO PARÂMETRO
 // ============================================
 
-export const useCryptos = () => {
+export const useCryptos = (token) => {
   return useQuery({
-    queryKey: ['cryptos'],
-    queryFn: fetchCryptos,
+    queryKey: ['cryptos', token],
+    queryFn: () => fetchCryptos(token),
     staleTime: 60 * 1000,
     cacheTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
     retry: 2,
+    enabled: !!token, // ✅ Só busca se tiver token
     
-    // ✅ Normalizar dados (API retorna 'id', mas precisamos de 'coinId')
     select: (data) => {
       return data.map(crypto => ({
-        coinId: crypto.id || crypto.coinId || crypto.symbol?.toLowerCase(), // ✅ CORREÇÃO
+        coinId: crypto.id || crypto.coinId || crypto.symbol?.toLowerCase(),
         name: crypto.name,
         symbol: crypto.symbol,
         currentPrice: crypto.current_price || crypto.currentPrice || 0,
@@ -69,7 +75,7 @@ export const useCryptos = () => {
 
 export const useMonitoringStatus = (token) => {
   return useQuery({
-    queryKey: ['monitoring-status'],
+    queryKey: ['monitoring-status', token],
     queryFn: () => fetchMonitoringStatus(token),
     staleTime: 30 * 1000,
     enabled: !!token,
@@ -81,10 +87,8 @@ export const useStartMonitoring = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ email, cryptocurrencies, interval, buyThreshold, sellThreshold, token }) => {
+    mutationFn: async ({ email, cryptocurrencies, interval, buyThreshold, sellThreshold, token, telegramConfig }) => {
       console.log('📤 Iniciando monitoramento...');
-      console.log('   Email:', email);
-      console.log('   Cryptos:', cryptocurrencies);
       
       const payload = {
         email,
@@ -93,6 +97,15 @@ export const useStartMonitoring = () => {
         buyThreshold,
         sellThreshold
       };
+      
+      // ✅ Adicionar Telegram se configurado
+      if (telegramConfig?.enabled && telegramConfig?.botToken && telegramConfig?.chatId) {
+        payload.telegramConfig = {
+          botToken: telegramConfig.botToken,
+          chatId: telegramConfig.chatId,
+          enabled: true
+        };
+      }
       
       console.log('📦 Payload:', JSON.stringify(payload, null, 2));
       
@@ -104,8 +117,6 @@ export const useStartMonitoring = () => {
         },
         body: JSON.stringify(payload)
       });
-      
-      console.log('📡 Response status:', response.status);
       
       if (!response.ok) {
         const errorText = await response.text();

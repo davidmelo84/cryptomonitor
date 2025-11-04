@@ -69,7 +69,7 @@ function App() {
     }
   }, []);
 
-  // ✅ Login
+  // ✅ Login com tratamento de erros melhorado
   const handleLogin = useCallback(async (username, password) => {
     setAuthError('');
 
@@ -79,29 +79,51 @@ function App() {
     }
 
     try {
+      console.log('🔑 Tentando login...', { username });
+      
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        setToken(data.token);
-        setUser({ username });
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify({ username }));
-        setCurrentPage('dashboard');
-      } else {
-        setAuthError('Credenciais inválidas');
+      console.log('📡 Response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Erro no login:', errorText);
+        
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || errorData.message || 'Credenciais inválidas');
+        } catch (e) {
+          if (response.status === 500) {
+            throw new Error('Erro no servidor. Tente novamente mais tarde.');
+          }
+          throw new Error('Credenciais inválidas');
+        }
       }
+
+      const data = await response.json();
+      console.log('✅ Login bem-sucedido:', data);
+
+      if (!data.token) {
+        throw new Error('Token não recebido do servidor');
+      }
+
+      setToken(data.token);
+      setUser({ username });
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify({ username }));
+      setCurrentPage('dashboard');
+      
     } catch (error) {
-      console.error('Erro no login:', error);
-      setAuthError('Erro ao conectar com o servidor');
+      console.error('❌ Erro no login:', error);
+      setAuthError(error.message || 'Erro ao conectar com o servidor');
     }
   }, []);
 
-  // ✅ Registro com verificação de e-mail
+  // ✅ Registro com tratamento de erros melhorado
   const handleRegister = useCallback(async (regUsername, regEmail, regPassword, regConfirmPassword) => {
     setAuthError('');
 
@@ -121,6 +143,8 @@ function App() {
     }
 
     try {
+      console.log('📝 Tentando registrar...', { username: regUsername, email: regEmail });
+      
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -131,22 +155,48 @@ function App() {
         }),
       });
 
-      const data = await response.json();
+      console.log('📡 Response status:', response.status);
 
-      if (!response.ok) throw new Error(data.error || 'Falha no registro');
+      const text = await response.text();
+      console.log('📄 Response body:', text);
+      
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch {
+        throw new Error('Resposta inválida do servidor');
+      }
+
+      if (!response.ok) {
+        // ✅ TRATAR ERRO 400 (Email/Username já existe)
+        if (response.status === 400) {
+          if (data.error?.includes('Email') || data.message?.includes('Email')) {
+            throw new Error('Este email já está cadastrado. Use outro ou faça login.');
+          }
+          if (data.error?.includes('Username') || data.message?.includes('Username')) {
+            throw new Error('Este username já está em uso. Escolha outro.');
+          }
+        }
+        
+        throw new Error(data.error || data.message || 'Falha no registro');
+      }
+
+      console.log('✅ Registro bem-sucedido:', data);
 
       if (data.requiresVerification) {
-        alert(`📧 Código de verificação enviado para ${regEmail}!`);
+        alert(`📧 Código de verificação enviado para ${regEmail}!\n\nVerifique sua caixa de entrada.`);
+      } else {
+        alert('✅ Conta criada com sucesso! Faça login para continuar.');
       }
 
       return true;
+      
     } catch (error) {
-      console.error('Erro no registro:', error);
+      console.error('❌ Erro no registro:', error);
       setAuthError(error.message || 'Erro ao criar conta');
       return false;
     }
   }, []);
-
   // ✅ Logout
   const handleLogout = () => {
     setUser(null);

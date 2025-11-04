@@ -51,7 +51,7 @@ function DashboardPage({
     isLoading: cryptosLoading,
     isRefetching,
     refetch: refetchCryptos 
-  } = useCryptos();
+  } = useCryptos(token);
 
   const {
     data: monitoringStatusData,
