@@ -80,7 +80,7 @@ public class CryptoService {
         }
         ScheduledFuture<?> task = scheduler.scheduleAtFixedRate(
                 () -> runUserCheck(userEmail),
-                0,
+                10_000, // ⏳ espera 10 segundos antes do primeiro ciclo
                 checkIntervalMs,
                 TimeUnit.MILLISECONDS
         );
@@ -97,6 +97,8 @@ public class CryptoService {
         userAlertCooldown.remove(userEmail);
     }
 
+    @Cacheable(value = "allCryptoPrices", sync = true, unless = "#result == null || #result.isEmpty()")
+    @Retryable(value = {Exception.class}, maxAttempts = 3, backoff = @Backoff(delay = 2000))
     public void runUserCheck(String userEmail) {
         try {
             List<CryptoCurrency> cryptos = getCurrentPrices();
@@ -206,6 +208,7 @@ public class CryptoService {
                     .block();
 
             if (cryptos != null && !cryptos.isEmpty()) {
+                log.info("🌐 Preços atualizados da CoinGecko carregados: {} moedas", cryptos.size());
                 return cryptos;
             }
         } catch (WebClientResponseException e) {
@@ -224,6 +227,7 @@ public class CryptoService {
 
         return mockList;
     }
+
 
     /** ✅ Invalida cache ao salvar crypto */
     @Caching(evict = {
