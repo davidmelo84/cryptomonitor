@@ -1,0 +1,1338 @@
+/* ============================================
+   CRYPTO MONITOR - COMPONENT STYLES
+   Versão OTIMIZADA - Sem duplicações
+   ============================================ */
+
+/* ============================================
+   1. BASE & LAYOUT
+   ============================================ */
+.page-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+  transition: background 0.5s ease;
+}
+
+.page-container.dark {
+  background: linear-gradient(to bottom, #111827, #1f2937);
+}
+
+.content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1.875rem 1.25rem;
+}
+
+/* ============================================
+   2. CARDS
+   ============================================ */
+.card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card.dark {
+  background: #1f2937;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   3. BUTTONS
+   ============================================ */
+.btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: white;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+/* ============================================ 
+   4. INPUTS
+   ============================================ */
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  background: white;
+  color: #333;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.form-input.dark,
+.form-select.dark {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+/* ============================================
+   5. STATUS CARD
+   ============================================ */
+.status-card {
+  padding: 2rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  color: white;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.status-card.active {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.status-card.inactive {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.status-card-bg-circle {
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.status-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  position: relative;
+}
+
+.status-info {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.status-icon {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+  border-radius: 15px;
+}
+
+.status-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.status-description {
+  font-size: 1rem;
+  margin: 0.5rem 0 0 0;
+  opacity: 0.9;
+}
+
+/* ============================================
+   STATUS BUTTON - VISUAL MELHORADO
+   ============================================ */
+
+.status-button {
+  background: white;
+  padding: 16px 40px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.status-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.status-button:hover::before {
+  left: 100%;
+}
+
+.status-button:hover:not(:disabled) {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.status-button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.status-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #e5e7eb;
+  color: #9ca3af;
+  box-shadow: none;
+}
+
+/* Botão ATIVO (verde - para PARAR) */
+.status-button.active {
+  color: #dc2626;
+  background: white;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.status-button.active:hover:not(:disabled) {
+  background: #fee2e2;
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
+}
+
+/* Botão INATIVO (cinza - para INICIAR) */
+.status-button.inactive {
+  color: #059669;
+  background: white;
+  box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.status-button.inactive:hover:not(:disabled) {
+  background: #d1fae5;
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+}
+
+/* Ícone dentro do botão */
+.status-button svg {
+  transition: transform 0.3s ease;
+}
+
+.status-button:hover:not(:disabled) svg {
+  transform: scale(1.2) rotate(5deg);
+}
+
+/* Animação de pulsação quando ativo */
+.status-card.active .status-button.active {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+  }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .status-button {
+    padding: 14px 32px;
+    font-size: 16px;
+  }
+}
+
+/* ============================================
+   6. STATS CARDS
+   ============================================ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.25rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card.dark {
+  background: #1f2937;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.stat-card.dark .stat-label {
+  color: #9ca3af;
+}
+
+.stat-value {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.stat-card.dark .stat-value {
+  color: #f3f4f6;
+}
+
+.stat-value.positive {
+  color: #10b981;
+}
+
+.stat-value.negative {
+  color: #ef4444;
+}
+
+/* ============================================
+   7. AUTH PAGES
+   ============================================ */
+.auth-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.5s ease;
+}
+
+.auth-container.dark {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.theme-toggle-wrapper {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.floating-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-circle.large {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  left: -150px;
+}
+
+.floating-circle.small {
+  width: 200px;
+  height: 200px;
+  bottom: -100px;
+  right: -100px;
+}
+
+.floating-circle.medium {
+  width: 250px;
+  height: 250px;
+  top: 10%;
+  right: 10%;
+}
+
+.auth-card {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 450px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  transition: all 0.5s ease;
+}
+
+.auth-card.dark {
+  background: #1f2937;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.auth-logo-wrapper {
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.auth-logo {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.25rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+.auth-logo.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.auth-title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 0.625rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-title.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 1.875rem;
+  font-size: 0.875rem;
+}
+
+.auth-card.dark .auth-subtitle {
+  color: #9ca3af;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 1rem;
+  padding-right: 3rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  background: white;
+  color: #333;
+  transition: all 0.3s;
+}
+
+.auth-input:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.auth-card.dark .auth-input {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.auth-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6b7280;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.auth-card.dark .auth-icon {
+  color: #9ca3af;
+}
+
+/* ============================================
+   PASSWORD STRENGTH (ATUALIZAÇÃO)
+   - usa classes dinâmicas: .weak .medium .strong .very-strong
+   ============================================ */
+.password-strength {
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+}
+
+.password-strength-bar {
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.password-strength-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.35s ease, background-color 0.35s ease;
+  width: 0%;
+}
+
+/* níveis (aplicados dinamicamente ao elemento que preenche) */
+.password-strength-fill.weak {
+  width: 25%;
+  background: linear-gradient(90deg, #ef4444 0%, #f97316 100%);
+}
+
+.password-strength-fill.medium {
+  width: 50%;
+  background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
+}
+
+.password-strength-fill.strong {
+  width: 75%;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+.password-strength-fill.very-strong {
+  width: 100%;
+  background: linear-gradient(90deg, #06b6d4 0%, #0ea5a3 100%);
+}
+
+/* caso o wrapper tenha .dark, invertemos tons para contraste */
+.auth-card.dark .password-strength-bar {
+  background: #374151;
+}
+
+.auth-card.dark .password-strength-fill.weak {
+  background: linear-gradient(90deg, #fca5a5 0%, #fdba74 100%);
+}
+
+.auth-card.dark .password-strength-fill.medium {
+  background: linear-gradient(90deg, #fcd34d 0%, #fdba74 100%);
+}
+
+.auth-card.dark .password-strength-fill.strong {
+  background: linear-gradient(90deg, #34d399 0%, #10b981 100%);
+}
+
+.auth-card.dark .password-strength-fill.very-strong {
+  background: linear-gradient(90deg, #67e8f9 0%, #2dd4bf 100%);
+}
+
+/* valor textual ao lado da barra (opcional) */
+.password-strength-value {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  font-size: 0.85rem;
+  vertical-align: middle;
+  color: #374151;
+}
+
+.password-strength-value.weak { color: #ef4444; }
+.password-strength-value.medium { color: #f59e0b; }
+.password-strength-value.strong { color: #10b981; }
+.password-strength-value.very-strong { color: #06b6d4; }
+
+.auth-card.dark .password-strength-value { color: #e5e7eb; }
+
+/* ============================================
+   ALERTS
+   ============================================ */
+.alert {
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.875rem;
+}
+
+.alert-error {
+  background: #fee;
+  color: #c00;
+}
+
+/* ============================================
+   AUTH BUTTONS & LINKS
+   ============================================ */
+.auth-button {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 0.625rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.auth-button:active {
+  transform: translateY(0);
+}
+
+.auth-button.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+.auth-button.register:hover {
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 1.25rem;
+  color: #667eea;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.auth-link span {
+  text-decoration: underline;
+}
+
+.auth-link:hover {
+  color: #764ba2;
+}
+
+/* ============================================
+   8. SETTINGS CARD
+   ============================================ */
+.settings-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.settings-card.dark {
+  background: #1f2937;
+}
+
+.settings-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  font-size: 1.375rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.settings-card.dark .settings-card-header {
+  color: #f3f4f6;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: bold;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.settings-card.dark .settings-label {
+  color: #f3f4f6;
+}
+
+.settings-input,
+.settings-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+  background: white;
+  color: #333;
+}
+
+.settings-input:focus,
+.settings-select:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.settings-card.dark .settings-input,
+.settings-card.dark .settings-select {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.email-input-wrapper {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.email-input-wrapper .settings-input {
+  flex: 1;
+}
+
+.copy-button {
+  padding: 0.75rem;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.copy-button:hover {
+  transform: scale(1.05);
+}
+
+.copy-button.copied {
+  background: #10b981;
+}
+
+.copy-button:not(.copied) {
+  background: #667eea;
+}
+
+/* ============================================
+   9. CRYPTOCURRENCIES CARD
+   ============================================ */
+.cryptocurrencies-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.cryptocurrencies-card.dark {
+  background: #1f2937;
+}
+
+.cryptocurrencies-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.cryptocurrencies-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.cryptocurrencies-card.dark .cryptocurrencies-title {
+  color: #f3f4f6;
+}
+
+.cryptocurrencies-subtitle {
+  margin: 0.5rem 0 0 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.cryptocurrencies-card.dark .cryptocurrencies-subtitle {
+  color: #9ca3af;
+}
+
+.cryptocurrencies-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  min-width: 200px;
+  background: white;
+  color: #333;
+}
+
+.search-input:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.cryptocurrencies-card.dark .search-input {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.sort-select {
+  padding: 0.75rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: white;
+  color: #333;
+}
+
+.sort-select:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.cryptocurrencies-card.dark .sort-select {
+  background: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.clear-button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.875rem;
+  transition: all 0.3s;
+}
+
+.clear-button:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.cryptocurrencies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.cryptocurrencies-empty {
+  text-align: center;
+  padding: 4rem 1.25rem;
+  color: #9ca3af;
+}
+
+/* ============================================
+   10. CRYPTO CARD
+   ============================================ */
+.crypto-card {
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid #e5e7eb;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  user-select: none;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.crypto-card.dark {
+  border-color: #374151;
+  background: #1f2937;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.crypto-card.selected {
+  border: 3px solid #667eea;
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+}
+
+.crypto-card.dark.selected {
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  border-color: #667eea;
+}
+
+.crypto-card:hover:not(.selected) {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   11. DASHBOARD HEADER
+   ============================================ */
+.dashboard-header {
+  background: white;
+  border-bottom: 3px solid #667eea;
+  padding: 1.25rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-header.dark {
+  background: #1f2937;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0.75rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  color: #333;
+}
+
+.dashboard-header.dark .header-title {
+  color: #f3f4f6;
+}
+
+.header-subtitle {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.dashboard-header.dark .header-subtitle {
+  color: #9ca3af;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.user-badge {
+  background: #eef2ff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+}
+
+.dashboard-header.dark .user-badge {
+  background: #374151;
+  color: #f3f4f6;
+}
+
+.header-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  border: none;
+  transition: transform 0.2s;
+}
+
+.header-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.header-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.header-btn-refresh {
+  background: #667eea;
+  color: white;
+}
+
+.header-btn-portfolio {
+  background: #10b981;
+  color: white;
+}
+
+.header-btn-bots {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.header-btn-logout {
+  background: #ef4444;
+  color: white;
+}
+
+.header-btn-telegram {
+  background: linear-gradient(135deg, #229ED9 0%, #0088CC 100%);
+  color: white;
+}
+
+.header-btn-telegram:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(34, 158, 217, 0.4);
+}
+
+/* ============================================
+   12. MODAL (ADDTO TRANSACTION) - NOVO
+   Small, semantic modal styling to replace inline styles
+   ============================================ */
+.modal-content {
+  padding: 1.5rem;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 20px 50px rgba(16, 24, 40, 0.25);
+  max-width: 720px;
+  width: 100%;
+  box-sizing: border-box;
+  color: #111827;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.modal-content.dark {
+  background: #0f1724;
+  color: #e5e7eb;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.modal-body {
+  padding-top: .5rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: .75rem;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+/* mensagem de erro padronizada (substitui inline styles como background: #fee2e2) */
+.error-message {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modal-content.dark .error-message {
+  background: rgba(255, 77, 77, 0.08);
+  color: #ffb4b4;
+}
+
+/* ============================================
+   13. TRANSACTION HISTORY - NOVO
+   ============================================ */
+.transaction-history {
+  padding: 3.75rem 1.25rem;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.transaction-history .title {
+  margin: 0 0 1rem 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.transaction-history.dark .title { color: #e5e7eb; }
+
+.transaction-history .list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.transaction-history .loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: 2rem 0;
+  color: #6b7280;
+}
+
+/* spinner reutilizável */
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 4px solid rgba(0,0,0,0.08);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.transaction-history.dark .loading { color: #9ca3af; }
+.transaction-history.dark .spinner {
+  border: 4px solid rgba(255,255,255,0.06);
+  border-top-color: #67e8f9;
+}
+
+/* empty state */
+.transaction-history .empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #9ca3af;
+}
+
+/* ============================================
+   14. ANIMATIONS (já existente; mantém keyframes)
+   ============================================ */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ============================================
+   15. RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 20px 15px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cryptocurrencies-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .auth-card {
+    padding: 20px;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+
+  .floating-circle.large {
+    width: 220px;
+    height: 220px;
+    top: -110px;
+    left: -110px;
+  }
+}
+
+/* ============================================
+   16. SCROLLBAR
+   ============================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #667eea, #764ba2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #5568d3, #6a3f8f);
+}
+
+.dark::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+/* ✅ CSS ADICIONAL PARA REGISTER PAGE (adicionar em components.css) */
+
+/* Wrapper register tem gradiente verde */
+.auth-container.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.auth-container.dark.register {
+  background: linear-gradient(135deg, #0f4c42 0%, #1a5c4f 100%);
+}
+
+/* Logo verde */
+.auth-logo.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+/* Título verde */
+.auth-title.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Botão verde */
+.auth-button.register {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+.auth-button.register:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(17, 153, 142, 0.5);
+}

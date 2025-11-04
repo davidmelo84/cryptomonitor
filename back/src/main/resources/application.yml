@@ -1,0 +1,191 @@
+# ============================================
+# CONFIGURAÇÕES GERAIS DO SERVIDOR
+# ============================================
+server:
+  port: ${PORT:8080}
+  servlet:
+    context-path: /crypto-monitor
+
+  compression:
+    enabled: true
+    mime-types:
+      - application/json
+      - application/xml
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+      - text/javascript
+      - application/javascript
+    min-response-size: 1024
+
+# ============================================
+# SPRING / BANCO DE DADOS
+# ============================================
+spring:
+  application:
+    name: crypto-monitor
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
+    driver-class-name: org.postgresql.Driver
+    username: ${SPRING_DATASOURCE_USERNAME:crypto_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:qwe123}
+
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: CryptoMonitorPool
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    defer-datasource-initialization: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    out-of-order: false
+
+  # ============================================
+  # TASK SCHEDULING
+  # ============================================
+  task:
+    scheduling:
+      enabled: true
+
+# ============================================
+# SENDGRID EMAIL CONFIGURATION
+# ============================================
+sendgrid:
+  api:
+    key: ${SENDGRID_API_KEY:}
+  from:
+    email: ${SENDGRID_FROM_EMAIL:ddevnordeste@gmail.com}
+    name: ${SENDGRID_FROM_NAME:Crypto Monitor}
+
+email:
+  provider: sendgrid
+  verification:
+    enabled: true
+    code-expiration-minutes: 15
+  from: ${SENDGRID_FROM_EMAIL:ddevnordeste@gmail.com}
+
+# ============================================
+# JWT CONFIGURATION
+# ============================================
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 86400000
+  issuer: crypto-monitor
+
+# ============================================
+# CONFIGURAÇÕES ESPECÍFICAS DA APLICAÇÃO
+# ============================================
+crypto:
+  coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash
+
+alert:
+  buy:
+    threshold: -5.0
+  sell:
+    threshold: 10.0
+  check-interval: 300000
+
+notification:
+  email:
+    enabled: true
+    from-name: Crypto Monitoring System
+    from: ${SENDGRID_FROM_EMAIL:ddevnordeste@gmail.com}
+    cooldown-minutes: 30
+
+  telegram:
+    enabled: true
+    bot-token: ${TELEGRAM_BOT_TOKEN:}
+    chat-id: ${TELEGRAM_CHAT_ID:}
+
+monitoring:
+  max-concurrent-users: 50
+  thread-pool-size: 10
+  shutdown-timeout: 60
+
+coingecko:
+  api:
+    url: https://api.coingecko.com/api/v3
+  rate-limit: 30
+
+# ============================================
+# LOGGING
+# ============================================
+logging:
+  level:
+    com.crypto: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: ERROR
+    org.springframework.web: INFO
+    org.springframework.mail: DEBUG
+    org.flywaydb: INFO
+    org.springframework.scheduling: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/crypto-monitor.log
+    max-size: 10MB
+    max-history: 7
+
+# ============================================
+# ACTUATOR
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+  health:
+    mail:
+      enabled: false
+  info:
+    env:
+      enabled: true
+
+# ============================================
+# INFORMAÇÕES DA APLICAÇÃO
+# ============================================
+info:
+  app:
+    name: Crypto Monitor
+    description: Sistema de Monitoramento de Criptomoedas com Controle por Usuário
+    version: 2.0.0
+    features:
+      - Monitoramento controlado por usuário
+      - Alertas personalizados por email
+      - Sistema anti-spam de notificações
+      - Suporte multi-usuário
+  java:
+    version: "17"
+  build:
+    timestamp: ${TIMESTAMP:2025-11-03T00:00:00Z}
+
+# ============================================
+# CONFIGURAÇÃO DE SEGURANÇA / CORS
+# ============================================
+app:
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,https://crypto-monitor-frontend.vercel.app}
+  security:
+    enabled: true

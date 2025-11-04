@@ -1,0 +1,214 @@
+/* ============================================
+   THEME TOGGLE COMPONENT
+   front/crypto-monitor-frontend/src/styles/theme-toggle.css
+   ============================================ */
+
+/* ============================================
+   1. BASE STYLES
+   ============================================ */
+
+.theme-toggle-button {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+.theme-toggle-button:hover {
+  transform: scale(1.1);
+}
+
+.theme-toggle-button:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* ============================================
+   2. LIGHT MODE (Sun Icon)
+   ============================================ */
+
+.theme-toggle-button.light-mode {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.theme-toggle-button.light-mode:hover {
+  background: linear-gradient(135deg, #e082ea 0%, #e4465b 100%);
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+}
+
+/* ============================================
+   3. DARK MODE (Moon Icon)
+   ============================================ */
+
+.theme-toggle-button.dark-mode {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.theme-toggle-button.dark-mode:hover {
+  background: linear-gradient(135deg, #556dd9 0%, #653a91 100%);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* ============================================
+   4. ICON STYLES
+   ============================================ */
+
+.theme-toggle-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+/* Animation for icon change */
+.theme-toggle-button .theme-toggle-icon {
+  animation: iconRotate 0.3s ease;
+}
+
+@keyframes iconRotate {
+  0% {
+    transform: rotate(-90deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   5. ACCESSIBILITY
+   ============================================ */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .theme-toggle-button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-button,
+  .theme-toggle-icon {
+    transition: none;
+    animation: none;
+  }
+  
+  .theme-toggle-button:hover {
+    transform: none;
+  }
+}
+
+/* ============================================
+   6. RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+  .theme-toggle-button {
+    padding: 8px;
+  }
+  
+  .theme-toggle-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ============================================
+   7. POSITIONING VARIANTS
+   ============================================ */
+
+/* Quando usado no header */
+.header-actions .theme-toggle-button {
+  margin-right: 0.5rem;
+}
+
+/* Quando usado como floating button */
+.theme-toggle-floating {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+@media (max-width: 768px) {
+  .theme-toggle-floating {
+    top: 10px;
+    right: 10px;
+  }
+}
+
+/* ============================================
+   8. TOOLTIP (Optional)
+   ============================================ */
+
+.theme-toggle-button[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.theme-toggle-button[data-tooltip]:hover::after {
+  opacity: 1;
+}
+
+/* ============================================
+   9. LOADING STATE (Optional)
+   ============================================ */
+
+.theme-toggle-button.loading {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.theme-toggle-button.loading .theme-toggle-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================
+   10. DISABLED STATE
+   ============================================ */
+
+.theme-toggle-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none !important;
+}
+
+.theme-toggle-button:disabled:hover {
+  transform: none !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}

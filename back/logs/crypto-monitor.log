@@ -1,0 +1,1654 @@
+<<<<<<< HEAD
+2025-11-03 16:23:58 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 13552 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-11-03 16:23:58 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-11-03 16:24:04 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-03 16:24:04 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 336 ms. Found 8 JPA repository interfaces.
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.AlertRuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.BotTradeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.CryptoCurrencyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.PortfolioRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TradingBotRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TransactionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.VerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:24:05 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 12 ms. Found 0 Redis repository interfaces.
+2025-11-03 16:24:07 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-11-03 16:24:07 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-03 16:24:07 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-11-03 16:24:07 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-11-03 16:24:07 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 8765 ms
+2025-11-03 16:24:07 [main] INFO  com.crypto.security.JwtUtil - ✅ JWT configurado: Expiração=86400000ms, Issuer=crypto-monitor
+2025-11-03 16:24:07 [main] WARN  org.postgresql.util.PGPropertyUtil - JDBC URL invalid port number: <PORT>
+2025-11-03 16:24:07 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-11-03 16:24:07 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-11-03 16:24:07 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+=======
+2025-10-31 18:56:27 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 8908 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-10-31 18:56:27 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-31 18:56:30 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-31 18:56:30 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 253 ms. Found 8 JPA repository interfaces.
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.AlertRuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.BotTradeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.CryptoCurrencyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.PortfolioRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TradingBotRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TransactionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.VerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:56:31 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 9 ms. Found 0 Redis repository interfaces.
+2025-10-31 18:56:32 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-31 18:56:32 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-31 18:56:32 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-31 18:56:33 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-10-31 18:56:33 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 5593 ms
+2025-10-31 18:56:33 [main] INFO  com.crypto.security.JwtUtil - ✅ JWT configurado: Expiração=86400000ms, Issuer=crypto-monitor
+2025-10-31 18:56:34 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-10-31 18:56:34 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-10-31 18:56:34 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+>>>>>>> 6fa2dff00e1d9241c2376a8ff8d4f74a059acf03
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+<<<<<<< HEAD
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+=======
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+>>>>>>> 6fa2dff00e1d9241c2376a8ff8d4f74a059acf03
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+<<<<<<< HEAD
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__create_trading_bots.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V4__add_composite_indexes.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V5__add_verification_system.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V5__add_verification_system.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__create_trading_bots.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-11-03 16:24:07 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V4__add_composite_indexes.sql
+2025-11-03 16:24:07 [main] WARN  org.postgresql.util.PGPropertyUtil - JDBC URL invalid port number: <PORT>
+2025-11-03 16:24:07 [main] ERROR o.s.b.w.e.tomcat.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+2025-11-03 16:24:07 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-11-03 16:24:07 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2025-11-03 16:24:07 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-11-03 16:24:07 [main] ERROR o.s.boot.SpringApplication - Application run failed
+=======
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__create_trading_bots.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V4__add_composite_indexes.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V5__add_verification_system.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V5__add_verification_system.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__create_trading_bots.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V4__add_composite_indexes.sql
+2025-10-31 18:56:34 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/crypto_monitor (PostgreSQL 16.8)
+2025-10-31 18:56:34 [main] DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.6.0
+2025-10-31 18:56:34 [main] DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-10-31 18:56:34 [main] WARN  o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 16.8 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 15.
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V5__add_verification_system.sql (filename: V5__add_verification_system.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__create_trading_bots.sql (filename: V3__create_trading_bots.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V4__add_composite_indexes.sql (filename: V4__add_composite_indexes.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V5__add_verification_system.sql (filename: V5__add_verification_system.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__create_trading_bots.sql (filename: V3__create_trading_bots.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V4__add_composite_indexes.sql (filename: V4__add_composite_indexes.sql)
+2025-10-31 18:56:34 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 5 migrations (execution time 00:00.231s)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-10-31 18:56:34 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.parser.Parser - Parsing V3__create_trading_bots.sql ...
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 1: CREATE TABLE trading_bots (
+                              id BIGSERIAL PRIMARY KEY,
+                              user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                              name VARCHAR(255) NOT NULL,
+                              coin_symbol VARCHAR(50) NOT NULL,
+                              strategy VARCHAR(50) NOT NULL DEFAULT 'GRID_TRADING',
+                              status VARCHAR(50) NOT NULL DEFAULT 'STOPPED',
+                              is_simulation BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Grid Trading Parameters
+                              grid_lower_price NUMERIC(19,8),
+                              grid_upper_price NUMERIC(19,8),
+                              grid_levels INT,
+                              amount_per_grid NUMERIC(19,8),
+
+    -- DCA Parameters
+                              dca_amount NUMERIC(19,2),
+                              dca_interval_minutes INT,
+                              last_dca_execution TIMESTAMP,
+
+    -- Stop Loss / Take Profit
+                              stop_loss_percent NUMERIC(5,2),
+                              take_profit_percent NUMERIC(5,2),
+                              entry_price NUMERIC(19,8),
+
+    -- Statistics
+                              total_profit_loss NUMERIC(19,2) DEFAULT 0,
+                              total_trades INT DEFAULT 0,
+                              winning_trades INT DEFAULT 0,
+                              losing_trades INT DEFAULT 0,
+
+    -- Timestamps
+                              created_at TIMESTAMP DEFAULT now(),
+                              started_at TIMESTAMP,
+                              stopped_at TIMESTAMP
+)
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 39: -- Índices recomendados
+CREATE INDEX idx_trading_bots_user_id ON trading_bots(user_id)
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 40: CREATE INDEX idx_trading_bots_status ON trading_bots(status)
+2025-10-31 18:56:34 [main] DEBUG o.f.core.internal.command.DbMigrate - Starting migration of schema "public" to version "3 - create trading bots" ...
+2025-10-31 18:56:34 [main] INFO  o.f.core.internal.command.DbMigrate - Migrating schema "public" to version "3 - create trading bots"
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: CREATE TABLE trading_bots (
+                              id BIGSERIAL PRIMARY KEY,
+                              user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                              name VARCHAR(255) NOT NULL,
+                              coin_symbol VARCHAR(50) NOT NULL,
+                              strategy VARCHAR(50) NOT NULL DEFAULT 'GRID_TRADING',
+                              status VARCHAR(50) NOT NULL DEFAULT 'STOPPED',
+                              is_simulation BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Grid Trading Parameters
+                              grid_lower_price NUMERIC(19,8),
+                              grid_upper_price NUMERIC(19,8),
+                              grid_levels INT,
+                              amount_per_grid NUMERIC(19,8),
+
+    -- DCA Parameters
+                              dca_amount NUMERIC(19,2),
+                              dca_interval_minutes INT,
+                              last_dca_execution TIMESTAMP,
+
+    -- Stop Loss / Take Profit
+                              stop_loss_percent NUMERIC(5,2),
+                              take_profit_percent NUMERIC(5,2),
+                              entry_price NUMERIC(19,8),
+
+    -- Statistics
+                              total_profit_loss NUMERIC(19,2) DEFAULT 0,
+                              total_trades INT DEFAULT 0,
+                              winning_trades INT DEFAULT 0,
+                              losing_trades INT DEFAULT 0,
+
+    -- Timestamps
+                              created_at TIMESTAMP DEFAULT now(),
+                              started_at TIMESTAMP,
+                              stopped_at TIMESTAMP
+)
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.j.TransactionalExecutionTemplate - Rolling back transaction...
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.j.TransactionalExecutionTemplate - Transaction rolled back
+2025-10-31 18:56:34 [main] ERROR o.f.core.internal.command.DbMigrate - Migration of schema "public" to version "3 - create trading bots" failed! Changes successfully rolled back.
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.j.TransactionalExecutionTemplate - Rolling back transaction...
+2025-10-31 18:56:34 [main] DEBUG o.f.c.i.j.TransactionalExecutionTemplate - Transaction rolled back
+2025-10-31 18:56:34 [main] DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 56 of 160M
+2025-10-31 18:56:34 [main] ERROR o.s.b.w.e.tomcat.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+2025-10-31 18:56:35 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-10-31 18:56:35 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2025-10-31 18:56:35 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-10-31 18:56:35 [main] ERROR o.s.boot.SpringApplication - Application run failed
+>>>>>>> 6fa2dff00e1d9241c2376a8ff8d4f74a059acf03
+org.springframework.context.ApplicationContextException: Unable to start web server
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:165)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:610)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:455)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:323)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1342)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1331)
+	at com.crypto.CryptoMonitorApplication.main(CryptoMonitorApplication.java:16)
+Caused by: org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:142)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:104)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:501)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:218)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:188)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:162)
+	... 8 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:204)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:210)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:173)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:168)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:153)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:86)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:266)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:240)
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4850)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+<<<<<<< HEAD
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:845)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:240)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:433)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:917)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:488)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:123)
+	... 13 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 54 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1686)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1435)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 68 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jpaSharedEM_entityManagerFactory': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:689)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1336)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1166)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 82 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+-----------------------------------------------------------------------------------------------------------------
+SQL State  : 99999
+Error Code : 0
+Message    : Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1775)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:312)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 94 common frames omitted
+Caused by: org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain connection from database: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+-----------------------------------------------------------------------------------------------------------------
+SQL State  : 99999
+Error Code : 0
+Message    : Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:60)
+	at org.flywaydb.core.internal.jdbc.JdbcConnectionFactory.<init>(JdbcConnectionFactory.java:74)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:142)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:140)
+	at org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1822)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1771)
+	... 103 common frames omitted
+Caused by: org.postgresql.util.PSQLException: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+	at org.postgresql.Driver.connect(Driver.java:280)
+	at org.springframework.jdbc.datasource.SimpleDriverDataSource.getConnectionFromDriver(SimpleDriverDataSource.java:144)
+	at org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnectionFromDriver(AbstractDriverBasedDataSource.java:205)
+	at org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnection(AbstractDriverBasedDataSource.java:169)
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:48)
+	... 109 common frames omitted
+2025-11-03 16:27:22 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 14432 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-11-03 16:27:22 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-11-03 16:27:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-03 16:27:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 185 ms. Found 8 JPA repository interfaces.
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.AlertRuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.BotTradeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.CryptoCurrencyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.PortfolioRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TradingBotRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TransactionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.VerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:27:24 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 12 ms. Found 0 Redis repository interfaces.
+2025-11-03 16:27:25 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-11-03 16:27:25 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-03 16:27:25 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-11-03 16:27:25 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-11-03 16:27:25 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3020 ms
+2025-11-03 16:27:25 [main] INFO  com.crypto.security.JwtUtil - ✅ JWT configurado: Expiração=86400000ms, Issuer=crypto-monitor
+2025-11-03 16:27:25 [main] WARN  org.postgresql.util.PGPropertyUtil - JDBC URL invalid port number: <PORT>
+2025-11-03 16:27:25 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-11-03 16:27:25 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-11-03 16:27:25 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__create_trading_bots.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V4__add_composite_indexes.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V5__add_verification_system.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V5__add_verification_system.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__create_trading_bots.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-11-03 16:27:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V4__add_composite_indexes.sql
+2025-11-03 16:27:25 [main] WARN  org.postgresql.util.PGPropertyUtil - JDBC URL invalid port number: <PORT>
+2025-11-03 16:27:25 [main] ERROR o.s.b.w.e.tomcat.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+2025-11-03 16:27:26 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-11-03 16:27:26 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2025-11-03 16:27:26 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-11-03 16:27:26 [main] ERROR o.s.boot.SpringApplication - Application run failed
+org.springframework.context.ApplicationContextException: Unable to start web server
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:165)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:610)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:455)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:323)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1342)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1331)
+	at com.crypto.CryptoMonitorApplication.main(CryptoMonitorApplication.java:16)
+Caused by: org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:142)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:104)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:501)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:218)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:188)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:162)
+	... 8 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:204)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:210)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:173)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:168)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:153)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:86)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:266)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:240)
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4850)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:845)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:240)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:433)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:917)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:488)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:123)
+	... 13 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 54 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1686)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1435)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 68 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jpaSharedEM_entityManagerFactory': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:689)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1336)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1166)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 82 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+-----------------------------------------------------------------------------------------------------------------
+SQL State  : 99999
+Error Code : 0
+Message    : Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1775)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:312)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 94 common frames omitted
+Caused by: org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain connection from database: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+-----------------------------------------------------------------------------------------------------------------
+SQL State  : 99999
+Error Code : 0
+Message    : Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:60)
+	at org.flywaydb.core.internal.jdbc.JdbcConnectionFactory.<init>(JdbcConnectionFactory.java:74)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:142)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:140)
+	at org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1822)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1771)
+	... 103 common frames omitted
+Caused by: org.postgresql.util.PSQLException: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+	at org.postgresql.Driver.connect(Driver.java:280)
+	at org.springframework.jdbc.datasource.SimpleDriverDataSource.getConnectionFromDriver(SimpleDriverDataSource.java:144)
+	at org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnectionFromDriver(AbstractDriverBasedDataSource.java:205)
+	at org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnection(AbstractDriverBasedDataSource.java:169)
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:48)
+	... 109 common frames omitted
+2025-11-03 16:28:34 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 9908 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-11-03 16:28:34 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 185 ms. Found 8 JPA repository interfaces.
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.AlertRuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.BotTradeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.CryptoCurrencyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.PortfolioRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TradingBotRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TransactionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.VerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:28:36 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 10 ms. Found 0 Redis repository interfaces.
+2025-11-03 16:28:37 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-11-03 16:28:37 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-03 16:28:37 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-11-03 16:28:37 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-11-03 16:28:37 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3034 ms
+2025-11-03 16:28:37 [main] INFO  com.crypto.security.JwtUtil - ✅ JWT configurado: Expiração=86400000ms, Issuer=crypto-monitor
+2025-11-03 16:28:38 [main] WARN  org.postgresql.util.PGPropertyUtil - JDBC URL invalid port number: <PORT>
+2025-11-03 16:28:38 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-11-03 16:28:38 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-11-03 16:28:38 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__create_trading_bots.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V4__add_composite_indexes.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V5__add_verification_system.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V5__add_verification_system.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__create_trading_bots.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-11-03 16:28:38 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V4__add_composite_indexes.sql
+2025-11-03 16:28:38 [main] WARN  org.postgresql.util.PGPropertyUtil - JDBC URL invalid port number: <PORT>
+2025-11-03 16:28:38 [main] ERROR o.s.b.w.e.tomcat.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+2025-11-03 16:28:38 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-11-03 16:28:38 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2025-11-03 16:28:38 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-11-03 16:28:38 [main] ERROR o.s.boot.SpringApplication - Application run failed
+org.springframework.context.ApplicationContextException: Unable to start web server
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:165)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:610)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:455)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:323)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1342)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1331)
+	at com.crypto.CryptoMonitorApplication.main(CryptoMonitorApplication.java:16)
+Caused by: org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:142)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:104)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:501)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:218)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:188)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:162)
+	... 8 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:204)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:210)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:173)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:168)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:153)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:86)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:266)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:240)
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4850)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:845)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:240)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:433)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:917)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:488)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:123)
+	... 13 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 54 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1686)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1435)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 68 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jpaSharedEM_entityManagerFactory': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:689)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1336)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1166)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 82 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+-----------------------------------------------------------------------------------------------------------------
+SQL State  : 99999
+Error Code : 0
+Message    : Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1775)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:312)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 94 common frames omitted
+Caused by: org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain connection from database: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+-----------------------------------------------------------------------------------------------------------------
+SQL State  : 99999
+Error Code : 0
+Message    : Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:60)
+	at org.flywaydb.core.internal.jdbc.JdbcConnectionFactory.<init>(JdbcConnectionFactory.java:74)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:142)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:140)
+	at org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1822)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1771)
+	... 103 common frames omitted
+Caused by: org.postgresql.util.PSQLException: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+	at org.postgresql.Driver.connect(Driver.java:280)
+	at org.springframework.jdbc.datasource.SimpleDriverDataSource.getConnectionFromDriver(SimpleDriverDataSource.java:144)
+	at org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnectionFromDriver(AbstractDriverBasedDataSource.java:205)
+	at org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnection(AbstractDriverBasedDataSource.java:169)
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:48)
+	... 109 common frames omitted
+2025-11-03 16:30:54 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 16024 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-11-03 16:30:54 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 213 ms. Found 8 JPA repository interfaces.
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.AlertRuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.BotTradeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.CryptoCurrencyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.PortfolioRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TradingBotRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TransactionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.VerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-11-03 16:30:56 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 13 ms. Found 0 Redis repository interfaces.
+2025-11-03 16:30:58 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-11-03 16:30:58 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-11-03 16:30:58 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-11-03 16:30:58 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-11-03 16:30:58 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3313 ms
+2025-11-03 16:30:58 [main] INFO  com.crypto.security.JwtUtil - ✅ JWT configurado: Expiração=86400000ms, Issuer=crypto-monitor
+2025-11-03 16:30:58 [main] WARN  org.postgresql.util.PGPropertyUtil - JDBC URL invalid port number: <PORT>
+2025-11-03 16:30:58 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-11-03 16:30:58 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-11-03 16:30:58 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__create_trading_bots.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V4__add_composite_indexes.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V5__add_verification_system.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V5__add_verification_system.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__create_trading_bots.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-11-03 16:30:58 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V4__add_composite_indexes.sql
+2025-11-03 16:30:58 [main] WARN  org.postgresql.util.PGPropertyUtil - JDBC URL invalid port number: <PORT>
+2025-11-03 16:30:58 [main] ERROR o.s.b.w.e.tomcat.TomcatStarter - Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+2025-11-03 16:30:58 [main] INFO  o.a.catalina.core.StandardService - Stopping service [Tomcat]
+2025-11-03 16:30:58 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start web server
+2025-11-03 16:30:58 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-11-03 16:30:58 [main] ERROR o.s.boot.SpringApplication - Application run failed
+org.springframework.context.ApplicationContextException: Unable to start web server
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:165)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:610)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:455)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:323)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1342)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1331)
+	at com.crypto.CryptoMonitorApplication.main(CryptoMonitorApplication.java:16)
+Caused by: org.springframework.boot.web.server.WebServerException: Unable to start embedded Tomcat
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:142)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.<init>(TomcatWebServer.java:104)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getTomcatWebServer(TomcatServletWebServerFactory.java:501)
+	at org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory.getWebServer(TomcatServletWebServerFactory.java:218)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.createWebServer(ServletWebServerApplicationContext.java:188)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.onRefresh(ServletWebServerApplicationContext.java:162)
+	... 8 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'jwtAuthenticationFilter' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\JwtAuthenticationFilter.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:204)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.getOrderedBeansOfType(ServletContextInitializerBeans.java:210)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:173)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAsRegistrationBean(ServletContextInitializerBeans.java:168)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.addAdaptableBeans(ServletContextInitializerBeans.java:153)
+	at org.springframework.boot.web.servlet.ServletContextInitializerBeans.<init>(ServletContextInitializerBeans.java:86)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.getServletContextInitializerBeans(ServletWebServerApplicationContext.java:266)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.selfInitialize(ServletWebServerApplicationContext.java:240)
+	at org.springframework.boot.web.embedded.tomcat.TomcatStarter.onStartup(TomcatStarter.java:52)
+	at org.apache.catalina.core.StandardContext.startInternal(StandardContext.java:4850)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:845)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:240)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:433)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:917)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:488)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:123)
+	... 13 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 54 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1686)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1435)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 68 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jpaSharedEM_entityManagerFactory': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:689)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1336)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1166)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 82 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Unable to obtain connection from database: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+-----------------------------------------------------------------------------------------------------------------
+SQL State  : 99999
+Error Code : 0
+Message    : Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1775)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:312)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 94 common frames omitted
+Caused by: org.flywaydb.core.internal.exception.FlywaySqlException: Unable to obtain connection from database: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+-----------------------------------------------------------------------------------------------------------------
+SQL State  : 99999
+Error Code : 0
+Message    : Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:60)
+	at org.flywaydb.core.internal.jdbc.JdbcConnectionFactory.<init>(JdbcConnectionFactory.java:74)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:142)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:140)
+	at org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1822)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1771)
+	... 103 common frames omitted
+Caused by: org.postgresql.util.PSQLException: Unable to parse URL jdbc:postgresql://<POSTGRES_HOST>:<PORT>/<DB_NAME>
+	at org.postgresql.Driver.connect(Driver.java:280)
+	at org.springframework.jdbc.datasource.SimpleDriverDataSource.getConnectionFromDriver(SimpleDriverDataSource.java:144)
+	at org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnectionFromDriver(AbstractDriverBasedDataSource.java:205)
+	at org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnection(AbstractDriverBasedDataSource.java:169)
+	at org.flywaydb.core.internal.jdbc.JdbcUtils.openConnection(JdbcUtils.java:48)
+	... 109 common frames omitted
+=======
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardHost.startInternal(StandardHost.java:845)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1332)
+	at org.apache.catalina.core.ContainerBase$StartChild.call(ContainerBase.java:1322)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at org.apache.tomcat.util.threads.InlineExecutorService.execute(InlineExecutorService.java:75)
+	at java.base/java.util.concurrent.AbstractExecutorService.submit(AbstractExecutorService.java:145)
+	at org.apache.catalina.core.ContainerBase.startInternal(ContainerBase.java:866)
+	at org.apache.catalina.core.StandardEngine.startInternal(StandardEngine.java:240)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardService.startInternal(StandardService.java:433)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.core.StandardServer.startInternal(StandardServer.java:917)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:171)
+	at org.apache.catalina.startup.Tomcat.start(Tomcat.java:488)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.initialize(TomcatWebServer.java:123)
+	... 13 common frames omitted
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'customUserDetailsService' defined in file [C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\com\crypto\security\CustomUserDetailsService.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:802)
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:241)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1356)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1193)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 54 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'userRepository' defined in com.crypto.repository.UserRepository defined in @EnableJpaRepositories declared on JpaRepositoriesRegistrar.EnableJpaRepositoriesConfiguration: Cannot resolve reference to bean 'jpaSharedEM_entityManagerFactory' while setting bean property 'entityManager'
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1686)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1435)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1441)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1348)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:911)
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:789)
+	... 68 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jpaSharedEM_entityManagerFactory': Cannot resolve reference to bean 'entityManagerFactory' while setting constructor argument
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:377)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:135)
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:689)
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:513)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1336)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1166)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:563)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 82 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'flywayInitializer' defined in class path resource [org/springframework/boot/autoconfigure/flyway/FlywayAutoConfiguration$FlywayConfiguration.class]: Migration V3__create_trading_bots.sql failed
+--------------------------------------------
+SQL State  : 42P07
+Error Code : 0
+Message    : ERRO: relação "trading_bots" já existe
+Location   : db/migration/V3__create_trading_bots.sql (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration\V3__create_trading_bots.sql)
+Line       : 1
+Statement  : CREATE TABLE trading_bots (
+                              id BIGSERIAL PRIMARY KEY,
+                              user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                              name VARCHAR(255) NOT NULL,
+                              coin_symbol VARCHAR(50) NOT NULL,
+                              strategy VARCHAR(50) NOT NULL DEFAULT 'GRID_TRADING',
+                              status VARCHAR(50) NOT NULL DEFAULT 'STOPPED',
+                              is_simulation BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Grid Trading Parameters
+                              grid_lower_price NUMERIC(19,8),
+                              grid_upper_price NUMERIC(19,8),
+                              grid_levels INT,
+                              amount_per_grid NUMERIC(19,8),
+
+    -- DCA Parameters
+                              dca_amount NUMERIC(19,2),
+                              dca_interval_minutes INT,
+                              last_dca_execution TIMESTAMP,
+
+    -- Stop Loss / Take Profit
+                              stop_loss_percent NUMERIC(5,2),
+                              take_profit_percent NUMERIC(5,2),
+                              entry_price NUMERIC(19,8),
+
+    -- Statistics
+                              total_profit_loss NUMERIC(19,2) DEFAULT 0,
+                              total_trades INT DEFAULT 0,
+                              winning_trades INT DEFAULT 0,
+                              losing_trades INT DEFAULT 0,
+
+    -- Timestamps
+                              created_at TIMESTAMP DEFAULT now(),
+                              started_at TIMESTAMP,
+                              stopped_at TIMESTAMP
+)
+
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1775)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:601)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:523)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:325)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:312)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
+	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:365)
+	... 94 common frames omitted
+Caused by: org.flywaydb.core.internal.command.DbMigrate$FlywayMigrateException: Migration V3__create_trading_bots.sql failed
+--------------------------------------------
+SQL State  : 42P07
+Error Code : 0
+Message    : ERRO: relação "trading_bots" já existe
+Location   : db/migration/V3__create_trading_bots.sql (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration\V3__create_trading_bots.sql)
+Line       : 1
+Statement  : CREATE TABLE trading_bots (
+                              id BIGSERIAL PRIMARY KEY,
+                              user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                              name VARCHAR(255) NOT NULL,
+                              coin_symbol VARCHAR(50) NOT NULL,
+                              strategy VARCHAR(50) NOT NULL DEFAULT 'GRID_TRADING',
+                              status VARCHAR(50) NOT NULL DEFAULT 'STOPPED',
+                              is_simulation BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Grid Trading Parameters
+                              grid_lower_price NUMERIC(19,8),
+                              grid_upper_price NUMERIC(19,8),
+                              grid_levels INT,
+                              amount_per_grid NUMERIC(19,8),
+
+    -- DCA Parameters
+                              dca_amount NUMERIC(19,2),
+                              dca_interval_minutes INT,
+                              last_dca_execution TIMESTAMP,
+
+    -- Stop Loss / Take Profit
+                              stop_loss_percent NUMERIC(5,2),
+                              take_profit_percent NUMERIC(5,2),
+                              entry_price NUMERIC(19,8),
+
+    -- Statistics
+                              total_profit_loss NUMERIC(19,2) DEFAULT 0,
+                              total_trades INT DEFAULT 0,
+                              winning_trades INT DEFAULT 0,
+                              losing_trades INT DEFAULT 0,
+
+    -- Timestamps
+                              created_at TIMESTAMP DEFAULT now(),
+                              started_at TIMESTAMP,
+                              stopped_at TIMESTAMP
+)
+
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:382)
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$applyMigrations$1(DbMigrate.java:272)
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:55)
+	at org.flywaydb.core.internal.command.DbMigrate.applyMigrations(DbMigrate.java:271)
+	at org.flywaydb.core.internal.command.DbMigrate.migrateGroup(DbMigrate.java:244)
+	at org.flywaydb.core.internal.command.DbMigrate.lambda$migrateAll$0(DbMigrate.java:139)
+	at org.flywaydb.core.internal.database.postgresql.PostgreSQLAdvisoryLockTemplate.execute(PostgreSQLAdvisoryLockTemplate.java:73)
+	at org.flywaydb.core.internal.database.postgresql.PostgreSQLAdvisoryLockTemplate.lambda$execute$0(PostgreSQLAdvisoryLockTemplate.java:56)
+	at org.flywaydb.core.internal.jdbc.TransactionalExecutionTemplate.execute(TransactionalExecutionTemplate.java:55)
+	at org.flywaydb.core.internal.database.postgresql.PostgreSQLAdvisoryLockTemplate.execute(PostgreSQLAdvisoryLockTemplate.java:56)
+	at org.flywaydb.core.internal.database.postgresql.PostgreSQLConnection.lock(PostgreSQLConnection.java:96)
+	at org.flywaydb.core.internal.schemahistory.JdbcTableSchemaHistory.lock(JdbcTableSchemaHistory.java:144)
+	at org.flywaydb.core.internal.command.DbMigrate.migrateAll(DbMigrate.java:139)
+	at org.flywaydb.core.internal.command.DbMigrate.migrate(DbMigrate.java:97)
+	at org.flywaydb.core.Flyway.lambda$migrate$0(Flyway.java:188)
+	at org.flywaydb.core.FlywayExecutor.execute(FlywayExecutor.java:213)
+	at org.flywaydb.core.Flyway.migrate(Flyway.java:140)
+	at org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:66)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1822)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1771)
+	... 103 common frames omitted
+Caused by: org.flywaydb.core.internal.sqlscript.FlywaySqlScriptException: Migration V3__create_trading_bots.sql failed
+--------------------------------------------
+SQL State  : 42P07
+Error Code : 0
+Message    : ERRO: relação "trading_bots" já existe
+Location   : db/migration/V3__create_trading_bots.sql (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration\V3__create_trading_bots.sql)
+Line       : 1
+Statement  : CREATE TABLE trading_bots (
+                              id BIGSERIAL PRIMARY KEY,
+                              user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                              name VARCHAR(255) NOT NULL,
+                              coin_symbol VARCHAR(50) NOT NULL,
+                              strategy VARCHAR(50) NOT NULL DEFAULT 'GRID_TRADING',
+                              status VARCHAR(50) NOT NULL DEFAULT 'STOPPED',
+                              is_simulation BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Grid Trading Parameters
+                              grid_lower_price NUMERIC(19,8),
+                              grid_upper_price NUMERIC(19,8),
+                              grid_levels INT,
+                              amount_per_grid NUMERIC(19,8),
+
+    -- DCA Parameters
+                              dca_amount NUMERIC(19,2),
+                              dca_interval_minutes INT,
+                              last_dca_execution TIMESTAMP,
+
+    -- Stop Loss / Take Profit
+                              stop_loss_percent NUMERIC(5,2),
+                              take_profit_percent NUMERIC(5,2),
+                              entry_price NUMERIC(19,8),
+
+    -- Statistics
+                              total_profit_loss NUMERIC(19,2) DEFAULT 0,
+                              total_trades INT DEFAULT 0,
+                              winning_trades INT DEFAULT 0,
+                              losing_trades INT DEFAULT 0,
+
+    -- Timestamps
+                              created_at TIMESTAMP DEFAULT now(),
+                              started_at TIMESTAMP,
+                              stopped_at TIMESTAMP
+)
+
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.handleException(DefaultSqlScriptExecutor.java:267)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:222)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.execute(DefaultSqlScriptExecutor.java:126)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.executeOnce(SqlMigrationExecutor.java:68)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.lambda$execute$0(SqlMigrationExecutor.java:57)
+	at org.flywaydb.core.internal.database.DefaultExecutionStrategy.execute(DefaultExecutionStrategy.java:27)
+	at org.flywaydb.core.internal.resolver.sql.SqlMigrationExecutor.execute(SqlMigrationExecutor.java:56)
+	at org.flywaydb.core.internal.command.DbMigrate.doMigrateGroup(DbMigrate.java:374)
+	... 122 common frames omitted
+Caused by: org.postgresql.util.PSQLException: ERRO: relação "trading_bots" já existe
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2713)
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2401)
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:368)
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:498)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:415)
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:335)
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:321)
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:297)
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:292)
+	at org.flywaydb.core.internal.jdbc.JdbcTemplate.executeStatement(JdbcTemplate.java:201)
+	at org.flywaydb.core.internal.sqlscript.ParsedSqlStatement.execute(ParsedSqlStatement.java:95)
+	at org.flywaydb.core.internal.sqlscript.DefaultSqlScriptExecutor.executeStatement(DefaultSqlScriptExecutor.java:210)
+	... 128 common frames omitted
+2025-10-31 18:57:21 [main] INFO  com.crypto.CryptoMonitorApplication - Starting CryptoMonitorApplication using Java 17.0.16 with PID 19444 (C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes started by DAVID in C:\Users\DAVID\Desktop\cryptomonitor\back)
+2025-10-31 18:57:21 [main] INFO  com.crypto.CryptoMonitorApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 209 ms. Found 8 JPA repository interfaces.
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.AlertRuleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.BotTradeRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.CryptoCurrencyRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.PortfolioRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TradingBotRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.TransactionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.crypto.repository.VerificationTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-31 18:57:23 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 14 ms. Found 0 Redis repository interfaces.
+2025-10-31 18:57:24 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-31 18:57:24 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-31 18:57:24 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-31 18:57:24 [main] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring embedded WebApplicationContext
+2025-10-31 18:57:24 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3128 ms
+2025-10-31 18:57:24 [main] INFO  com.crypto.security.JwtUtil - ✅ JWT configurado: Expiração=86400000ms, Issuer=crypto-monitor
+2025-10-31 18:57:25 [main] INFO  o.f.c.i.license.VersionPrinter - Flyway Community Edition 9.22.3 by Redgate
+2025-10-31 18:57:25 [main] INFO  o.f.c.i.license.VersionPrinter - See release notes here: https://rd.gt/416ObMi
+2025-10-31 18:57:25 [main] INFO  o.f.c.i.license.VersionPrinter - 
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/callback' ...
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/callback using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Unable to resolve location classpath:db/callback.
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classpath resources at 'classpath:db/migration' ...
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Determining location urls for classpath:db/migration using ClassLoader TomcatEmbeddedWebappClassLoader
+  context: crypto-monitor
+  delegate: true
+----------> Parent Classloader:
+jdk.internal.loader.ClassLoaders$AppClassLoader@60e53b93
+ ...
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning URL: file:/C:/Users/DAVID/Desktop/cryptomonitor/back/target/classes/db/migration
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning starting at classpath root in filesystem: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.c.FileSystemClassPathLocationScanner - Scanning for resources in path: C:\Users\DAVID\Desktop\cryptomonitor\back\target\classes\db\migration (db/migration)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V1__create_tables.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V2__create_portfolio_tables.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V3__create_trading_bots.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V4__add_composite_indexes.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Found resource: db/migration/V5__add_verification_system.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.classpath.ClassPathScanner - Scanning for classes at classpath:db/migration
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V5__add_verification_system.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V1__create_tables.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V3__create_trading_bots.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V2__create_portfolio_tables.sql
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.r.ResourceNameValidator - Validating V4__add_composite_indexes.sql
+2025-10-31 18:57:25 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/crypto_monitor (PostgreSQL 16.8)
+2025-10-31 18:57:25 [main] DEBUG org.flywaydb.core.FlywayExecutor - Driver: PostgreSQL JDBC Driver 42.6.0
+2025-10-31 18:57:25 [main] DEBUG org.flywaydb.core.FlywayExecutor - DDL Transactions Supported: true
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Schemas: 
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.SchemaHistoryFactory - Default schema: null
+2025-10-31 18:57:25 [main] WARN  o.f.c.i.database.base.Database - Flyway upgrade recommended: PostgreSQL 16.8 is newer than this version of Flyway and support has not been tested. The latest supported version of PostgreSQL is 15.
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.c.SqlScriptCallbackFactory - Scanning for SQL callbacks ...
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.command.DbValidate - Validating migrations ...
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V5__add_verification_system.sql (filename: V5__add_verification_system.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__create_trading_bots.sql (filename: V3__create_trading_bots.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V4__add_composite_indexes.sql (filename: V4__add_composite_indexes.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V5__add_verification_system.sql (filename: V5__add_verification_system.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V1__create_tables.sql (filename: V1__create_tables.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V3__create_trading_bots.sql (filename: V3__create_trading_bots.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V2__create_portfolio_tables.sql (filename: V2__create_portfolio_tables.sql)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.scanner.Scanner - Filtering out resource: db/migration/V4__add_composite_indexes.sql (filename: V4__add_composite_indexes.sql)
+2025-10-31 18:57:25 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 5 migrations (execution time 00:00.034s)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.command.DbSchemas - Skipping creation of existing schema: "public"
+2025-10-31 18:57:25 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 2
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.parser.Parser - Parsing V3__create_trading_bots.sql ...
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 1: CREATE TABLE trading_bots (
+                              id BIGSERIAL PRIMARY KEY,
+                              user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                              name VARCHAR(255) NOT NULL,
+                              coin_symbol VARCHAR(50) NOT NULL,
+                              strategy VARCHAR(50) NOT NULL DEFAULT 'GRID_TRADING',
+                              status VARCHAR(50) NOT NULL DEFAULT 'STOPPED',
+                              is_simulation BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Grid Trading Parameters
+                              grid_lower_price NUMERIC(19,8),
+                              grid_upper_price NUMERIC(19,8),
+                              grid_levels INT,
+                              amount_per_grid NUMERIC(19,8),
+
+    -- DCA Parameters
+                              dca_amount NUMERIC(19,2),
+                              dca_interval_minutes INT,
+                              last_dca_execution TIMESTAMP,
+
+    -- Stop Loss / Take Profit
+                              stop_loss_percent NUMERIC(5,2),
+                              take_profit_percent NUMERIC(5,2),
+                              entry_price NUMERIC(19,8),
+
+    -- Statistics
+                              total_profit_loss NUMERIC(19,2) DEFAULT 0,
+                              total_trades INT DEFAULT 0,
+                              winning_trades INT DEFAULT 0,
+                              losing_trades INT DEFAULT 0,
+
+    -- Timestamps
+                              created_at TIMESTAMP DEFAULT now(),
+                              started_at TIMESTAMP,
+                              stopped_at TIMESTAMP
+)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 39: -- Índices recomendados
+CREATE INDEX idx_trading_bots_user_id ON trading_bots(user_id)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 40: CREATE INDEX idx_trading_bots_status ON trading_bots(status)
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.command.DbMigrate - Starting migration of schema "public" to version "3 - create trading bots" ...
+2025-10-31 18:57:25 [main] INFO  o.f.core.internal.command.DbMigrate - Migrating schema "public" to version "3 - create trading bots"
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: CREATE TABLE trading_bots (
+                              id BIGSERIAL PRIMARY KEY,
+                              user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                              name VARCHAR(255) NOT NULL,
+                              coin_symbol VARCHAR(50) NOT NULL,
+                              strategy VARCHAR(50) NOT NULL DEFAULT 'GRID_TRADING',
+                              status VARCHAR(50) NOT NULL DEFAULT 'STOPPED',
+                              is_simulation BOOLEAN NOT NULL DEFAULT TRUE,
+
+    -- Grid Trading Parameters
+                              grid_lower_price NUMERIC(19,8),
+                              grid_upper_price NUMERIC(19,8),
+                              grid_levels INT,
+                              amount_per_grid NUMERIC(19,8),
+
+    -- DCA Parameters
+                              dca_amount NUMERIC(19,2),
+                              dca_interval_minutes INT,
+                              last_dca_execution TIMESTAMP,
+
+    -- Stop Loss / Take Profit
+                              stop_loss_percent NUMERIC(5,2),
+                              take_profit_percent NUMERIC(5,2),
+                              entry_price NUMERIC(19,8),
+
+    -- Statistics
+                              total_profit_loss NUMERIC(19,2) DEFAULT 0,
+                              total_trades INT DEFAULT 0,
+                              winning_trades INT DEFAULT 0,
+                              losing_trades INT DEFAULT 0,
+
+    -- Timestamps
+                              created_at TIMESTAMP DEFAULT now(),
+                              started_at TIMESTAMP,
+                              stopped_at TIMESTAMP
+)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- Índices recomendados
+CREATE INDEX idx_trading_bots_user_id ON trading_bots(user_id)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: CREATE INDEX idx_trading_bots_status ON trading_bots(status)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.command.DbMigrate - Successfully completed migration of schema "public" to version "3 - create trading bots"
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.JdbcTableSchemaHistory - Schema History table "public"."flyway_schema_history" successfully updated to reflect changes
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.parser.Parser - Parsing V4__add_composite_indexes.sql ...
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 7: -- ================================================================
+-- V4__add_composite_indexes.sql
+-- Ajuste completo: adiciona colunas faltantes e cria índices otimizados
+-- ================================================================
+
+-- 🩵 Corrigir colunas faltantes antes dos índices
+ALTER TABLE alert_rules
+    ADD COLUMN IF NOT EXISTS notification_email VARCHAR(150),
+    ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 12: -- ✅ Índice composto para busca de alertas por símbolo + ativo
+CREATE INDEX IF NOT EXISTS idx_alert_rules_email_symbol_active
+    ON alert_rules(coin_symbol, is_active)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 16: -- ✅ Índices complementares para segurança e desempenho
+CREATE INDEX IF NOT EXISTS idx_alert_rules_user_id ON alert_rules(user_id)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 17: CREATE INDEX IF NOT EXISTS idx_alert_rules_coin_symbol ON alert_rules(coin_symbol)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 20: -- ✅ Índice para portfolio por usuário
+CREATE INDEX IF NOT EXISTS idx_portfolio_user_symbol
+    ON portfolio(user_id, coin_symbol)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 24: -- ✅ Índice para transações por usuário e data
+CREATE INDEX IF NOT EXISTS idx_transactions_user_date
+    ON transactions(user_id, transaction_date DESC)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 28: -- ✅ Índice para bots ativos
+CREATE INDEX IF NOT EXISTS idx_bots_status_user
+    ON trading_bots(status, user_id)
+    WHERE status = 'RUNNING'
+2025-10-31 18:57:25 [main] DEBUG o.f.core.internal.command.DbMigrate - Starting migration of schema "public" to version "4 - add composite indexes" ...
+2025-10-31 18:57:25 [main] INFO  o.f.core.internal.command.DbMigrate - Migrating schema "public" to version "4 - add composite indexes"
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- ================================================================
+-- V4__add_composite_indexes.sql
+-- Ajuste completo: adiciona colunas faltantes e cria índices otimizados
+-- ================================================================
+
+-- 🩵 Corrigir colunas faltantes antes dos índices
+ALTER TABLE alert_rules
+    ADD COLUMN IF NOT EXISTS notification_email VARCHAR(150),
+    ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE
+2025-10-31 18:57:25 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: a coluna "notification_email" da relação "alert_rules" já existe, ignorada (SQL State: 42701 - Error Code: 0)
+2025-10-31 18:57:25 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: a coluna "is_active" da relação "alert_rules" já existe, ignorada (SQL State: 42701 - Error Code: 0)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- ✅ Índice composto para busca de alertas por símbolo + ativo
+CREATE INDEX IF NOT EXISTS idx_alert_rules_email_symbol_active
+    ON alert_rules(coin_symbol, is_active)
+2025-10-31 18:57:25 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: relação "idx_alert_rules_email_symbol_active" já existe, ignorando (SQL State: 42P07 - Error Code: 0)
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:25 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- ✅ Índices complementares para segurança e desempenho
+CREATE INDEX IF NOT EXISTS idx_alert_rules_user_id ON alert_rules(user_id)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: CREATE INDEX IF NOT EXISTS idx_alert_rules_coin_symbol ON alert_rules(coin_symbol)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- ✅ Índice para portfolio por usuário
+CREATE INDEX IF NOT EXISTS idx_portfolio_user_symbol
+    ON portfolio(user_id, coin_symbol)
+2025-10-31 18:57:26 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: relação "idx_portfolio_user_symbol" já existe, ignorando (SQL State: 42P07 - Error Code: 0)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- ✅ Índice para transações por usuário e data
+CREATE INDEX IF NOT EXISTS idx_transactions_user_date
+    ON transactions(user_id, transaction_date DESC)
+2025-10-31 18:57:26 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: relação "idx_transactions_user_date" já existe, ignorando (SQL State: 42P07 - Error Code: 0)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- ✅ Índice para bots ativos
+CREATE INDEX IF NOT EXISTS idx_bots_status_user
+    ON trading_bots(status, user_id)
+    WHERE status = 'RUNNING'
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.core.internal.command.DbMigrate - Successfully completed migration of schema "public" to version "4 - add composite indexes"
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.JdbcTableSchemaHistory - Schema History table "public"."flyway_schema_history" successfully updated to reflect changes
+2025-10-31 18:57:26 [main] DEBUG o.f.core.internal.parser.Parser - Parsing V5__add_verification_system.sql ...
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 7: -- ================================================================
+-- V5__add_verification_system.sql
+-- Adiciona sistema de verificação de e-mail por token e código
+-- ================================================================
+
+-- 🧩 Adicionar campo 'enabled' na tabela de usuários
+ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS enabled BOOLEAN DEFAULT FALSE
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 11: -- 🧩 Criar tabela de tokens de verificação
+CREATE TABLE IF NOT EXISTS verification_tokens (
+                                                   id SERIAL PRIMARY KEY,
+                                                   token VARCHAR(255) NOT NULL UNIQUE,
+    code VARCHAR(6) NOT NULL,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expiry_date TIMESTAMP NOT NULL,
+    verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 22: -- 🧩 Índices para performance nas verificações
+CREATE INDEX IF NOT EXISTS idx_verification_token ON verification_tokens(token)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 23: CREATE INDEX IF NOT EXISTS idx_verification_code ON verification_tokens(code)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.sqlscript.ParserSqlScript - Found statement at line 24: CREATE INDEX IF NOT EXISTS idx_verification_user ON verification_tokens(user_id)
+2025-10-31 18:57:26 [main] DEBUG o.f.core.internal.command.DbMigrate - Starting migration of schema "public" to version "5 - add verification system" ...
+2025-10-31 18:57:26 [main] INFO  o.f.core.internal.command.DbMigrate - Migrating schema "public" to version "5 - add verification system"
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- ================================================================
+-- V5__add_verification_system.sql
+-- Adiciona sistema de verificação de e-mail por token e código
+-- ================================================================
+
+-- 🧩 Adicionar campo 'enabled' na tabela de usuários
+ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS enabled BOOLEAN DEFAULT FALSE
+2025-10-31 18:57:26 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: a coluna "enabled" da relação "users" já existe, ignorada (SQL State: 42701 - Error Code: 0)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- 🧩 Criar tabela de tokens de verificação
+CREATE TABLE IF NOT EXISTS verification_tokens (
+                                                   id SERIAL PRIMARY KEY,
+                                                   token VARCHAR(255) NOT NULL UNIQUE,
+    code VARCHAR(6) NOT NULL,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expiry_date TIMESTAMP NOT NULL,
+    verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+2025-10-31 18:57:26 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: relação "verification_tokens" já existe, ignorando (SQL State: 42P07 - Error Code: 0)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: -- 🧩 Índices para performance nas verificações
+CREATE INDEX IF NOT EXISTS idx_verification_token ON verification_tokens(token)
+2025-10-31 18:57:26 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: relação "idx_verification_token" já existe, ignorando (SQL State: 42P07 - Error Code: 0)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: CREATE INDEX IF NOT EXISTS idx_verification_code ON verification_tokens(code)
+2025-10-31 18:57:26 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: relação "idx_verification_code" já existe, ignorando (SQL State: 42P07 - Error Code: 0)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - Executing SQL: CREATE INDEX IF NOT EXISTS idx_verification_user ON verification_tokens(user_id)
+2025-10-31 18:57:26 [main] WARN  o.f.c.i.s.DefaultSqlScriptExecutor - DB: relação "idx_verification_user" já existe, ignorando (SQL State: 42P07 - Error Code: 0)
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.DefaultSqlScriptExecutor - 0 rows affected
+2025-10-31 18:57:26 [main] DEBUG o.f.core.internal.command.DbMigrate - Successfully completed migration of schema "public" to version "5 - add verification system"
+2025-10-31 18:57:26 [main] DEBUG o.f.c.i.s.JdbcTableSchemaHistory - Schema History table "public"."flyway_schema_history" successfully updated to reflect changes
+2025-10-31 18:57:26 [main] INFO  o.f.core.internal.command.DbMigrate - Successfully applied 3 migrations to schema "public", now at version v5 (execution time 00:00.482s)
+2025-10-31 18:57:26 [main] DEBUG org.flywaydb.core.FlywayExecutor - Memory usage: 56 of 88M
+2025-10-31 18:57:26 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-31 18:57:26 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-31 18:57:26 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-31 18:57:27 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-31 18:57:27 [main] INFO  com.zaxxer.hikari.HikariDataSource - CryptoMonitorPool - Starting...
+2025-10-31 18:57:27 [main] INFO  com.zaxxer.hikari.pool.HikariPool - CryptoMonitorPool - Added connection org.postgresql.jdbc.PgConnection@2093bb6c
+2025-10-31 18:57:27 [main] INFO  com.zaxxer.hikari.HikariDataSource - CryptoMonitorPool - Start completed.
+2025-10-31 18:57:27 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-31 18:57:29 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-31 18:57:29 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-31 18:57:30 [main] DEBUG o.s.w.f.ServerHttpObservationFilter - Filter 'webMvcObservationFilter' configured for use
+2025-10-31 18:57:31 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-31 18:57:32 [main] INFO  com.crypto.config.CacheConfig - 🚀 Configurando Caffeine Cache (L1 - Local)
+2025-10-31 18:57:32 [main] INFO  com.crypto.config.CacheConfig - ✅ Caffeine Cache configurado: TTL=5min, MaxSize=1000
+2025-10-31 18:57:32 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService
+2025-10-31 18:57:32 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService
+2025-10-31 18:57:32 [main] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Initializing ExecutorService 'taskExecutor'
+2025-10-31 18:57:32 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-31 18:57:33 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 54 mappings in 'requestMappingHandlerMapping'
+2025-10-31 18:57:33 [main] DEBUG o.s.w.s.c.a.WebMvcConfigurer - Default resource handling disabled
+2025-10-31 18:57:34 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint(s) beneath base path '/actuator'
+2025-10-31 18:57:34 [main] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-10-31 18:57:34 [main] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-10-31 18:57:35 [main] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Initializing ExecutorService 'taskScheduler'
+2025-10-31 18:57:35 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/crypto-monitor'
+2025-10-31 18:57:35 [main] INFO  com.crypto.CryptoMonitorApplication - Started CryptoMonitorApplication in 15.012 seconds (process running for 16.297)
+2025-10-31 18:57:35 [scheduling-1] INFO  c.crypto.service.TradingBotService - ⏰ Scheduler executando... Procurando bots ativos
+2025-10-31 18:57:35 [scheduling-1] INFO  c.crypto.service.TradingBotService - 📊 Encontrados 0 bots rodando
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] INFO  o.a.c.c.C.[.[.[/crypto-monitor] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected StandardServletMultipartResolver
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected AcceptHeaderLocaleResolver
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected FixedThemeResolver
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@534bd131
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - Detected org.springframework.web.servlet.support.SessionFlashMapManager@5a8bcae1
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] DEBUG o.s.web.servlet.DispatcherServlet - enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-10-31 18:57:36 [RMI TCP Connection(1)-192.168.1.2] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2025-10-31 18:57:37 [boundedElastic-1] WARN  o.s.b.a.d.r.RedisReactiveHealthIndicator - Redis health check failed
+org.springframework.data.redis.RedisConnectionFailureException: Unable to connect to Redis
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$ExceptionTranslatingConnectionProvider.translateException(LettuceConnectionFactory.java:1805)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$ExceptionTranslatingConnectionProvider.getConnection(LettuceConnectionFactory.java:1736)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$SharedConnection.getNativeConnection(LettuceConnectionFactory.java:1538)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$SharedConnection.lambda$getConnection$0(LettuceConnectionFactory.java:1518)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory.doInLock(LettuceConnectionFactory.java:1478)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$SharedConnection.getConnection(LettuceConnectionFactory.java:1515)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory.getSharedReactiveConnection(LettuceConnectionFactory.java:1224)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory.getReactiveConnection(LettuceConnectionFactory.java:1099)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory.getReactiveConnection(LettuceConnectionFactory.java:130)
+	at reactor.core.publisher.MonoSupplier.call(MonoSupplier.java:67)
+	at reactor.core.publisher.FluxSubscribeOnCallable$CallableSubscribeOnSubscription.run(FluxSubscribeOnCallable.java:228)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:68)
+	at reactor.core.scheduler.SchedulerTask.call(SchedulerTask.java:28)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: io.lettuce.core.RedisConnectionException: Unable to connect to localhost/<unresolved>:6379
+	at io.lettuce.core.RedisConnectionException.create(RedisConnectionException.java:78)
+	at io.lettuce.core.RedisConnectionException.create(RedisConnectionException.java:56)
+	at io.lettuce.core.AbstractRedisClient.getConnection(AbstractRedisClient.java:350)
+	at io.lettuce.core.RedisClient.connect(RedisClient.java:215)
+	at org.springframework.data.redis.connection.lettuce.StandaloneConnectionProvider.lambda$getConnection$1(StandaloneConnectionProvider.java:112)
+	at java.base/java.util.Optional.orElseGet(Optional.java:364)
+	at org.springframework.data.redis.connection.lettuce.StandaloneConnectionProvider.getConnection(StandaloneConnectionProvider.java:112)
+	at org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory$ExceptionTranslatingConnectionProvider.getConnection(LettuceConnectionFactory.java:1734)
+	... 16 common frames omitted
+Caused by: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: getsockopt: localhost/127.0.0.1:6379
+Caused by: java.net.ConnectException: Connection refused: getsockopt
+	at java.base/sun.nio.ch.Net.pollConnect(Native Method)
+	at java.base/sun.nio.ch.Net.pollConnectNow(Net.java:672)
+	at java.base/sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:946)
+	at io.netty.channel.socket.nio.NioSocketChannel.doFinishConnect(NioSocketChannel.java:337)
+	at io.netty.channel.nio.AbstractNioChannel$AbstractNioUnsafe.finishConnect(AbstractNioChannel.java:334)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:776)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724)
+	at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650)
+	at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562)
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:997)
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74)
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+	at java.base/java.lang.Thread.run(Thread.java:840)
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService 'taskScheduler'
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskExecutor - Shutting down ExecutorService 'taskExecutor'
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] INFO  c.c.service.MonitoringControlService - 🔌 Encerrando MonitoringControlService...
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] INFO  c.c.service.MonitoringControlService - 🛑 Parando todos os monitoramentos ativos (0 usuários)...
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] INFO  c.c.service.MonitoringControlService - ✅ Todos os monitoramentos parados
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] DEBUG o.s.s.c.ThreadPoolTaskScheduler - Shutting down ExecutorService
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] INFO  c.c.service.MonitoringControlService - ✅ MonitoringControlService encerrado
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - CryptoMonitorPool - Shutdown initiated...
+2025-10-31 18:57:43 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - CryptoMonitorPool - Shutdown completed.
+>>>>>>> 6fa2dff00e1d9241c2376a8ff8d4f74a059acf03
