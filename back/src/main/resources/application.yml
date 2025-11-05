@@ -44,18 +44,21 @@ spring:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: false
-    open-in-view: false  # ✅ ADICIONADO
+    open-in-view: false  # ✅ Reduz overhead
     properties:
       hibernate:
-        # ✅ REMOVIDO: dialect (não é necessário)
-        format_sql: true
+        format_sql: false  # ✅ Desabilitar em produção
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
     defer-datasource-initialization: false
 
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-    validate-on-migrate: true
+    validate-on-migrate: false  # ✅ Reduz tempo de startup
     out-of-order: false
 
   # ============================================
@@ -64,13 +67,13 @@ spring:
   data:
     redis:
       repositories:
-        enabled: false  # ✅ DESABILITAR Redis
+        enabled: false
 
   # ============================================
   # CACHE - APENAS CAFFEINE
   # ============================================
   cache:
-    type: caffeine  # ✅ FORÇAR uso do Caffeine
+    type: caffeine
 
   # ============================================
   # TASK SCHEDULING
@@ -78,12 +81,15 @@ spring:
   task:
     scheduling:
       enabled: true
+      pool:
+        size: 5  # ✅ Limitar threads de scheduling
 
   # ============================================
-  # MAIN - PERMITIR REFERÊNCIAS CIRCULARES (TEMPORÁRIO)
+  # MAIN
   # ============================================
   main:
-    allow-circular-references: false  # ✅ Manter false (boa prática)
+    allow-circular-references: false
+    lazy-initialization: false  # ✅ Manter false em produção
 
 # ============================================
 # SENDGRID EMAIL CONFIGURATION
@@ -146,21 +152,22 @@ coingecko:
   rate-limit: 30
 
 # ============================================
-# LOGGING
+# LOGGING - OTIMIZADO PARA PRODUÇÃO
 # ============================================
 logging:
   level:
+    root: WARN  # ✅ Padrão WARN
     com.crypto: INFO
     org.springframework.security: WARN
-    org.hibernate: WARN  # ✅ REDUZIDO
-    org.springframework.web: INFO
-    org.springframework.mail: WARN  # ✅ REDUZIDO
-    org.flywaydb: INFO
-    org.springframework.scheduling: INFO
-    org.springframework.data.redis: ERROR  # ✅ SILENCIAR warnings Redis
+    org.hibernate: WARN
+    org.springframework.web: WARN  # ✅ Reduzido
+    org.springframework.mail: ERROR
+    org.flywaydb: WARN  # ✅ Reduzido
+    org.springframework.scheduling: WARN  # ✅ Reduzido
+    org.springframework.data.redis: ERROR
+    org.springframework.boot: WARN  # ✅ Reduzido
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/crypto-monitor.log
     max-size: 10MB
