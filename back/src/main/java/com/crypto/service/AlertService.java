@@ -1,8 +1,8 @@
 // back/src/main/java/com/crypto/service/AlertService.java
-
 package com.crypto.service;
 
 import com.crypto.model.AlertRule;
+import com.crypto.model.AlertRule.AlertType; // ✅ Import do enum interno
 import com.crypto.dto.CryptoCurrency;
 import com.crypto.model.User;
 import com.crypto.model.dto.NotificationMessage;
@@ -37,7 +37,7 @@ public class AlertService {
     // =========================================
 
     /**
-     * Cria uma nova regra de alerta genérica
+     * ✅ Cria uma nova regra de alerta genérica
      */
     @Transactional
     public AlertRule createAlertRule(AlertRule alertRule) {
@@ -47,6 +47,7 @@ public class AlertService {
             log.debug("   - Email: {}", alertRule.getNotificationEmail());
             log.debug("   - Tipo: {}", alertRule.getAlertType());
             log.debug("   - Threshold: {}", alertRule.getThresholdValue());
+            log.debug("   - Target Price: {}", alertRule.getTargetPrice());
 
             // Tentar vincular ao usuário autenticado (se disponível)
             try {
@@ -94,139 +95,6 @@ public class AlertService {
     }
 
     /**
-     * ✅ NOVO: Cria alerta de PERCENT_CHANGE_24H (variação percentual)
-     */
-    @Transactional
-    public AlertRule createPercentChangeAlert(
-            Long userId,
-            String coinSymbol,
-            BigDecimal thresholdValue,
-            String email
-    ) {
-        log.info("📝 Criando alerta de variação percentual");
-
-        if (thresholdValue == null) {
-            throw new IllegalArgumentException("Threshold de variação não pode ser nulo");
-        }
-
-        try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userId));
-
-            // ✅ VALIDAÇÃO: targetPrice deve ser null para PERCENT_CHANGE
-            AlertRule rule = AlertRule.builder()
-                    .user(user)
-                    .coinSymbol(coinSymbol.toUpperCase())
-                    .alertType(AlertType.PERCENT_CHANGE_24H)
-                    .thresholdValue(thresholdValue)
-                    .targetPrice(null)  // ✅ Explicitamente null (não usado neste tipo)
-                    .timePeriod("24h")
-                    .notificationEmail(email)
-                    .active(true)
-                    .build();
-
-            AlertRule savedRule = alertRuleRepository.save(rule);
-
-            log.info("✅ Alerta de variação criado: ID={}, Crypto={}, Threshold={}%",
-                    savedRule.getId(), coinSymbol, thresholdValue);
-
-            return savedRule;
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao criar alerta de variação: {}", e.getMessage(), e);
-            throw new RuntimeException("Falha ao criar alerta de variação: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * ✅ NOVO: Cria alerta de PRICE_INCREASE (preço atingir valor)
-     */
-    @Transactional
-    public AlertRule createPriceIncreaseAlert(
-            Long userId,
-            String coinSymbol,
-            BigDecimal targetPrice,
-            String email
-    ) {
-        log.info("📝 Criando alerta de aumento de preço");
-
-        if (targetPrice == null || targetPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Preço alvo deve ser maior que zero");
-        }
-
-        try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userId));
-
-            AlertRule rule = AlertRule.builder()
-                    .user(user)
-                    .coinSymbol(coinSymbol.toUpperCase())
-                    .alertType(AlertType.PRICE_INCREASE)
-                    .thresholdValue(targetPrice)  // ✅ Usado como preço alvo
-                    .targetPrice(null)
-                    .timePeriod(null)
-                    .notificationEmail(email)
-                    .active(true)
-                    .build();
-
-            AlertRule savedRule = alertRuleRepository.save(rule);
-
-            log.info("✅ Alerta de preço criado: ID={}, Crypto={}, Target=${}",
-                    savedRule.getId(), coinSymbol, targetPrice);
-
-            return savedRule;
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao criar alerta de preço: {}", e.getMessage(), e);
-            throw new RuntimeException("Falha ao criar alerta de preço: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * ✅ NOVO: Cria alerta de PRICE_DECREASE (preço cair abaixo de valor)
-     */
-    @Transactional
-    public AlertRule createPriceDecreaseAlert(
-            Long userId,
-            String coinSymbol,
-            BigDecimal targetPrice,
-            String email
-    ) {
-        log.info("📝 Criando alerta de queda de preço");
-
-        if (targetPrice == null || targetPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Preço alvo deve ser maior que zero");
-        }
-
-        try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userId));
-
-            AlertRule rule = AlertRule.builder()
-                    .user(user)
-                    .coinSymbol(coinSymbol.toUpperCase())
-                    .alertType(AlertType.PRICE_DECREASE)
-                    .thresholdValue(targetPrice)  // ✅ Usado como preço alvo
-                    .targetPrice(null)
-                    .timePeriod(null)
-                    .notificationEmail(email)
-                    .active(true)
-                    .build();
-
-            AlertRule savedRule = alertRuleRepository.save(rule);
-
-            log.info("✅ Alerta de queda criado: ID={}, Crypto={}, Target=${}",
-                    savedRule.getId(), coinSymbol, targetPrice);
-
-            return savedRule;
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao criar alerta de queda: {}", e.getMessage(), e);
-            throw new RuntimeException("Falha ao criar alerta de queda: " + e.getMessage(), e);
-        }
-    }
-
-    /**
      * ✅ VALIDAÇÃO: Garante consistência entre tipo de alerta e campos
      */
     private void validateAlertRule(AlertRule rule) {
@@ -236,33 +104,36 @@ public class AlertService {
             if (rule.getThresholdValue() == null) {
                 throw new IllegalArgumentException("PERCENT_CHANGE_24H requer thresholdValue");
             }
-            // targetPrice deve ser null para este tipo
+            // ✅ targetPrice DEVE ser null para este tipo
             rule.setTargetPrice(null);
         }
         else if (type == AlertType.PRICE_INCREASE || type == AlertType.PRICE_DECREASE) {
+            // ✅ Para alertas de preço, usar thresholdValue como preço alvo
             if (rule.getThresholdValue() == null) {
                 throw new IllegalArgumentException(type + " requer thresholdValue como preço alvo");
             }
             if (rule.getThresholdValue().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new IllegalArgumentException("Preço alvo deve ser maior que zero");
             }
+            // ✅ targetPrice pode ser null ou igual a thresholdValue
+            rule.setTargetPrice(null);
         }
         else if (type == AlertType.VOLUME_SPIKE || type == AlertType.MARKET_CAP) {
             if (rule.getThresholdValue() == null) {
                 throw new IllegalArgumentException(type + " requer thresholdValue");
             }
+            rule.setTargetPrice(null);
         }
     }
 
     /**
-     * Desativa TODOS os alertas de um usuário por email
+     * ✅ Desativa TODOS os alertas de um usuário por email
      */
     @Transactional
     public int deactivateAllAlertsForUser(String email) {
         try {
             log.info("🗑️  Desativando todos os alertas para: {}", email);
 
-            // Buscar todos os alertas ativos do usuário
             List<AlertRule> userAlerts = alertRuleRepository
                     .findByNotificationEmailAndActiveTrue(email);
 
@@ -273,7 +144,6 @@ public class AlertService {
 
             int deactivatedCount = 0;
 
-            // Desativar cada alerta
             for (AlertRule rule : userAlerts) {
                 rule.setActive(false);
                 alertRuleRepository.save(rule);
@@ -294,7 +164,7 @@ public class AlertService {
     }
 
     /**
-     * Desativa um alerta específico por ID
+     * ✅ Desativa um alerta específico por ID
      */
     @Transactional
     public void deactivateAlertRule(Long ruleId) {
@@ -321,35 +191,10 @@ public class AlertService {
         }
     }
 
-    /**
-     * Deleta fisicamente um alerta (alternativa à desativação)
-     */
-    @Transactional
-    public void deleteAlertRule(Long ruleId) {
-        try {
-            log.info("🗑️  Deletando alerta ID: {}", ruleId);
-
-            if (!alertRuleRepository.existsById(ruleId)) {
-                log.warn("⚠️  Alerta não encontrado: ID {}", ruleId);
-                throw new RuntimeException("Alerta não encontrado: " + ruleId);
-            }
-
-            alertRuleRepository.deleteById(ruleId);
-            log.info("✅ Alerta deletado: ID {}", ruleId);
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao deletar alerta {}: {}", ruleId, e.getMessage(), e);
-            throw new RuntimeException("Falha ao deletar alerta: " + e.getMessage(), e);
-        }
-    }
-
     // =========================================
     // CONSULTAS DE ALERTAS
     // =========================================
 
-    /**
-     * Retorna todos os alertas ativos do sistema
-     */
     public List<AlertRule> getActiveAlertRules() {
         try {
             log.debug("📋 Buscando todos os alertas ativos");
@@ -362,9 +207,6 @@ public class AlertService {
         }
     }
 
-    /**
-     * Retorna alertas ativos de um email específico
-     */
     public List<AlertRule> getActiveAlertRulesForUser(String userEmail) {
         try {
             log.debug("📋 Buscando alertas ativos para: {}", userEmail);
@@ -378,65 +220,14 @@ public class AlertService {
         }
     }
 
-    /**
-     * Retorna alertas de um usuário por username (requer User vinculado)
-     */
-    public List<AlertRule> getAlertRulesForUser(String username) {
-        try {
-            log.debug("📋 Buscando alertas para username: {}", username);
-
-            return alertRuleRepository.findAll()
-                    .stream()
-                    .filter(rule -> rule.getUser() != null &&
-                            username.equals(rule.getUser().getUsername()))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            log.error("❌ Erro ao buscar alertas para username {}: {}", username, e.getMessage(), e);
-            throw new RuntimeException("Falha ao buscar alertas: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Busca um alerta específico por ID
-     */
-    public Optional<AlertRule> getAlertRuleById(Long ruleId) {
-        try {
-            log.debug("📋 Buscando alerta ID: {}", ruleId);
-            return alertRuleRepository.findById(ruleId);
-        } catch (Exception e) {
-            log.error("❌ Erro ao buscar alerta {}: {}", ruleId, e.getMessage(), e);
-            throw new RuntimeException("Falha ao buscar alerta: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Retorna alertas por símbolo e email
-     */
-    public List<AlertRule> getAlertsBySymbolAndEmail(String coinSymbol, String email) {
-        try {
-            String normalizedSymbol = coinSymbol.toUpperCase();
-            log.debug("📋 Buscando alertas: {} para {}", normalizedSymbol, email);
-
-            return alertRuleRepository
-                    .findByCoinSymbolAndNotificationEmailAndActiveTrue(normalizedSymbol, email);
-        } catch (Exception e) {
-            log.error("❌ Erro ao buscar alertas: {}", e.getMessage(), e);
-            throw new RuntimeException("Falha ao buscar alertas: " + e.getMessage(), e);
-        }
-    }
-
     // =========================================
     // PROCESSAMENTO DE ALERTAS
     // =========================================
 
-    /**
-     * Processa alertas para um usuário específico
-     */
     @Transactional
     public void processAlertsForUser(List<CryptoCurrency> cryptos, String userEmail) {
         log.info("🔍 Processando alertas para email: {}", userEmail);
 
-        // Buscar todos os alertas ativos do usuário
         List<AlertRule> allUserRules = alertRuleRepository
                 .findByNotificationEmailAndActiveTrue(userEmail);
 
@@ -445,7 +236,6 @@ public class AlertService {
             return;
         }
 
-        // Agrupar alertas por símbolo (UPPERCASE)
         Map<String, List<AlertRule>> rulesBySymbol = allUserRules.stream()
                 .collect(Collectors.groupingBy(rule -> rule.getCoinSymbol().toUpperCase()));
 
@@ -472,9 +262,6 @@ public class AlertService {
         log.info("✅ {} alertas disparados para {}", alertsTriggered, userEmail);
     }
 
-    /**
-     * Processa alertas para TODOS os usuários (usado pelo sistema)
-     */
     public void processAlerts(List<CryptoCurrency> cryptos) {
         try {
             log.info("🔍 Processando alertas para todos os usuários");
@@ -486,7 +273,6 @@ public class AlertService {
                 return;
             }
 
-            // Agrupar por email
             Map<String, List<AlertRule>> rulesByEmail = allActiveRules.stream()
                     .collect(Collectors.groupingBy(AlertRule::getNotificationEmail));
 
@@ -496,7 +282,6 @@ public class AlertService {
                 String email = entry.getKey();
                 List<AlertRule> userRules = entry.getValue();
 
-                // Agrupar por símbolo
                 Map<String, List<AlertRule>> rulesBySymbol = userRules.stream()
                         .collect(Collectors.groupingBy(rule -> rule.getCoinSymbol().toUpperCase()));
 
@@ -526,45 +311,6 @@ public class AlertService {
         }
     }
 
-    /**
-     * Verifica alertas para uma crypto específica
-     */
-    public void checkAlertsForCrypto(CryptoCurrency crypto) {
-        try {
-            String normalizedSymbol = crypto.getSymbol().toUpperCase();
-            log.debug("🔍 Verificando alertas para: {}", normalizedSymbol);
-
-            List<AlertRule> rules = alertRuleRepository
-                    .findByCoinSymbolAndActiveTrue(normalizedSymbol);
-
-            if (rules.isEmpty()) {
-                log.debug("   ℹ️  Nenhum alerta para {}", normalizedSymbol);
-                return;
-            }
-
-            int triggered = 0;
-
-            for (AlertRule rule : rules) {
-                try {
-                    if (shouldTriggerAlert(crypto, rule)) {
-                        triggerAlert(crypto, rule);
-                        triggered++;
-                    }
-                } catch (Exception e) {
-                    log.error("Erro ao verificar regra {}: {}", rule.getId(), e.getMessage());
-                }
-            }
-
-            log.debug("   ✅ {} alertas disparados para {}", triggered, normalizedSymbol);
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao verificar alertas: {}", e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Verifica alertas para uma crypto e usuário específicos
-     */
     public void checkAlertsForCryptoAndUser(CryptoCurrency crypto, String userEmail) {
         try {
             String normalizedSymbol = crypto.getSymbol().toUpperCase();
@@ -608,18 +354,21 @@ public class AlertService {
         switch (rule.getAlertType()) {
             case PRICE_INCREASE:
                 return crypto.getCurrentPrice() != null &&
+                        threshold != null &&
                         crypto.getCurrentPrice().compareTo(threshold) >= 0;
 
             case PRICE_DECREASE:
                 return crypto.getCurrentPrice() != null &&
+                        threshold != null &&
                         crypto.getCurrentPrice().compareTo(threshold) <= 0;
 
             case VOLUME_SPIKE:
                 return crypto.getTotalVolume() != null &&
+                        threshold != null &&
                         crypto.getTotalVolume().compareTo(threshold) >= 0;
 
             case PERCENT_CHANGE_24H:
-                if (crypto.getPriceChange24h() == null) return false;
+                if (crypto.getPriceChange24h() == null || threshold == null) return false;
 
                 double priceChange = crypto.getPriceChange24h();
                 double thresholdValue = threshold.doubleValue();
@@ -633,6 +382,7 @@ public class AlertService {
 
             case MARKET_CAP:
                 return crypto.getMarketCap() != null &&
+                        threshold != null &&
                         crypto.getMarketCap().compareTo(threshold) >= 0;
 
             default:
@@ -671,7 +421,8 @@ public class AlertService {
                 return String.format(
                         "🚀 %s (%s) atingiu $%s (limite $%s). Variação 24h: %.2f%%",
                         crypto.getName(), crypto.getSymbol().toUpperCase(),
-                        df.format(crypto.getCurrentPrice()), df.format(rule.getThresholdValue()),
+                        df.format(crypto.getCurrentPrice()),
+                        rule.getThresholdValue() != null ? df.format(rule.getThresholdValue()) : "N/A",
                         crypto.getPriceChange24h() != null ? crypto.getPriceChange24h() : 0
                 );
 
@@ -679,7 +430,8 @@ public class AlertService {
                 return String.format(
                         "📉 %s (%s) caiu para $%s (limite $%s). Variação 24h: %.2f%%",
                         crypto.getName(), crypto.getSymbol().toUpperCase(),
-                        df.format(crypto.getCurrentPrice()), df.format(rule.getThresholdValue()),
+                        df.format(crypto.getCurrentPrice()),
+                        rule.getThresholdValue() != null ? df.format(rule.getThresholdValue()) : "N/A",
                         crypto.getPriceChange24h() != null ? crypto.getPriceChange24h() : 0
                 );
 
@@ -687,21 +439,24 @@ public class AlertService {
                 return String.format(
                         "📊 %s (%s) com volume acima de %s (atual %s)",
                         crypto.getName(), crypto.getSymbol().toUpperCase(),
-                        df.format(rule.getThresholdValue()), df.format(crypto.getTotalVolume())
+                        rule.getThresholdValue() != null ? df.format(rule.getThresholdValue()) : "N/A",
+                        crypto.getTotalVolume() != null ? df.format(crypto.getTotalVolume()) : "N/A"
                 );
 
             case PERCENT_CHANGE_24H:
                 return String.format(
                         "⚡ %s (%s) variou %.2f%% nas últimas 24h (limite: %s%%)",
                         crypto.getName(), crypto.getSymbol().toUpperCase(),
-                        crypto.getPriceChange24h(), df.format(rule.getThresholdValue())
+                        crypto.getPriceChange24h() != null ? crypto.getPriceChange24h() : 0,
+                        rule.getThresholdValue() != null ? df.format(rule.getThresholdValue()) : "N/A"
                 );
 
             case MARKET_CAP:
                 return String.format(
                         "🏦 %s (%s) com market cap acima de %s (atual %s)",
                         crypto.getName(), crypto.getSymbol().toUpperCase(),
-                        df.format(rule.getThresholdValue()), df.format(crypto.getMarketCap())
+                        rule.getThresholdValue() != null ? df.format(rule.getThresholdValue()) : "N/A",
+                        crypto.getMarketCap() != null ? df.format(crypto.getMarketCap()) : "N/A"
                 );
 
             default:
@@ -714,9 +469,6 @@ public class AlertService {
     // UTILITÁRIOS
     // =========================================
 
-    /**
-     * Conta quantos alertas ativos existem no sistema
-     */
     public long countActiveAlerts() {
         try {
             return alertRuleRepository.findByActiveTrue().size();
@@ -726,9 +478,6 @@ public class AlertService {
         }
     }
 
-    /**
-     * Conta quantos alertas ativos um usuário tem
-     */
     public long countActiveAlertsForUser(String userEmail) {
         try {
             return alertRuleRepository
@@ -737,79 +486,6 @@ public class AlertService {
         } catch (Exception e) {
             log.error("❌ Erro ao contar alertas de {}: {}", userEmail, e.getMessage());
             return 0;
-        }
-    }
-
-    /**
-     * Reativa um alerta desativado
-     */
-    @Transactional
-    public void reactivateAlertRule(Long ruleId) {
-        try {
-            log.info("🔄 Reativando alerta ID: {}", ruleId);
-
-            Optional<AlertRule> ruleOpt = alertRuleRepository.findById(ruleId);
-
-            if (ruleOpt.isEmpty()) {
-                throw new RuntimeException("Alerta não encontrado: " + ruleId);
-            }
-
-            AlertRule rule = ruleOpt.get();
-            rule.setActive(true);
-            alertRuleRepository.save(rule);
-
-            log.info("✅ Alerta reativado: ID {}", ruleId);
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao reativar alerta {}: {}", ruleId, e.getMessage(), e);
-            throw new RuntimeException("Falha ao reativar alerta: " + e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Atualiza um alerta existente
-     */
-    @Transactional
-    public AlertRule updateAlertRule(Long ruleId, AlertRule updatedRule) {
-        try {
-            log.info("🔄 Atualizando alerta ID: {}", ruleId);
-
-            Optional<AlertRule> existingRuleOpt = alertRuleRepository.findById(ruleId);
-
-            if (existingRuleOpt.isEmpty()) {
-                throw new RuntimeException("Alerta não encontrado: " + ruleId);
-            }
-
-            AlertRule existingRule = existingRuleOpt.get();
-
-            // Atualizar campos
-            if (updatedRule.getCoinSymbol() != null) {
-                existingRule.setCoinSymbol(updatedRule.getCoinSymbol().toUpperCase());
-            }
-            if (updatedRule.getAlertType() != null) {
-                existingRule.setAlertType(updatedRule.getAlertType());
-            }
-            if (updatedRule.getThresholdValue() != null) {
-                existingRule.setThresholdValue(updatedRule.getThresholdValue());
-            }
-            if (updatedRule.getNotificationEmail() != null) {
-                existingRule.setNotificationEmail(updatedRule.getNotificationEmail());
-            }
-            if (updatedRule.getActive() != null) {
-                existingRule.setActive(updatedRule.getActive());
-            }
-
-            // ✅ Validar consistência após atualização
-            validateAlertRule(existingRule);
-
-            AlertRule saved = alertRuleRepository.save(existingRule);
-            log.info("✅ Alerta atualizado: ID {}", ruleId);
-
-            return saved;
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao atualizar alerta {}: {}", ruleId, e.getMessage(), e);
-            throw new RuntimeException("Falha ao atualizar alerta: " + e.getMessage(), e);
         }
     }
 }
