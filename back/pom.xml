@@ -31,7 +31,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <!-- ✅ Exclusão de commons-logging duplicado -->
+            <!-- ✅ EXCLUIR commons-logging -->
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -76,10 +76,13 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
+        <!-- ✅ REDIS - OPCIONAL (remova se não usar) -->
+        <!--
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+        -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -115,7 +118,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ✅ Flyway atualizado para compatibilidade com PostgreSQL 17 -->
+        <!-- ✅ FLYWAY ATUALIZADO -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -170,7 +173,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- SendGrid API -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -194,7 +196,6 @@
 
     <build>
         <plugins>
-            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -208,7 +209,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -220,7 +220,6 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven Surefire Plugin (Tests) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

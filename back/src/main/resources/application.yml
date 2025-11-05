@@ -44,9 +44,10 @@ spring:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: false
-    open-in-view: false  # ✅ Boa prática: evita vazamento de sessão no Hibernate
+    open-in-view: false  # ✅ ADICIONADO
     properties:
       hibernate:
+        # ✅ REMOVIDO: dialect (não é necessário)
         format_sql: true
     defer-datasource-initialization: false
 
@@ -57,12 +58,32 @@ spring:
     validate-on-migrate: true
     out-of-order: false
 
-  main:
-    lazy-initialization: true  # ✅ Melhora startup no ambiente dev
+  # ============================================
+  # REDIS - DESABILITADO
+  # ============================================
+  data:
+    redis:
+      repositories:
+        enabled: false  # ✅ DESABILITAR Redis
 
+  # ============================================
+  # CACHE - APENAS CAFFEINE
+  # ============================================
+  cache:
+    type: caffeine  # ✅ FORÇAR uso do Caffeine
+
+  # ============================================
+  # TASK SCHEDULING
+  # ============================================
   task:
     scheduling:
       enabled: true
+
+  # ============================================
+  # MAIN - PERMITIR REFERÊNCIAS CIRCULARES (TEMPORÁRIO)
+  # ============================================
+  main:
+    allow-circular-references: false  # ✅ Manter false (boa prática)
 
 # ============================================
 # SENDGRID EMAIL CONFIGURATION
@@ -131,11 +152,12 @@ logging:
   level:
     com.crypto: INFO
     org.springframework.security: WARN
-    org.hibernate.SQL: ERROR
+    org.hibernate: WARN  # ✅ REDUZIDO
     org.springframework.web: INFO
-    org.springframework.mail: DEBUG
+    org.springframework.mail: WARN  # ✅ REDUZIDO
     org.flywaydb: INFO
     org.springframework.scheduling: INFO
+    org.springframework.data.redis: ERROR  # ✅ SILENCIAR warnings Redis
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
@@ -169,7 +191,7 @@ management:
 info:
   app:
     name: Crypto Monitor
-    description: Sistema de Monitoramento de Criptomoedas com Controle por Usuário
+    description: Sistema de Monitoramento de Criptomoedas
     version: 2.0.0
     features:
       - Monitoramento controlado por usuário
@@ -179,7 +201,7 @@ info:
   java:
     version: "17"
   build:
-    timestamp: ${TIMESTAMP:2025-11-03T00:00:00Z}
+    timestamp: ${TIMESTAMP:2025-11-05T00:00:00Z}
 
 # ============================================
 # CONFIGURAÇÃO DE SEGURANÇA / CORS

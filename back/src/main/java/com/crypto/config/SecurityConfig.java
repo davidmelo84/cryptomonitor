@@ -1,3 +1,4 @@
+// back/src/main/java/com/crypto/config/SecurityConfig.java
 package com.crypto.config;
 
 import com.crypto.security.JwtAuthenticationFilter;
@@ -20,7 +21,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -42,12 +42,12 @@ public class SecurityConfig {
 
                         // ✅ Endpoints públicos
                         .requestMatchers(
-                                "/api/auth/**",                     // Registro, login, etc.
-                                "/api/crypto/status",               // Status da API
-                                "/crypto-monitor/api/auth/debug-env",// Endpoint de debug de variáveis
-                                "/api/crypto/history/**",
-                                "/actuator/health",                 // Health check
-                                "/actuator/info"                    // Info do actuator
+                                "/api/auth/**",                      // Registro, login, verificação
+                                "/api/crypto/status",                // Status da API
+                                "/api/crypto/history/**",            // ✅ LIBERADO (histórico de preços)
+                                "/crypto-monitor/api/auth/debug-env",// Debug de variáveis (remover em prod)
+                                "/actuator/health",                  // Health check
+                                "/actuator/info"                     // Info do actuator
                         ).permitAll()
 
                         // 🔒 Todos os outros exigem autenticação

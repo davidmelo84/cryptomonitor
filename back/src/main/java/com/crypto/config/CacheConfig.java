@@ -15,8 +15,6 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -24,27 +22,24 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ✅ CONFIGURAÇÃO DE CACHE HÍBRIDO
+ * ✅ CONFIGURAÇÃO DE CACHE HÍBRIDO - SEM REFERÊNCIA CIRCULAR
  *
  * ESTRATÉGIA:
  * - L1 (Caffeine): Cache local ultra-rápido (5 min)
- * - L2 (Redis): Cache distribuído para múltiplas instâncias (30 min) - OPCIONAL
+ * - L2 (Redis): Cache distribuído - OPCIONAL
  *
  * BENEFÍCIOS:
  * - Reduz latência (L1 local)
- * - Compartilha dados entre instâncias (L2 Redis)
  * - TTL automático (sem dados obsoletos)
  * - Fallback gracioso (se Redis falhar, usa Caffeine)
  */
 @Slf4j
 @Configuration
 @EnableCaching
-@EnableScheduling // ✅ permite agendamento periódico (para logs de cache)
 public class CacheConfig {
 
     /**
      * ✅ CACHE L1 (LOCAL) - CAFFEINE
-     *
      * Sempre ativo, ultra-rápido, não depende de Redis
      */
     @Primary
@@ -71,7 +66,6 @@ public class CacheConfig {
 
     /**
      * ✅ CACHE L2 (DISTRIBUÍDO) - REDIS
-     *
      * Ativo apenas se Redis estiver disponível e configurado
      */
     @Bean("redisCacheManager")
@@ -111,57 +105,7 @@ public class CacheConfig {
         }
     }
 
-    /**
-     * ✅ Bean de estatísticas de cache (monitoramento)
-     */
-    @Bean
-    public CacheStatsLogger cacheStatsLogger(CacheManager cacheManager) {
-        return new CacheStatsLogger(cacheManager);
-    }
-
-    /**
-     * ✅ Classe auxiliar: logger de estatísticas do cache
-     */
-    public static class CacheStatsLogger {
-        private final CacheManager cacheManager;
-
-        public CacheStatsLogger(CacheManager cacheManager) {
-            this.cacheManager = cacheManager;
-        }
-
-        public void logStats() {
-            if (cacheManager instanceof CaffeineCacheManager caffeine) {
-                caffeine.getCacheNames().forEach(cacheName -> {
-                    var cache = caffeine.getCache(cacheName);
-                    if (cache != null) {
-                        var nativeCache = cache.getNativeCache();
-                        if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> c) {
-                            var stats = c.stats();
-                            log.info("📊 Cache [{}] → Hits: {}, Misses: {}, HitRate: {:.2f}%",
-                                    cacheName,
-                                    stats.hitCount(),
-                                    stats.missCount(),
-                                    stats.hitRate() * 100
-                            );
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-    /**
-     * ✅ Scheduler: executa logs de estatísticas a cada 5 minutos
-     */
-    private final CacheStatsLogger cacheStatsLogger;
-
-    public CacheConfig(CacheStatsLogger cacheStatsLogger) {
-        this.cacheStatsLogger = cacheStatsLogger;
-    }
-
-    @Scheduled(fixedDelay = 300000) // A cada 5 minutos
-    public void logCacheStats() {
-        log.info("🕒 Executando log periódico de estatísticas do cache...");
-        cacheStatsLogger.logStats();
-    }
+    // ✅ REMOVIDO: CacheStatsLogger e @Scheduled
+    // Para evitar referência circular, os logs de cache podem ser
+    // implementados em outra classe com @Component separado
 }
