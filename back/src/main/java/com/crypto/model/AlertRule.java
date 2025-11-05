@@ -1,74 +1,71 @@
 package com.crypto.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "alert_rules")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AlertRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "coin_symbol")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(name = "coin_symbol", length = 10, nullable = false)
     private String coinSymbol;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "alert_type")
+    @Column(name = "alert_type", nullable = false)
     private AlertType alertType;
 
-    @Column(name = "threshold_value", precision = 19, scale = 6)
+    @Column(name = "threshold_value", precision = 10, scale = 6)
     private BigDecimal thresholdValue;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "time_period")
-    private TimePeriod timePeriod;
+    @Column(name = "target_price", precision = 20, scale = 8, nullable = true)
+    private BigDecimal targetPrice;
 
-    @Column(name = "is_active")
-    private Boolean active = true;
+    @Column(name = "time_period", length = 20)
+    private String timePeriod;
 
-    @Column(name = "notification_email")
+    @Email(message = "E-mail inválido")
+    @NotBlank(message = "E-mail é obrigatório")
+    @Column(name = "notification_email", nullable = false)
     private String notificationEmail;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "is_active", nullable = false)
+    private Boolean active = true;
 
-    // Implementação correta dos setters customizados
-    public void setTargetValue(
-            @NotNull(message = "Valor alvo é obrigatório")
-            @DecimalMin(value = "0.0", inclusive = false, message = "Valor deve ser maior que zero")
-            BigDecimal targetValue) {
-        this.thresholdValue = targetValue;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
     }
 
-    public void setEmail(
-            @Email(message = "E-mail inválido")
-            @NotBlank(message = "E-mail é obrigatório")
-            String email) {
-        this.notificationEmail = email;
-    }
-
+    // ✅ ENUMS DENTRO DA CLASSE (NÃO ESQUEÇA DELES!)
     public enum AlertType {
-        PRICE_INCREASE,      // preço acima do limite
-        PRICE_DECREASE,      // preço abaixo do limite
-        VOLUME_SPIKE,        // volume disparou
-        PERCENT_CHANGE_24H,  // variação percentual em 24h
-        MARKET_CAP           // valor de mercado
+        PRICE_INCREASE,
+        PRICE_DECREASE,
+        VOLUME_SPIKE,
+        PERCENT_CHANGE_24H,
+        MARKET_CAP
     }
 
     public enum TimePeriod {
-        ONE_HOUR, TWENTY_FOUR_HOURS, SEVEN_DAYS
+        ONE_HOUR,
+        TWENTY_FOUR_HOURS,
+        SEVEN_DAYS
     }
-}
+} // ✅ ESTA CHAVE FECHA A CLASSE

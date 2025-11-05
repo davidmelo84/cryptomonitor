@@ -37,7 +37,7 @@ public class AlertService {
     // =========================================
 
     /**
-     * Cria uma nova regra de alerta
+     * Cria uma nova regra de alerta genérica
      */
     @Transactional
     public AlertRule createAlertRule(AlertRule alertRule) {
@@ -77,6 +77,9 @@ public class AlertService {
                 alertRule.setCoinSymbol(alertRule.getCoinSymbol().toUpperCase());
             }
 
+            // ✅ VALIDAÇÃO: Garantir consistência entre tipo de alerta e campos
+            validateAlertRule(alertRule);
+
             // Salvar no banco
             AlertRule savedRule = alertRuleRepository.save(alertRule);
 
@@ -87,6 +90,167 @@ public class AlertService {
         } catch (Exception e) {
             log.error("❌ Erro ao criar regra de alerta: {}", e.getMessage(), e);
             throw new RuntimeException("Falha ao criar regra de alerta: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * ✅ NOVO: Cria alerta de PERCENT_CHANGE_24H (variação percentual)
+     */
+    @Transactional
+    public AlertRule createPercentChangeAlert(
+            Long userId,
+            String coinSymbol,
+            BigDecimal thresholdValue,
+            String email
+    ) {
+        log.info("📝 Criando alerta de variação percentual");
+
+        if (thresholdValue == null) {
+            throw new IllegalArgumentException("Threshold de variação não pode ser nulo");
+        }
+
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userId));
+
+            // ✅ VALIDAÇÃO: targetPrice deve ser null para PERCENT_CHANGE
+            AlertRule rule = AlertRule.builder()
+                    .user(user)
+                    .coinSymbol(coinSymbol.toUpperCase())
+                    .alertType(AlertType.PERCENT_CHANGE_24H)
+                    .thresholdValue(thresholdValue)
+                    .targetPrice(null)  // ✅ Explicitamente null (não usado neste tipo)
+                    .timePeriod("24h")
+                    .notificationEmail(email)
+                    .active(true)
+                    .build();
+
+            AlertRule savedRule = alertRuleRepository.save(rule);
+
+            log.info("✅ Alerta de variação criado: ID={}, Crypto={}, Threshold={}%",
+                    savedRule.getId(), coinSymbol, thresholdValue);
+
+            return savedRule;
+
+        } catch (Exception e) {
+            log.error("❌ Erro ao criar alerta de variação: {}", e.getMessage(), e);
+            throw new RuntimeException("Falha ao criar alerta de variação: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * ✅ NOVO: Cria alerta de PRICE_INCREASE (preço atingir valor)
+     */
+    @Transactional
+    public AlertRule createPriceIncreaseAlert(
+            Long userId,
+            String coinSymbol,
+            BigDecimal targetPrice,
+            String email
+    ) {
+        log.info("📝 Criando alerta de aumento de preço");
+
+        if (targetPrice == null || targetPrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Preço alvo deve ser maior que zero");
+        }
+
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userId));
+
+            AlertRule rule = AlertRule.builder()
+                    .user(user)
+                    .coinSymbol(coinSymbol.toUpperCase())
+                    .alertType(AlertType.PRICE_INCREASE)
+                    .thresholdValue(targetPrice)  // ✅ Usado como preço alvo
+                    .targetPrice(null)
+                    .timePeriod(null)
+                    .notificationEmail(email)
+                    .active(true)
+                    .build();
+
+            AlertRule savedRule = alertRuleRepository.save(rule);
+
+            log.info("✅ Alerta de preço criado: ID={}, Crypto={}, Target=${}",
+                    savedRule.getId(), coinSymbol, targetPrice);
+
+            return savedRule;
+
+        } catch (Exception e) {
+            log.error("❌ Erro ao criar alerta de preço: {}", e.getMessage(), e);
+            throw new RuntimeException("Falha ao criar alerta de preço: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * ✅ NOVO: Cria alerta de PRICE_DECREASE (preço cair abaixo de valor)
+     */
+    @Transactional
+    public AlertRule createPriceDecreaseAlert(
+            Long userId,
+            String coinSymbol,
+            BigDecimal targetPrice,
+            String email
+    ) {
+        log.info("📝 Criando alerta de queda de preço");
+
+        if (targetPrice == null || targetPrice.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Preço alvo deve ser maior que zero");
+        }
+
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userId));
+
+            AlertRule rule = AlertRule.builder()
+                    .user(user)
+                    .coinSymbol(coinSymbol.toUpperCase())
+                    .alertType(AlertType.PRICE_DECREASE)
+                    .thresholdValue(targetPrice)  // ✅ Usado como preço alvo
+                    .targetPrice(null)
+                    .timePeriod(null)
+                    .notificationEmail(email)
+                    .active(true)
+                    .build();
+
+            AlertRule savedRule = alertRuleRepository.save(rule);
+
+            log.info("✅ Alerta de queda criado: ID={}, Crypto={}, Target=${}",
+                    savedRule.getId(), coinSymbol, targetPrice);
+
+            return savedRule;
+
+        } catch (Exception e) {
+            log.error("❌ Erro ao criar alerta de queda: {}", e.getMessage(), e);
+            throw new RuntimeException("Falha ao criar alerta de queda: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * ✅ VALIDAÇÃO: Garante consistência entre tipo de alerta e campos
+     */
+    private void validateAlertRule(AlertRule rule) {
+        AlertType type = rule.getAlertType();
+
+        if (type == AlertType.PERCENT_CHANGE_24H) {
+            if (rule.getThresholdValue() == null) {
+                throw new IllegalArgumentException("PERCENT_CHANGE_24H requer thresholdValue");
+            }
+            // targetPrice deve ser null para este tipo
+            rule.setTargetPrice(null);
+        }
+        else if (type == AlertType.PRICE_INCREASE || type == AlertType.PRICE_DECREASE) {
+            if (rule.getThresholdValue() == null) {
+                throw new IllegalArgumentException(type + " requer thresholdValue como preço alvo");
+            }
+            if (rule.getThresholdValue().compareTo(BigDecimal.ZERO) <= 0) {
+                throw new IllegalArgumentException("Preço alvo deve ser maior que zero");
+            }
+        }
+        else if (type == AlertType.VOLUME_SPIKE || type == AlertType.MARKET_CAP) {
+            if (rule.getThresholdValue() == null) {
+                throw new IllegalArgumentException(type + " requer thresholdValue");
+            }
         }
     }
 
@@ -634,6 +798,9 @@ public class AlertService {
             if (updatedRule.getActive() != null) {
                 existingRule.setActive(updatedRule.getActive());
             }
+
+            // ✅ Validar consistência após atualização
+            validateAlertRule(existingRule);
 
             AlertRule saved = alertRuleRepository.save(existingRule);
             log.info("✅ Alerta atualizado: ID {}", ruleId);
