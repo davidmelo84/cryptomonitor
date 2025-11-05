@@ -66,8 +66,8 @@ public class MonitoringControlService {
         try {
             // ✅ NOVO: Verificação atômica dentro do lock
             if (isMonitoringActiveInternal(username)) {
-                log.warn("⚠️ Monitoramento já ativo para usuário: {}", username);
-                return false;
+                log.info("♻️ Monitoramento já ativo para {}, reiniciando...", username);
+                stopMonitoring(username); // ← interrompe o anterior
             }
 
             log.info("🚀 Iniciando monitoramento para: {} (email: {})", username, userEmail);

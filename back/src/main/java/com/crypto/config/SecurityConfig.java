@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 "/api/auth/**",                     // Registro, login, etc.
                                 "/api/crypto/status",               // Status da API
                                 "/crypto-monitor/api/auth/debug-env",// Endpoint de debug de variáveis
+                                "/api/crypto/history/**",
                                 "/actuator/health",                 // Health check
                                 "/actuator/info"                    // Info do actuator
                         ).permitAll()

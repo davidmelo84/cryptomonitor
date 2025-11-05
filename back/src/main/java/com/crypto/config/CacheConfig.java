@@ -15,6 +15,8 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -37,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Configuration
 @EnableCaching
+@EnableScheduling // ✅ permite agendamento periódico (para logs de cache)
 public class CacheConfig {
 
     /**
@@ -50,16 +53,16 @@ public class CacheConfig {
         log.info("🚀 Configurando Caffeine Cache (L1 - Local)");
 
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-                "cryptoPrices",           // Cache individual de cryptos
-                "allCryptoPrices",        // Cache da lista completa
-                "portfolioData",          // Cache de portfolios
-                "userAlerts"              // Cache de alertas do usuário
+                "cryptoPrices",     // Cache individual de cryptos
+                "allCryptoPrices",  // Cache da lista completa
+                "portfolioData",    // Cache de portfolios
+                "userAlerts"        // Cache de alertas do usuário
         );
 
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .maximumSize(1000)                          // Max 1000 entradas
-                .expireAfterWrite(5, TimeUnit.MINUTES)      // Expira após 5 min
-                .recordStats()                               // Estatísticas para monitoramento
+                .maximumSize(1000)                         // Máx. 1000 entradas
+                .expireAfterWrite(5, TimeUnit.MINUTES)     // Expira após 5 min
+                .recordStats()                             // Estatísticas ativas
         );
 
         log.info("✅ Caffeine Cache configurado: TTL=5min, MaxSize=1000");
@@ -77,9 +80,8 @@ public class CacheConfig {
         log.info("🚀 Configurando Redis Cache (L2 - Distribuído)");
 
         try {
-            // Configuração padrão
             RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                    .entryTtl(Duration.ofMinutes(30))  // TTL padrão: 30 minutos
+                    .entryTtl(Duration.ofMinutes(30)) // TTL padrão: 30 min
                     .disableCachingNullValues()
                     .serializeValuesWith(
                             RedisSerializationContext.SerializationPair.fromSerializer(
@@ -87,46 +89,30 @@ public class CacheConfig {
                             )
                     );
 
-            // ✅ NOVO: Configurações específicas por cache
+            // Configura TTLs personalizados por cache
             Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-
-            // Crypto prices: 5 minutos (dados mudam rápido)
-            cacheConfigurations.put("cryptoPrices",
-                    defaultConfig.entryTtl(Duration.ofMinutes(5))
-            );
-
-            // Lista completa: 3 minutos (alta demanda)
-            cacheConfigurations.put("allCryptoPrices",
-                    defaultConfig.entryTtl(Duration.ofMinutes(3))
-            );
-
-            // Portfolio: 10 minutos (muda menos)
-            cacheConfigurations.put("portfolioData",
-                    defaultConfig.entryTtl(Duration.ofMinutes(10))
-            );
-
-            // Alertas: 15 minutos
-            cacheConfigurations.put("userAlerts",
-                    defaultConfig.entryTtl(Duration.ofMinutes(15))
-            );
+            cacheConfigurations.put("cryptoPrices", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+            cacheConfigurations.put("allCryptoPrices", defaultConfig.entryTtl(Duration.ofMinutes(3)));
+            cacheConfigurations.put("portfolioData", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+            cacheConfigurations.put("userAlerts", defaultConfig.entryTtl(Duration.ofMinutes(15)));
 
             RedisCacheManager cacheManager = RedisCacheManager.builder(connectionFactory)
                     .cacheDefaults(defaultConfig)
                     .withInitialCacheConfigurations(cacheConfigurations)
-                    .transactionAware()  // Suporte a transações
+                    .transactionAware()
                     .build();
 
             log.info("✅ Redis Cache configurado com TTLs personalizados");
             return cacheManager;
 
         } catch (Exception e) {
-            log.warn("⚠️ Redis não disponível, usando apenas Caffeine: {}", e.getMessage());
-            return caffeineCacheManager(); // Fallback para Caffeine
+            log.warn("⚠️ Redis não disponível, fallback para Caffeine: {}", e.getMessage());
+            return caffeineCacheManager();
         }
     }
 
     /**
-     * ✅ NOVO: Bean de estatísticas de cache (opcional para monitoramento)
+     * ✅ Bean de estatísticas de cache (monitoramento)
      */
     @Bean
     public CacheStatsLogger cacheStatsLogger(CacheManager cacheManager) {
@@ -134,7 +120,7 @@ public class CacheConfig {
     }
 
     /**
-     * ✅ NOVO: Logger de estatísticas
+     * ✅ Classe auxiliar: logger de estatísticas do cache
      */
     public static class CacheStatsLogger {
         private final CacheManager cacheManager;
@@ -144,15 +130,14 @@ public class CacheConfig {
         }
 
         public void logStats() {
-            if (cacheManager instanceof CaffeineCacheManager) {
-                CaffeineCacheManager caffeine = (CaffeineCacheManager) cacheManager;
+            if (cacheManager instanceof CaffeineCacheManager caffeine) {
                 caffeine.getCacheNames().forEach(cacheName -> {
                     var cache = caffeine.getCache(cacheName);
                     if (cache != null) {
                         var nativeCache = cache.getNativeCache();
-                        if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache) {
-                            var stats = ((com.github.benmanes.caffeine.cache.Cache<?, ?>) nativeCache).stats();
-                            log.info("📊 Cache [{}] - Hits: {}, Misses: {}, Hit Rate: {:.2f}%",
+                        if (nativeCache instanceof com.github.benmanes.caffeine.cache.Cache<?, ?> c) {
+                            var stats = c.stats();
+                            log.info("📊 Cache [{}] → Hits: {}, Misses: {}, HitRate: {:.2f}%",
                                     cacheName,
                                     stats.hitCount(),
                                     stats.missCount(),
@@ -163,5 +148,20 @@ public class CacheConfig {
                 });
             }
         }
+    }
+
+    /**
+     * ✅ Scheduler: executa logs de estatísticas a cada 5 minutos
+     */
+    private final CacheStatsLogger cacheStatsLogger;
+
+    public CacheConfig(CacheStatsLogger cacheStatsLogger) {
+        this.cacheStatsLogger = cacheStatsLogger;
+    }
+
+    @Scheduled(fixedDelay = 300000) // A cada 5 minutos
+    public void logCacheStats() {
+        log.info("🕒 Executando log periódico de estatísticas do cache...");
+        cacheStatsLogger.logStats();
     }
 }

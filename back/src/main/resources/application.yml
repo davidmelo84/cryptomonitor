@@ -44,9 +44,9 @@ spring:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: false
+    open-in-view: false  # ✅ Boa prática: evita vazamento de sessão no Hibernate
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     defer-datasource-initialization: false
 
@@ -57,9 +57,9 @@ spring:
     validate-on-migrate: true
     out-of-order: false
 
-  # ============================================
-  # TASK SCHEDULING
-  # ============================================
+  main:
+    lazy-initialization: true  # ✅ Melhora startup no ambiente dev
+
   task:
     scheduling:
       enabled: true
