@@ -1,4 +1,6 @@
 // front/crypto-monitor-frontend/src/components/auth/VerifyEmailPage.jsx
+// ✅ CORRIGIDO - Envia email junto com código de verificação
+
 import React, { useState, useRef } from 'react';
 import { Mail, ArrowLeft, RefreshCw, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -42,7 +44,7 @@ function VerifyEmailPage({ email, onVerified, onBack }) {
     inputRefs.current[5]?.focus();
   };
 
-  // Verificar código
+  // ✅ CORRIGIDO - Verificar código com email
   const handleVerify = async () => {
     const fullCode = code.join('');
     if (fullCode.length !== 6) {
@@ -57,7 +59,10 @@ function VerifyEmailPage({ email, onVerified, onBack }) {
       const response = await fetch(`${API_BASE_URL}/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: fullCode }),
+        body: JSON.stringify({ 
+          email: email,  // ✅ ADICIONADO
+          code: fullCode 
+        }),
       });
 
       const text = await response.text();

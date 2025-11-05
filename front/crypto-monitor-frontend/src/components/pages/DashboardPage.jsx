@@ -1,7 +1,7 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
-// ✅ VERSÃO COM INTEGRAÇÃO TELEGRAM CONTEXT
+// ✅ VERSÃO COM MEMOIZAÇÃO DE TELEGRAM CONFIG
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTelegram } from '../../contexts/TelegramContext';
 import Header from '../dashboard/Header';
@@ -40,8 +40,6 @@ function DashboardPage({
   onNavigateToBots
 }) {
   const { isDark } = useTheme();
-  
-  // ✅ USAR TELEGRAM CONTEXT
   const { telegramConfig, isConfigured } = useTelegram();
   
   const [showTelegramConfig, setShowTelegramConfig] = useState(false);
@@ -63,14 +61,22 @@ function DashboardPage({
 
   const isMonitoringActive = monitoringStatusData?.active || false;
 
-  // ✅ HANDLER COM INTEGRAÇÃO TELEGRAM
+  // ✅ MEMOIZAR TELEGRAM CONFIG PARA EVITAR RE-RENDERS
+  const telegramConfigMemo = useMemo(() => telegramConfig, [
+    telegramConfig.enabled,
+    telegramConfig.botToken,
+    telegramConfig.chatId,
+    telegramConfig.isConnected
+  ]);
+
+  // ✅ HANDLER ESTÁVEL E SEGURO
   const handleStartStopMonitoring = useCallback(async () => {
     console.log('🔘 handleStartStopMonitoring chamado');
     console.log('   isMonitoringActive:', isMonitoringActive);
     console.log('   monitoringEmail:', monitoringEmail);
     console.log('   selectedCryptos:', selectedCryptos.length);
     console.log('   Telegram configurado?', isConfigured());
-    console.log('   Telegram habilitado?', telegramConfig.enabled);
+    console.log('   Telegram habilitado?', telegramConfigMemo.enabled);
 
     if (isMonitoringActive) {
       // ========== PARAR MONITORAMENTO ==========
@@ -89,7 +95,6 @@ function DashboardPage({
       // ========== INICIAR MONITORAMENTO ==========
       console.log('▶️ Tentando iniciar monitoramento...');
       
-      // ✅ VALIDAÇÕES
       if (!monitoringEmail || monitoringEmail.trim() === '') {
         alert('⚠️ Configure um email válido antes de iniciar!');
         return;
@@ -100,8 +105,7 @@ function DashboardPage({
         return;
       }
 
-      // ✅ AVISO SE TELEGRAM HABILITADO MAS NÃO TESTADO
-      if (telegramConfig.enabled && !telegramConfig.isConnected) {
+      if (telegramConfigMemo.enabled && !telegramConfigMemo.isConnected) {
         const confirmStart = window.confirm(
           '⚠️ Telegram está habilitado mas não foi testado.\n\n' +
           'Deseja continuar mesmo assim?\n\n' +
@@ -115,11 +119,10 @@ function DashboardPage({
       }
 
       try {
-        const cryptocurrencies = selectedCryptos.map(c => {
-          return c.coinId || c.id || c.symbol?.toLowerCase() || c.name?.toLowerCase();
-        });
+        const cryptocurrencies = selectedCryptos.map(c =>
+          c.coinId || c.id || c.symbol?.toLowerCase() || c.name?.toLowerCase()
+        );
 
-        // ✅ PREPARAR PAYLOAD COM TELEGRAM
         const monitoringPayload = {
           email: monitoringEmail,
           cryptocurrencies,
@@ -129,21 +132,19 @@ function DashboardPage({
           token
         };
 
-        // ✅ ADICIONAR CONFIGS DO TELEGRAM SE HABILITADO
-        if (telegramConfig.enabled && isConfigured()) {
+        if (telegramConfigMemo.enabled && isConfigured()) {
           monitoringPayload.telegramConfig = {
-            botToken: telegramConfig.botToken,
-            chatId: telegramConfig.chatId,
+            botToken: telegramConfigMemo.botToken,
+            chatId: telegramConfigMemo.chatId,
             enabled: true
           };
-          
           console.log('📱 Telegram será usado para notificações');
         }
 
         console.log('📤 Enviando dados:', {
           ...monitoringPayload,
-          telegramConfig: monitoringPayload.telegramConfig 
-            ? '***CONFIGURADO***' 
+          telegramConfig: monitoringPayload.telegramConfig
+            ? '***CONFIGURADO***'
             : 'NÃO CONFIGURADO'
         });
 
@@ -157,7 +158,7 @@ function DashboardPage({
                           `• Moedas: ${cryptocurrencies.length}\n` +
                           `• Intervalo: ${monitoringInterval} min`;
         
-        if (telegramConfig.enabled && isConfigured()) {
+        if (telegramConfigMemo.enabled && isConfigured()) {
           alertMessage += `\n• Telegram: Habilitado ✅`;
         }
         
@@ -176,7 +177,7 @@ function DashboardPage({
     buyThreshold,
     sellThreshold,
     token,
-    telegramConfig,
+    telegramConfigMemo,
     isConfigured,
     startMonitoringMutation,
     stopMonitoringMutation,
@@ -250,7 +251,6 @@ function DashboardPage({
         )}
       </div>
 
-      {/* ✅ Modal Telegram - Agora persiste dados */}
       {showTelegramConfig && (
         <div 
           className="telegram-modal-overlay" 
@@ -273,9 +273,7 @@ function DashboardPage({
             </div>
 
             <div className="telegram-modal-body">
-              <TelegramConfig 
-                userEmail={monitoringEmail}
-              />
+              <TelegramConfig userEmail={monitoringEmail} />
             </div>
           </div>
         </div>

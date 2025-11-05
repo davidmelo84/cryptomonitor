@@ -1,5 +1,5 @@
 // front/crypto-monitor-frontend/src/hooks/useCryptoData.js
-// ✅ VERSÃO CORRIGIDA - Envia token JWT corretamente
+// ✅ VERSÃO FINAL COM VALIDAÇÃO DE TELEGRAM
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { API_BASE_URL } from '../utils/constants';
@@ -11,7 +11,6 @@ import { API_BASE_URL } from '../utils/constants';
 const fetchCryptos = async (token) => {
   console.log('🔍 Buscando criptomoedas...');
   
-  // ✅ ADICIONAR TOKEN NO HEADER
   const response = await fetch(`${API_BASE_URL}/crypto/current`, {
     headers: {
       'Authorization': `Bearer ${token}`
@@ -56,9 +55,9 @@ export const useCryptos = (token) => {
     queryFn: () => fetchCryptos(token),
     staleTime: 60 * 1000,
     cacheTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     retry: 2,
-    enabled: !!token, // ✅ Só busca se tiver token
+    enabled: !!token,
     
     select: (data) => {
       return data.map(crypto => ({
@@ -98,8 +97,20 @@ export const useStartMonitoring = () => {
         sellThreshold
       };
       
-      // ✅ Adicionar Telegram se configurado
+      // ✅ Validar e adicionar Telegram se configurado
       if (telegramConfig?.enabled && telegramConfig?.botToken && telegramConfig?.chatId) {
+        // Validação do formato
+        const tokenRegex = /^\d+:[A-Za-z0-9_-]+$/;
+        const chatIdRegex = /^-?\d+$/;
+        
+        if (!tokenRegex.test(telegramConfig.botToken)) {
+          throw new Error('⚠️ Token do Telegram inválido. O formato deve ser semelhante a "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11".');
+        }
+        
+        if (!chatIdRegex.test(telegramConfig.chatId)) {
+          throw new Error('⚠️ Chat ID do Telegram inválido. Deve conter apenas números (ex: 123456789).');
+        }
+
         payload.telegramConfig = {
           botToken: telegramConfig.botToken,
           chatId: telegramConfig.chatId,

@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { TelegramProvider } from './contexts/TelegramContext'; // ✅ NOVO
 import { API_BASE_URL } from './utils/constants';
+import ErrorBoundary from './components/ErrorBoundary'; // ✅ Importado aqui
 
 // ✅ Lazy loading das páginas
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
@@ -80,7 +81,7 @@ function App() {
 
     try {
       console.log('🔑 Tentando login...', { username });
-      
+
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -92,7 +93,7 @@ function App() {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('❌ Erro no login:', errorText);
-        
+
         try {
           const errorData = JSON.parse(errorText);
           throw new Error(errorData.error || errorData.message || 'Credenciais inválidas');
@@ -116,7 +117,7 @@ function App() {
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify({ username }));
       setCurrentPage('dashboard');
-      
+
     } catch (error) {
       console.error('❌ Erro no login:', error);
       setAuthError(error.message || 'Erro ao conectar com o servidor');
@@ -144,7 +145,7 @@ function App() {
 
     try {
       console.log('📝 Tentando registrar...', { username: regUsername, email: regEmail });
-      
+
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -159,7 +160,7 @@ function App() {
 
       const text = await response.text();
       console.log('📄 Response body:', text);
-      
+
       let data;
       try {
         data = text ? JSON.parse(text) : {};
@@ -168,7 +169,6 @@ function App() {
       }
 
       if (!response.ok) {
-        // ✅ TRATAR ERRO 400 (Email/Username já existe)
         if (response.status === 400) {
           if (data.error?.includes('Email') || data.message?.includes('Email')) {
             throw new Error('Este email já está cadastrado. Use outro ou faça login.');
@@ -177,7 +177,7 @@ function App() {
             throw new Error('Este username já está em uso. Escolha outro.');
           }
         }
-        
+
         throw new Error(data.error || data.message || 'Falha no registro');
       }
 
@@ -190,13 +190,14 @@ function App() {
       }
 
       return true;
-      
+
     } catch (error) {
       console.error('❌ Erro no registro:', error);
       setAuthError(error.message || 'Erro ao criar conta');
       return false;
     }
   }, []);
+
   // ✅ Logout
   const handleLogout = () => {
     setUser(null);
@@ -250,25 +251,25 @@ function App() {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        {/* ✅ Adicionado TelegramProvider */}
-        <TelegramProvider>
-          <Suspense fallback={<PageLoader />}>
-            {currentPage === 'login' && <LoginPage {...sharedProps} />}
-            {currentPage === 'register' && <RegisterPage {...sharedProps} />}
-            {currentPage === 'dashboard' && <DashboardPage {...sharedProps} />}
-            {currentPage === 'portfolio' && <PortfolioPage {...sharedProps} />}
-            {currentPage === 'bots' && <TradingBotsPage {...sharedProps} />}
-          </Suspense>
-        </TelegramProvider>
-      </ThemeProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <TelegramProvider>
+            <Suspense fallback={<PageLoader />}>
+              {currentPage === 'login' && <LoginPage {...sharedProps} />}
+              {currentPage === 'register' && <RegisterPage {...sharedProps} />}
+              {currentPage === 'dashboard' && <DashboardPage {...sharedProps} />}
+              {currentPage === 'portfolio' && <PortfolioPage {...sharedProps} />}
+              {currentPage === 'bots' && <TradingBotsPage {...sharedProps} />}
+            </Suspense>
+          </TelegramProvider>
+        </ThemeProvider>
 
-      {/* DevTools React Query */}
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
-    </QueryClientProvider>
+        {process.env.NODE_ENV === 'development' && (
+          <ReactQueryDevtools initialIsOpen={false} />
+        )}
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
