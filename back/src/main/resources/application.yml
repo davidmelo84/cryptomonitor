@@ -44,10 +44,10 @@ spring:
     hibernate:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: false
-    open-in-view: false  # ✅ Reduz overhead
+    open-in-view: false
     properties:
       hibernate:
-        format_sql: false  # ✅ Desabilitar em produção
+        format_sql: false
         jdbc:
           batch_size: 20
         order_inserts: true
@@ -58,7 +58,7 @@ spring:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
-    validate-on-migrate: false  # ✅ Reduz tempo de startup
+    validate-on-migrate: false
     out-of-order: false
 
   # ============================================
@@ -82,14 +82,14 @@ spring:
     scheduling:
       enabled: true
       pool:
-        size: 5  # ✅ Limitar threads de scheduling
+        size: 5
 
   # ============================================
   # MAIN
   # ============================================
   main:
     allow-circular-references: false
-    lazy-initialization: false  # ✅ Manter false em produção
+    lazy-initialization: false
 
 # ============================================
 # SENDGRID EMAIL CONFIGURATION
@@ -127,14 +127,16 @@ alert:
     threshold: -5.0
   sell:
     threshold: 10.0
-  check-interval: 300000
+  # ✅ AUMENTADO: Intervalo de 5min → 10min (reduz 50% das requisições)
+  check-interval: 600000  # 10 minutos (era 300000 = 5min)
 
 notification:
   email:
     enabled: true
     from-name: Crypto Monitoring System
     from: ${SENDGRID_FROM_EMAIL:ddevnordeste@gmail.com}
-    cooldown-minutes: 30
+    # ✅ AUMENTADO: Cooldown de 30min → 60min (reduz spam de emails)
+    cooldown-minutes: 60  # 1 hora (era 30min)
 
   telegram:
     enabled: true
@@ -146,26 +148,35 @@ monitoring:
   thread-pool-size: 10
   shutdown-timeout: 60
 
+# ============================================
+# ✅ COINGECKO API - RATE LIMITING
+# ============================================
 coingecko:
   api:
     url: https://api.coingecko.com/api/v3
-  rate-limit: 30
+  # ✅ NOVO: Rate limit da API gratuita
+  rate-limit: 25  # Requisições por minuto (margem de segurança, API permite 30)
+
+  # ✅ NOVO: Configurações de retry
+  retry:
+    max-attempts: 2  # Reduzido de 3 para 2 (menos requisições em caso de erro)
+    backoff-delay: 3000  # 3 segundos entre tentativas
 
 # ============================================
 # LOGGING - OTIMIZADO PARA PRODUÇÃO
 # ============================================
 logging:
   level:
-    root: WARN  # ✅ Padrão WARN
+    root: WARN
     com.crypto: INFO
     org.springframework.security: WARN
     org.hibernate: WARN
-    org.springframework.web: WARN  # ✅ Reduzido
+    org.springframework.web: WARN
     org.springframework.mail: ERROR
-    org.flywaydb: WARN  # ✅ Reduzido
-    org.springframework.scheduling: WARN  # ✅ Reduzido
+    org.flywaydb: WARN
+    org.springframework.scheduling: WARN
     org.springframework.data.redis: ERROR
-    org.springframework.boot: WARN  # ✅ Reduzido
+    org.springframework.boot: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
   file:
@@ -199,16 +210,18 @@ info:
   app:
     name: Crypto Monitor
     description: Sistema de Monitoramento de Criptomoedas
-    version: 2.0.0
+    version: 2.0.1-rate-limited
     features:
       - Monitoramento controlado por usuário
       - Alertas personalizados por email
       - Sistema anti-spam de notificações
       - Suporte multi-usuário
+      - Rate limiting automático para CoinGecko API
+      - Fallback para dados mock em caso de rate limit
   java:
     version: "17"
   build:
-    timestamp: ${TIMESTAMP:2025-11-05T00:00:00Z}
+    timestamp: ${TIMESTAMP:2025-11-05T18:00:00Z}
 
 # ============================================
 # CONFIGURAÇÃO DE SEGURANÇA / CORS

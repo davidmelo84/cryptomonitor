@@ -13,8 +13,9 @@ import org.springframework.context.annotation.Primary;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ✅ CONFIGURAÇÃO DE CACHE - APENAS CAFFEINE
- * Redis removido para simplificar deploy
+ * ✅ CONFIGURAÇÃO DE CACHE - OTIMIZADA PARA RATE LIMITING
+ *
+ * Estratégia: Aumentar TTL do cache para reduzir requisições à API
  */
 @Slf4j
 @Configuration
@@ -22,27 +23,57 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     /**
-     * ✅ CACHE LOCAL - CAFFEINE
+     * ✅ CACHE LOCAL - CAFFEINE COM TTL ESTENDIDO
+     *
+     * Mudanças:
+     * - cryptoPrices: 5min → 10min (reduz 50% das requisições)
+     * - allCryptoPrices: 5min → 10min (reduz 50% das requisições)
      */
     @Primary
     @Bean("caffeineCacheManager")
     public CacheManager caffeineCacheManager() {
-        log.info("🚀 Configurando Caffeine Cache (Local)");
+        log.info("🚀 Configurando Caffeine Cache com TTL estendido");
 
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-                "cryptoPrices",
-                "allCryptoPrices",
-                "portfolioData",
-                "userAlerts"
+                "cryptoPrices",       // Cache individual (10min)
+                "allCryptoPrices",    // Cache lista completa (10min)
+                "portfolioData",      // Cache portfolio (5min)
+                "userAlerts"          // Cache alertas (5min)
         );
 
+        // ✅ CONFIGURAÇÃO GLOBAL: 10 minutos de TTL
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(1000)
-                .expireAfterWrite(5, TimeUnit.MINUTES)
+                .expireAfterWrite(10, TimeUnit.MINUTES)  // ✅ Aumentado de 5min para 10min
                 .recordStats()
         );
 
-        log.info("✅ Caffeine Cache configurado: TTL=5min, MaxSize=1000");
+        log.info("✅ Caffeine Cache configurado:");
+        log.info("   - TTL: 10 minutos (reduz 50% das requisições)");
+        log.info("   - MaxSize: 1000 entradas");
+        log.info("   - Stats: habilitado");
+
+        return cacheManager;
+    }
+
+    /**
+     * ✅ CACHE ESPECÍFICO PARA HISTÓRICO (TTL MAIOR)
+     */
+    @Bean("historyCacheManager")
+    public CacheManager historyCacheManager() {
+        log.info("🚀 Configurando cache para histórico (TTL: 1 hora)");
+
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager("cryptoHistory");
+
+        // Histórico muda pouco, pode ter TTL maior
+        cacheManager.setCaffeine(Caffeine.newBuilder()
+                .maximumSize(500)
+                .expireAfterWrite(60, TimeUnit.MINUTES)  // 1 hora
+                .recordStats()
+        );
+
+        log.info("✅ Cache de histórico configurado: TTL=1h");
+
         return cacheManager;
     }
 }

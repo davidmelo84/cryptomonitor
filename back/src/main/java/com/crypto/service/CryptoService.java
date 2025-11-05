@@ -1,3 +1,4 @@
+// back/src/main/java/com/crypto/service/CryptoService.java
 package com.crypto.service;
 
 import com.crypto.dto.CryptoCurrency;
@@ -48,11 +49,20 @@ public class CryptoService {
     @Value("${notification.email.cooldown-minutes:30}")
     private int alertCooldownMinutes;
 
-    private static final boolean USE_MOCK_FOR_BOTS = true;
-    private static final Random random = new Random();
+    // ============================================
+    // ✅ RATE LIMITING - CONTROLE DE REQUISIÇÕES
+    // ============================================
+    private static final int MAX_REQUESTS_PER_MINUTE = 25; // Margem de segurança (CoinGecko = 30/min)
+    private static final long RATE_LIMIT_WINDOW_MS = 60_000; // 1 minuto
+    private final Queue<Long> requestTimestamps = new ConcurrentLinkedQueue<>();
+    private final Object rateLimitLock = new Object();
+
+    // ✅ FALLBACK: Usar dados mock quando API falhar
+    private static final boolean USE_MOCK_ON_RATE_LIMIT = true;
     private static final Map<String, MockCryptoConfig> MOCK_CONFIGS = new ConcurrentHashMap<>();
 
     static {
+        // Configurar mocks para as principais moedas
         MOCK_CONFIGS.put("bitcoin", new MockCryptoConfig("bitcoin", "BTC", "Bitcoin", 45000.0, 40000.0, 50000.0, BigDecimal.valueOf(845_000_000_000L)));
         MOCK_CONFIGS.put("ethereum", new MockCryptoConfig("ethereum", "ETH", "Ethereum", 2500.0, 2000.0, 3000.0, BigDecimal.valueOf(274_000_000_000L)));
         MOCK_CONFIGS.put("cardano", new MockCryptoConfig("cardano", "ADA", "Cardano", 0.50, 0.40, 0.60, BigDecimal.valueOf(20_000_000_000L)));
@@ -69,6 +79,39 @@ public class CryptoService {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
     private final Map<String, ScheduledFuture<?>> userTasks = new ConcurrentHashMap<>();
 
+    /**
+     * ✅ RATE LIMITING: Aguarda se necessário antes de fazer requisição
+     */
+    private void waitForRateLimit() {
+        synchronized (rateLimitLock) {
+            // Remover timestamps antigos (fora da janela de 1 minuto)
+            long now = System.currentTimeMillis();
+            requestTimestamps.removeIf(timestamp -> (now - timestamp) > RATE_LIMIT_WINDOW_MS);
+
+            // Se atingiu o limite, aguardar
+            if (requestTimestamps.size() >= MAX_REQUESTS_PER_MINUTE) {
+                Long oldestTimestamp = requestTimestamps.peek();
+                if (oldestTimestamp != null) {
+                    long waitTime = RATE_LIMIT_WINDOW_MS - (now - oldestTimestamp) + 1000; // +1s de margem
+                    if (waitTime > 0) {
+                        log.warn("⏰ Rate limit atingido. Aguardando {}ms antes da próxima requisição...", waitTime);
+                        try {
+                            Thread.sleep(waitTime);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            log.error("Aguardo de rate limit interrompido", e);
+                        }
+                    }
+                }
+                // Limpar fila após aguardar
+                requestTimestamps.clear();
+            }
+
+            // Registrar nova requisição
+            requestTimestamps.add(System.currentTimeMillis());
+        }
+    }
+
     // =============================
     // MONITORAMENTO MULTI-USUÁRIO
     // =============================
@@ -80,7 +123,7 @@ public class CryptoService {
         }
         ScheduledFuture<?> task = scheduler.scheduleAtFixedRate(
                 () -> runUserCheck(userEmail),
-                10_000, // ⏳ espera 10 segundos antes do primeiro ciclo
+                30_000, // ⏳ Aguardar 30s antes do primeiro ciclo (dar tempo da API resetar)
                 checkIntervalMs,
                 TimeUnit.MILLISECONDS
         );
@@ -97,8 +140,6 @@ public class CryptoService {
         userAlertCooldown.remove(userEmail);
     }
 
-    @Cacheable(value = "allCryptoPrices", sync = true, unless = "#result == null || #result.isEmpty()")
-    @Retryable(value = {Exception.class}, maxAttempts = 3, backoff = @Backoff(delay = 2000))
     public void runUserCheck(String userEmail) {
         try {
             List<CryptoCurrency> cryptos = getCurrentPrices();
@@ -156,19 +197,18 @@ public class CryptoService {
     }
 
     // =============================
-    // MÉTODOS COM CACHE
+    // MÉTODOS COM CACHE E RATE LIMITING
     // =============================
 
-    /** ✅ Adiciona cache e retry à busca por ID */
+    /**
+     * ✅ Busca crypto por ID com rate limiting e fallback para mock
+     */
     @Cacheable(value = "cryptoPrices", key = "#coinId", unless = "#result == null || #result.isEmpty()")
-    @Retryable(value = {Exception.class}, maxAttempts = 3, backoff = @Backoff(delay = 2000))
     public Optional<CryptoCurrency> getCryptoByCoinId(String coinId) {
-        if (USE_MOCK_FOR_BOTS && MOCK_CONFIGS.containsKey(coinId.toLowerCase())) {
-            log.info("🎮 Usando MOCK dinâmico para {}", coinId);
-            return Optional.of(getMockCrypto(coinId.toLowerCase()));
-        }
-
         try {
+            // ✅ Aguardar rate limit antes de fazer requisição
+            waitForRateLimit();
+
             String url = String.format("%s/coins/markets?vs_currency=usd&ids=%s&price_change_percentage=1h,24h,7d",
                     coinGeckoApiUrl, coinId);
 
@@ -180,23 +220,33 @@ public class CryptoService {
                     .block();
 
             if (cryptos != null && !cryptos.isEmpty()) {
+                log.debug("✅ Preço obtido da API: {}", coinId);
                 return Optional.of(cryptos.get(0));
+            }
+        } catch (WebClientResponseException.TooManyRequests e) {
+            log.warn("⚠️ RATE LIMIT atingido para {}, usando mock como fallback", coinId);
+            if (USE_MOCK_ON_RATE_LIMIT && MOCK_CONFIGS.containsKey(coinId.toLowerCase())) {
+                return Optional.of(getMockCrypto(coinId.toLowerCase()));
             }
         } catch (Exception e) {
             log.error("Erro ao buscar cotação de {}: {}", coinId, e.getMessage());
-            if (MOCK_CONFIGS.containsKey(coinId.toLowerCase())) {
-                log.warn("⚠️ API falhou, usando mock como fallback para {}", coinId);
+            if (USE_MOCK_ON_RATE_LIMIT && MOCK_CONFIGS.containsKey(coinId.toLowerCase())) {
+                log.warn("⚠️ Usando mock como fallback para {}", coinId);
                 return Optional.of(getMockCrypto(coinId.toLowerCase()));
             }
         }
         return Optional.empty();
     }
 
-    /** ✅ Cache com duração curta para todas as cryptos */
+    /**
+     * ✅ Cache com duração de 5 MINUTOS + Rate Limiting
+     */
     @Cacheable(value = "allCryptoPrices", unless = "#result == null || #result.isEmpty()")
-    @Retryable(value = {Exception.class}, maxAttempts = 3, backoff = @Backoff(delay = 2000))
     public List<CryptoCurrency> getCurrentPrices() {
         try {
+            // ✅ Aguardar rate limit antes de fazer requisição
+            waitForRateLimit();
+
             String url = String.format("%s/coins/markets?vs_currency=usd&ids=%s&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h,24h,7d",
                     coinGeckoApiUrl, coinsToMonitor);
 
@@ -208,28 +258,30 @@ public class CryptoService {
                     .block();
 
             if (cryptos != null && !cryptos.isEmpty()) {
-                log.info("🌐 Preços atualizados da CoinGecko carregados: {} moedas", cryptos.size());
+                log.info("🌐 Preços atualizados da CoinGecko: {} moedas", cryptos.size());
                 return cryptos;
             }
+        } catch (WebClientResponseException.TooManyRequests e) {
+            log.error("❌ RATE LIMIT EXCEDIDO! Usando dados mock como fallback");
+            return getMockCryptoList();
         } catch (WebClientResponseException e) {
             log.error("Erro ao buscar cotações da CoinGecko API: {} - {}", e.getStatusCode(), e.getResponseBodyAsString());
-            throw new RuntimeException("Falha ao conectar com CoinGecko API", e);
         } catch (Exception e) {
             log.error("Erro inesperado ao buscar cotações: {}", e.getMessage(), e);
-            throw new RuntimeException("Erro interno ao buscar cotações", e);
         }
 
-        List<CryptoCurrency> mockList = new ArrayList<>();
-        if (USE_MOCK_FOR_BOTS) {
-            MOCK_CONFIGS.forEach((coinId, config) -> mockList.add(getMockCrypto(coinId)));
-            log.warn("⚠️ API falhou, retornando lista mock com {} moedas", mockList.size());
+        // ✅ Fallback para mock
+        if (USE_MOCK_ON_RATE_LIMIT) {
+            log.warn("⚠️ API falhou, retornando lista mock");
+            return getMockCryptoList();
         }
 
-        return mockList;
+        return Collections.emptyList();
     }
 
-
-    /** ✅ Invalida cache ao salvar crypto */
+    /**
+     * ✅ Invalida cache ao salvar crypto
+     */
     @Caching(evict = {
             @CacheEvict(value = "cryptoPrices", key = "#crypto.coinId"),
             @CacheEvict(value = "allCryptoPrices", allEntries = true)
@@ -256,20 +308,17 @@ public class CryptoService {
         return cryptoRepository.findByCoinId(coinId);
     }
 
-    /** ✅ Limpar cache manualmente */
     @CacheEvict(value = {"cryptoPrices", "allCryptoPrices"}, allEntries = true)
     public void clearCache() {
         log.info("🗑️ Cache de criptomoedas limpo manualmente");
     }
 
-    /** ✅ Atualizar cache manualmente */
     @CachePut(value = "cryptoPrices", key = "#crypto.coinId", unless = "#crypto == null")
     public CryptoCurrency updateCache(CryptoCurrency crypto) {
         log.debug("🔄 Cache atualizado para: {}", crypto.getCoinId());
         return crypto;
     }
 
-    /** ✅ Preaquecer cache após startup/deploy */
     public void warmUpCache() {
         log.info("🔥 Aquecendo cache...");
         try {
@@ -283,6 +332,8 @@ public class CryptoService {
     // =============================
     // SISTEMA DE MOCK DINÂMICO
     // =============================
+
+    private static final Random random = new Random();
 
     private CryptoCurrency getMockCrypto(String coinId) {
         MockCryptoConfig config = MOCK_CONFIGS.get(coinId);
@@ -308,8 +359,20 @@ public class CryptoService {
         mock.setTotalVolume(config.marketCap.divide(BigDecimal.valueOf(30), RoundingMode.HALF_UP));
         mock.setLastUpdated(LocalDateTime.now());
 
-        log.info("🎮 Mock {} @ ${} (variação: ${})", config.symbol, currentPrice, variation);
+        log.debug("🎮 Mock {} @ ${}", config.symbol, currentPrice);
         return mock;
+    }
+
+    private List<CryptoCurrency> getMockCryptoList() {
+        List<CryptoCurrency> mockList = new ArrayList<>();
+        MOCK_CONFIGS.forEach((coinId, config) -> {
+            CryptoCurrency mock = getMockCrypto(coinId);
+            if (mock != null) {
+                mockList.add(mock);
+            }
+        });
+        log.info("🎮 Retornando {} moedas do sistema mock", mockList.size());
+        return mockList;
     }
 
     public void resetAllMockPrices() {
