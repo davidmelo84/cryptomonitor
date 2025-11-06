@@ -136,13 +136,14 @@ public class PortfolioService {
     }
 
     /**
-     * Busca portfolio do usuário com informações atualizadas
+     * ✅ SPRINT 2 - Otimizado com Projeção
+     *
+     * Usa PortfolioProjection para evitar carregar User completo
      */
     public Map<String, Object> getPortfolio(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        List<Portfolio> portfolios = portfolioRepository.findByUserOrderByTotalInvestedDesc(user);
+        // ✅ USA PROJEÇÃO ao invés de carregar entidade completa
+        List<PortfolioRepository.PortfolioProjection> portfolios =
+                portfolioRepository.findByUserUsernameOptimized(username);
 
         // Buscar preços atuais
         List<CryptoCurrency> currentPrices = cryptoService.getCurrentPrices();
@@ -158,12 +159,17 @@ public class PortfolioService {
         BigDecimal totalInvested = BigDecimal.ZERO;
         BigDecimal totalCurrentValue = BigDecimal.ZERO;
 
-        for (Portfolio p : portfolios) {
-            BigDecimal currentPrice = priceMap.getOrDefault(p.getCoinSymbol().toUpperCase(), p.getAverageBuyPrice());
+        for (PortfolioRepository.PortfolioProjection p : portfolios) {
+            BigDecimal currentPrice = priceMap.getOrDefault(
+                    p.getCoinSymbol().toUpperCase(),
+                    p.getAverageBuyPrice()
+            );
+
             BigDecimal currentValue = p.getQuantity().multiply(currentPrice);
             BigDecimal profitLoss = currentValue.subtract(p.getTotalInvested());
             BigDecimal profitLossPercent = p.getTotalInvested().compareTo(BigDecimal.ZERO) > 0
-                    ? profitLoss.divide(p.getTotalInvested(), 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
+                    ? profitLoss.divide(p.getTotalInvested(), 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100))
                     : BigDecimal.ZERO;
 
             Map<String, Object> item = new HashMap<>();
@@ -186,7 +192,8 @@ public class PortfolioService {
 
         BigDecimal totalProfitLoss = totalCurrentValue.subtract(totalInvested);
         BigDecimal totalProfitLossPercent = totalInvested.compareTo(BigDecimal.ZERO) > 0
-                ? totalProfitLoss.divide(totalInvested, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
+                ? totalProfitLoss.divide(totalInvested, 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100))
                 : BigDecimal.ZERO;
 
         Map<String, Object> result = new HashMap<>();
@@ -195,6 +202,9 @@ public class PortfolioService {
         result.put("totalCurrentValue", totalCurrentValue);
         result.put("totalProfitLoss", totalProfitLoss);
         result.put("totalProfitLossPercent", totalProfitLossPercent);
+
+        log.debug("✅ Portfolio otimizado carregado para {}: {} itens",
+                username, portfolios.size());
 
         return result;
     }

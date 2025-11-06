@@ -99,6 +99,23 @@ spring:
       x-xss-protection: "1; mode=block"
       strict-transport-security: "max-age=31536000; includeSubDomains"
 
+      # ✅ SPRINT 2: WebSocket
+      websocket:
+        enabled: true
+        heartbeat:
+          incoming: 10000  # 10s
+          outgoing: 10000  # 10s
+        message-size-limit: 65536  # 64KB
+
+      # ✅ SPRINT 2: Async Config
+      task:
+        execution:
+          pool:
+            core-size: 5
+            max-size: 10
+            queue-capacity: 100
+          thread-name-prefix: crypto-async-
+
 # ============================================
 # SENDGRID EMAIL CONFIGURATION
 # ============================================

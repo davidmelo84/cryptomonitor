@@ -75,27 +75,39 @@ public class VerificationService {
         return code;
     }
 
+    /**
+     * ✅ SPRINT 2 - Agora assíncrono!
+     *
+     * Usa sendEmailAsync() para não bloquear thread
+     */
     public void sendVerificationEmail(User user, String code) {
         String subject = "🔐 Código de Verificação - Crypto Monitor";
         String body = String.format("""
-                Olá %s!
-                
-                Para ativar sua conta no Crypto Monitor, use o código abaixo:
-                
-                ╔══════════════════╗
-                ║   CÓDIGO: %s   ║
-                ╚══════════════════╝
-                
-                ⏰ Este código é válido por 24 horas.
-                
-                Se você não criou esta conta, ignore este email.
-                
-                ---
-                Crypto Monitor - Sistema de Monitoramento de Criptomoedas
-                https://cryptomonitor-theta.vercel.app
-                """, user.getUsername(), code);
+            Olá %s!
+            
+            Para ativar sua conta no Crypto Monitor, use o código abaixo:
+            
+            ╔══════════════════╗
+            ║   CÓDIGO: %s   ║
+            ╚══════════════════╝
+            
+            ⏰ Este código é válido por 24 horas.
+            
+            Se você não criou esta conta, ignore este email.
+            
+            ---
+            Crypto Monitor - Sistema de Monitoramento de Criptomoedas
+            https://cryptomonitor-theta.vercel.app
+            """, user.getUsername(), code);
 
-        emailService.sendEmail(user.getEmail(), subject, body);
+        // ✅ MUDANÇA: Usar método assíncrono
+        emailService.sendEmailAsync(user.getEmail(), subject, body)
+                .exceptionally(ex -> {
+                    log.error("❌ Erro ao enviar email de verificação: {}", ex.getMessage());
+                    return null;
+                });
+
+        log.info("📧 Email de verificação agendado para: {}", user.getEmail());
     }
 
     @Transactional

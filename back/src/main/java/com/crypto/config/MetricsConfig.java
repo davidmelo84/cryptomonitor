@@ -1,5 +1,6 @@
 package com.crypto.config;
 
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.config.MeterFilter;
@@ -85,6 +86,25 @@ public class MetricsConfig {
         return Timer.builder("crypto.alert.processing.duration")
                 .description("Tempo de processamento de alertas")
                 .tag("type", "alert")
+                .register(registry);
+    }
+
+    /**
+     * ✅ SPRINT 2: Métricas de WebSocket
+     */
+    @Bean
+    public Counter websocketConnectionsCounter(MeterRegistry registry) {
+        return Counter.builder("crypto.websocket.connections")
+                .description("Total de conexões WebSocket")
+                .tag("type", "connection")
+                .register(registry);
+    }
+
+    @Bean
+    public Counter websocketMessagesCounter(MeterRegistry registry) {
+        return Counter.builder("crypto.websocket.messages")
+                .description("Mensagens enviadas via WebSocket")
+                .tag("type", "message")
                 .register(registry);
     }
 }
