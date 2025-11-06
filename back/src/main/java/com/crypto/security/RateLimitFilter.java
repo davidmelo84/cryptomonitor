@@ -9,33 +9,48 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * ✅ SPRINT 1 - RATE LIMITING FILTER
+ *
+ * CORREÇÕES:
+ * - Uso de Optional<Counter> para injeção opcional (type-safe)
+ * - Não quebra se métricas não estiverem disponíveis
+ */
 @Slf4j
 @Component
 @Order(1)
-@RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimitConfig rateLimitConfig;
+    private final Optional<Counter> rateLimitHitsCounter;
+    private final Optional<Counter> apiRequestsCounter;
 
-    @Autowired(required = false)
-    @Qualifier("rateLimitHitsCounter")
-    private Counter rateLimitHitsCounter;
+    /**
+     * ✅ SOLUÇÃO FINAL: Injeção via Optional (null-safe e type-safe)
+     */
+    public RateLimitFilter(
+            RateLimitConfig rateLimitConfig,
+            @Autowired(required = false) Counter rateLimitHitsCounter,
+            @Autowired(required = false) Counter apiRequestsCounter) {
+        this.rateLimitConfig = rateLimitConfig;
+        this.rateLimitHitsCounter = Optional.ofNullable(rateLimitHitsCounter);
+        this.apiRequestsCounter = Optional.ofNullable(apiRequestsCounter);
 
-    @Autowired(required = false)
-    @Qualifier("apiRequestsCounter")
-    private Counter apiRequestsCounter;
+        log.info("✅ RateLimitFilter inicializado");
+        log.info("   📊 Métricas habilitadas: {}",
+                this.rateLimitHitsCounter.isPresent() && this.apiRequestsCounter.isPresent());
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -52,15 +67,18 @@ public class RateLimitFilter extends OncePerRequestFilter {
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
         if (probe.isConsumed()) {
-            if (apiRequestsCounter != null) apiRequestsCounter.increment();
+            // ✅ Incrementar contador (usando Optional - null-safe)
+            apiRequestsCounter.ifPresent(Counter::increment);
 
             response.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
+
             log.debug("✅ Rate limit OK: {} {} (IP: {}, Remaining: {})",
                     request.getMethod(), path, ip, probe.getRemainingTokens());
 
             filterChain.doFilter(request, response);
         } else {
-            if (rateLimitHitsCounter != null) rateLimitHitsCounter.increment();
+            // ✅ Rate limit atingido
+            rateLimitHitsCounter.ifPresent(Counter::increment);
 
             long waitForRefill = TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill());
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
@@ -81,17 +99,21 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     private BucketType determineBucketType(String path) {
-        if (path.startsWith("/crypto-monitor/api/auth/")) return BucketType.AUTH;
-        if (path.startsWith("/crypto-monitor/api/admin/")) return BucketType.ADMIN;
+        if (path.contains("/api/auth/")) return BucketType.AUTH;
+        if (path.contains("/api/admin/")) return BucketType.ADMIN;
         return BucketType.API;
     }
 
     private String getClientIp(HttpServletRequest request) {
         String xForwardedFor = request.getHeader("X-Forwarded-For");
-        if (xForwardedFor != null && !xForwardedFor.isEmpty()) return xForwardedFor.split(",")[0].trim();
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
+            return xForwardedFor.split(",")[0].trim();
+        }
 
         String xRealIp = request.getHeader("X-Real-IP");
-        if (xRealIp != null && !xRealIp.isEmpty()) return xRealIp;
+        if (xRealIp != null && !xRealIp.isEmpty()) {
+            return xRealIp;
+        }
 
         return request.getRemoteAddr();
     }
@@ -99,8 +121,13 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
+
+        // ✅ CORRIGIDO: Excluir WebSocket dos rate limits
         return path.startsWith("/crypto-monitor/actuator/health") ||
                 path.startsWith("/crypto-monitor/actuator/prometheus") ||
+                path.startsWith("/crypto-monitor/ws/") ||  // ✅ WebSocket
+                path.startsWith("/crypto-monitor/topic/") ||
+                path.startsWith("/crypto-monitor/app/") ||
                 path.endsWith(".css") ||
                 path.endsWith(".js") ||
                 path.endsWith(".png") ||

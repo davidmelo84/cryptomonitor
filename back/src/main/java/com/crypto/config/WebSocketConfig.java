@@ -8,8 +8,10 @@ import org.springframework.web.socket.config.annotation.*;
 /**
  * ✅ SPRINT 2 - WEBSOCKET PARA REAL-TIME
  *
- * Permite push automático de preços para o frontend
- * sem necessidade de polling.
+ * CORREÇÕES:
+ * - Removido endpoint duplicado
+ * - CORS simplificado e correto
+ * - SockJS habilitado como fallback
  */
 @Slf4j
 @Configuration
@@ -18,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // ✅ Broker simples em memória (para começar)
+        // ✅ Broker simples em memória
         config.enableSimpleBroker("/topic");
 
         // ✅ Prefixo para mensagens do cliente
@@ -29,22 +31,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // ✅ CORS EXPLÍCITO para WebSocket
+        // ✅ CORRIGIDO: Endpoint único com SockJS
         registry.addEndpoint("/ws/crypto")
                 .setAllowedOriginPatterns(
                         "https://cryptomonitor-theta.vercel.app",
+                        "https://*.vercel.app",
                         "http://localhost:3000",
-                        "http://localhost:8080"
-                );
-        // SockJS (fallback para navegadores antigos)
-        registry.addEndpoint("/ws/crypto")
-                .setAllowedOriginPatterns(
-                        "https://cryptomonitor-theta.vercel.app",
-                        "http://localhost:3000",
-                        "http://localhost:8080"
+                        "http://localhost:8080",
+                        "http://127.0.0.1:*"
                 )
-                .withSockJS();
+                .withSockJS();  // ✅ SockJS como fallback
 
-        log.info("✅ Endpoints WebSocket registrados com CORS liberado para o front.");
+        log.info("✅ WebSocket endpoint registrado: /ws/crypto");
+        log.info("   📡 STOMP destination: /topic/prices");
+        log.info("   🌐 CORS: Vercel + localhost");
     }
 }

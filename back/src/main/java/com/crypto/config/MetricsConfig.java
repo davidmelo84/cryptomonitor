@@ -11,17 +11,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * ✅ SPRINT 1: Configuração de Métricas Prometheus
+ * ✅ SPRINT 1 & 2: Configuração de Métricas Prometheus
  *
- * Métricas disponíveis:
- * - crypto_api_requests_total: Total de requisições
- * - crypto_rate_limit_hits_total: Rate limit atingido
- * - crypto_coingecko_request_duration_seconds: Latência CoinGecko
- * - crypto_alert_processing_duration_seconds: Tempo de processamento alertas
- * - crypto_websocket_connections_total: Conexões WebSocket
- * - crypto_websocket_messages_total: Mensagens WebSocket
- *
- * Endpoint: /actuator/prometheus
+ * CORREÇÕES:
+ * - Removido parâmetro MeterRegistry do customizer (evita dependência circular)
+ * - Beans de Counter/Timer injetados via @Lazy no RateLimitFilter
  */
 @Slf4j
 @Configuration
@@ -30,14 +24,14 @@ public class MetricsConfig {
     @Value("${spring.application.name:crypto-monitor}")
     private String applicationName;
 
-    @Value("${app.version:2.0.1-sprint1}")
+    @Value("${app.version:2.0.1-sprint2}")
     private String version;
 
     @Value("${spring.profiles.active:dev}")
     private String environment;
 
     /**
-     * ✅ Customizador para adicionar tags globais e filtrar métricas irrelevantes
+     * ✅ CORRIGIDO - Sem parâmetros para evitar dependência circular
      */
     @Bean
     public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
@@ -62,7 +56,7 @@ public class MetricsConfig {
         };
     }
 
-    // ✅ Timer: Requisições CoinGecko
+    // ✅ Timers
     @Bean
     public Timer coinGeckoRequestTimer(MeterRegistry registry) {
         return Timer.builder("crypto_coingecko_request_duration_seconds")
@@ -71,7 +65,6 @@ public class MetricsConfig {
                 .register(registry);
     }
 
-    // ✅ Timer: Processamento de alertas
     @Bean
     public Timer alertProcessingTimer(MeterRegistry registry) {
         return Timer.builder("crypto_alert_processing_duration_seconds")
@@ -80,7 +73,7 @@ public class MetricsConfig {
                 .register(registry);
     }
 
-    // ✅ Counter: Total de conexões WebSocket
+    // ✅ Counters
     @Bean
     public Counter websocketConnectionsCounter(MeterRegistry registry) {
         return Counter.builder("crypto_websocket_connections_total")
@@ -89,7 +82,6 @@ public class MetricsConfig {
                 .register(registry);
     }
 
-    // ✅ Counter: Total de mensagens WebSocket
     @Bean
     public Counter websocketMessagesCounter(MeterRegistry registry) {
         return Counter.builder("crypto_websocket_messages_total")
@@ -98,7 +90,6 @@ public class MetricsConfig {
                 .register(registry);
     }
 
-    // ✅ Counter: Total de vezes que o rate limit foi atingido
     @Bean
     public Counter rateLimitHitsCounter(MeterRegistry registry) {
         return Counter.builder("crypto_rate_limit_hits_total")
@@ -107,7 +98,6 @@ public class MetricsConfig {
                 .register(registry);
     }
 
-    // ✅ Counter: Total de requisições à API (necessário para RateLimitFilter)
     @Bean
     public Counter apiRequestsCounter(MeterRegistry registry) {
         return Counter.builder("crypto_api_requests_total")

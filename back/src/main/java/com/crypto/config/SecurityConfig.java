@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/config/SecurityConfig.java
 package com.crypto.config;
 
 import com.crypto.security.JwtAuthenticationFilter;
@@ -22,6 +21,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+/**
+ * ✅ CORREÇÃO: WebSocket endpoints adicionados como públicos
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -40,14 +42,18 @@ public class SecurityConfig {
                         // ✅ Permitir OPTIONS para preflight CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ✅ Endpoints públicos
+                        // ✅ Endpoints públicos (incluindo WebSocket)
                         .requestMatchers(
-                                "/api/auth/**",                      // Registro, login, verificação
-                                "/api/crypto/status",                // Status da API
-                                "/api/crypto/history/**",            // ✅ LIBERADO (histórico de preços)
-                                "/crypto-monitor/api/auth/debug-env",// Debug de variáveis (remover em prod)
-                                "/actuator/health",                  // Health check
-                                "/actuator/info"                     // Info do actuator
+                                "/api/auth/**",
+                                "/api/crypto/status",
+                                "/api/crypto/history/**",
+                                "/crypto-monitor/api/auth/debug-env",
+                                "/actuator/health",
+                                "/actuator/info",
+                                "/ws/**",              // ✅ WebSocket STOMP
+                                "/topic/**",           // ✅ WebSocket topic
+                                "/app/**",             // ✅ WebSocket app
+                                "/sockjs-node/**"      // ✅ SockJS
                         ).permitAll()
 
                         // 🔒 Todos os outros exigem autenticação
@@ -66,9 +72,11 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "https://cryptomonitor-theta.vercel.app",
                 "https://www.cryptomonitor-theta.vercel.app",
-                "https://*.vercel.app",  // Todos os previews do Vercel
-                "http://localhost:*",    // Qualquer porta local
-                "http://127.0.0.1:*"
+                "https://*.vercel.app",
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "ws://localhost:*",    // ✅ WebSocket localhost
+                "ws://127.0.0.1:*"     // ✅ WebSocket localhost
         ));
 
         // ✅ Métodos HTTP permitidos
@@ -79,7 +87,7 @@ public class SecurityConfig {
         // ✅ Headers permitidos
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
-        // ✅ Permitir credenciais (cookies, tokens, etc.)
+        // ✅ Permitir credenciais
         configuration.setAllowCredentials(true);
 
         // ✅ Expor headers personalizados

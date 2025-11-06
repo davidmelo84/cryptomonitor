@@ -8,24 +8,21 @@ server:
     session:
       cookie:
         http-only: true
-        secure: true  # Apenas HTTPS
+        secure: ${COOKIE_SECURE:true} # HTTPS em prod
         same-site: strict
 
   compression:
     enabled: true
     mime-types:
       - application/json
-      - application/xml
       - text/html
-      - text/xml
       - text/plain
       - text/css
       - text/javascript
       - application/javascript
     min-response-size: 1024
 
-  # ✅ Forçar HTTPS em produção (Render)
-  forward-headers-strategy: framework
+  forward-headers-strategy: framework # ✅ necessário no Render para HTTPS
 
 # ============================================
 # SPRING / BANCO DE DADOS
@@ -39,7 +36,6 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${SPRING_DATASOURCE_USERNAME:crypto_user}
     password: ${SPRING_DATASOURCE_PASSWORD:qwe123}
-
     hikari:
       maximum-pool-size: 10
       minimum-idle: 5
@@ -47,8 +43,6 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       pool-name: CryptoMonitorPool
-      connection-test-query: SELECT 1
-      validation-timeout: 3000
       leak-detection-threshold: 60000
 
   jpa:
@@ -59,62 +53,36 @@ spring:
     properties:
       hibernate:
         format_sql: false
-        jdbc:
-          batch_size: 20
         order_inserts: true
         order_updates: true
-    defer-datasource-initialization: false
+        jdbc.batch_size: 20
 
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: false
-    out-of-order: false
-
-  data:
-    redis:
-      repositories:
-        enabled: false
 
   cache:
     type: caffeine
 
   task:
     scheduling:
-      enabled: true
       pool:
         size: 5
 
   main:
+    web-application-type: servlet # 👈 evita conflito com WebFlux
     allow-circular-references: false
-    lazy-initialization: false
 
   security:
     require-ssl: ${REQUIRE_SSL:false}
-    headers:
-      content-security-policy: "default-src 'self'"
-      x-frame-options: DENY
-      x-content-type-options: nosniff
-      x-xss-protection: "1; mode=block"
-      strict-transport-security: "max-age=31536000; includeSubDomains"
 
-      # ✅ SPRINT 2: WebSocket
-      websocket:
-        enabled: true
-        heartbeat:
-          incoming: 10000  # 10s
-          outgoing: 10000  # 10s
-        message-size-limit: 65536  # 64KB
-
-      # ✅ SPRINT 2: Async Config
-      task:
-        execution:
-          pool:
-            core-size: 5
-            max-size: 10
-            queue-capacity: 100
-          thread-name-prefix: crypto-async-
+  websocket:
+    message-size-limit: 65536
+    heartbeat:
+      interval: 10000
+    enabled: true
 
 # ============================================
 # SENDGRID EMAIL CONFIGURATION
@@ -143,15 +111,15 @@ email:
 # JWT CONFIGURATION
 # ============================================
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET:default_secret}
   expiration: 86400000
   issuer: crypto-monitor
   validate-issuer: true
   validate-expiration: true
-  refresh-token-expiration: 604800000  # 7 dias
+  refresh-token-expiration: 604800000 # 7 dias
 
 # ============================================
-# CONFIGURAÇÕES ESPECÍFICAS DA APLICAÇÃO
+# APLICAÇÃO / NEGÓCIO
 # ============================================
 crypto:
   coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash
@@ -161,7 +129,7 @@ alert:
     threshold: -5.0
   sell:
     threshold: 10.0
-  check-interval: 600000  # 10 minutos
+  check-interval: 600000 # 10 minutos
 
 notification:
   email:
@@ -180,7 +148,7 @@ monitoring:
   shutdown-timeout: 60
 
 # ============================================
-# ✅ COINGECKO API - RATE LIMITING
+# COINGECKO API / RATE LIMIT
 # ============================================
 coingecko:
   api:
@@ -190,9 +158,6 @@ coingecko:
     max-attempts: 2
     backoff-delay: 3000
 
-# ============================================
-# ✅ RATE LIMITING GERAL (NOVO)
-# ============================================
 rate-limit:
   api:
     requests-per-minute: 100
@@ -202,34 +167,24 @@ rate-limit:
     requests-per-minute: 50
 
 # ============================================
-# LOGGING - OTIMIZADO PARA PRODUÇÃO
+# LOGGING
 # ============================================
 logging:
   level:
     root: WARN
     com.crypto: INFO
-    com.crypto.security.audit: INFO
-    com.crypto.security.RateLimitFilter: INFO
     org.springframework.security: WARN
-    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
-    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_PARAM_LOG_LEVEL:WARN}
-    org.hibernate: WARN
-    org.springframework.web: WARN
-    org.springframework.mail: ERROR
-    org.flywaydb: WARN
-    org.springframework.scheduling: WARN
-    org.springframework.data.redis: ERROR
-    org.springframework.boot: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/crypto-monitor.log
     max-size: 10MB
     max-history: 7
 
 # ============================================
-# ACTUATOR / PROMETHEUS
+# MANAGEMENT / METRICS / PROMETHEUS
 # ============================================
 management:
   endpoints:
@@ -244,39 +199,20 @@ management:
     tags:
       application: ${spring.application.name}
       environment: ${SPRING_PROFILES_ACTIVE:dev}
-  health:
-    mail:
-      enabled: false
-  info:
-    env:
-      enabled: true
-  prometheus:
-    metrics:
-      export:
-        enabled: true
 
 # ============================================
-# INFORMAÇÕES DA APLICAÇÃO
+# INFO
 # ============================================
 info:
   app:
     name: Crypto Monitor
     description: Sistema de Monitoramento de Criptomoedas
-    version: 2.0.1-rate-limited
-    features:
-      - Monitoramento controlado por usuário
-      - Alertas personalizados por email
-      - Sistema anti-spam de notificações
-      - Suporte multi-usuário
-      - Rate limiting automático para CoinGecko API
-      - Fallback para dados mock em caso de rate limit
+    version: 2.0.1
   java:
-    version: "17"
-  build:
-    timestamp: ${TIMESTAMP:2025-11-05T18:00:00Z}
+    version: 17
 
 # ============================================
-# CONFIGURAÇÃO DE SEGURANÇA / CORS
+# CORS
 # ============================================
 app:
   cors:
@@ -289,7 +225,7 @@ app:
     enabled: true
 
 # ============================================
-# ✅ API SECURITY
+# API LIMITES / TAMANHO
 # ============================================
 api:
   timeout: 30000
@@ -297,7 +233,7 @@ api:
   max-file-size: 5MB
 
 # ============================================
-# ✅ PROFILES
+# PERFIS
 # ============================================
 ---
 spring:
@@ -321,7 +257,7 @@ server:
   servlet:
     session:
       cookie:
-        secure: false  # HTTP OK em dev
+        secure: false
 
 ---
 spring:
@@ -344,4 +280,4 @@ server:
   servlet:
     session:
       cookie:
-        secure: true  # Apenas HTTPS
+        secure: true
