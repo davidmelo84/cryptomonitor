@@ -29,11 +29,22 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // ✅ Endpoint de conexão WebSocket
+        // ✅ CORS EXPLÍCITO para WebSocket
         registry.addEndpoint("/ws/crypto")
-                .setAllowedOriginPatterns("*") // CORS
-                .withSockJS(); // Fallback para navegadores antigos
+                .setAllowedOriginPatterns(
+                        "https://cryptomonitor-theta.vercel.app",
+                        "http://localhost:3000",
+                        "http://localhost:8080"
+                );
+        // SockJS (fallback para navegadores antigos)
+        registry.addEndpoint("/ws/crypto")
+                .setAllowedOriginPatterns(
+                        "https://cryptomonitor-theta.vercel.app",
+                        "http://localhost:3000",
+                        "http://localhost:8080"
+                )
+                .withSockJS();
 
-        log.info("✅ WebSocket endpoint registrado: /ws/crypto");
+        log.info("✅ Endpoints WebSocket registrados com CORS liberado para o front.");
     }
 }
