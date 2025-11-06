@@ -31,7 +31,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <!-- ✅ EXCLUIR commons-logging -->
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -43,7 +42,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
-            <!-- ✅ ADICIONAR EXCLUSÃO TAMBÉM AQUI -->
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -66,7 +64,6 @@
             <groupId>com.sendgrid</groupId>
             <artifactId>sendgrid-java</artifactId>
             <version>4.10.2</version>
-            <!-- ✅ ADICIONAR EXCLUSÃO TAMBÉM AQUI -->
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -124,7 +121,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ✅ FLYWAY ATUALIZADO -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -167,6 +163,32 @@
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
+        </dependency>
+
+        <!-- ========================================= -->
+        <!-- ✅ NOVO: RATE LIMITING (BUCKET4J)         -->
+        <!-- ========================================= -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>8.7.0</version>
+        </dependency>
+
+        <!-- ========================================= -->
+        <!-- ✅ NOVO: LOGS ESTRUTURADOS (LOGSTASH)     -->
+        <!-- ========================================= -->
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>7.4</version>
+        </dependency>
+
+        <!-- ========================================= -->
+        <!-- ✅ NOVO: MÉTRICAS (MICROMETER/PROMETHEUS) -->
+        <!-- ========================================= -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
         <!-- ========================================= -->

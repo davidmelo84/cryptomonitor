@@ -5,6 +5,11 @@ server:
   port: ${PORT:8080}
   servlet:
     context-path: /crypto-monitor
+    session:
+      cookie:
+        http-only: true
+        secure: true  # Apenas HTTPS
+        same-site: strict
 
   compression:
     enabled: true
@@ -18,6 +23,9 @@ server:
       - text/javascript
       - application/javascript
     min-response-size: 1024
+
+  # ✅ Forçar HTTPS em produção (Render)
+  forward-headers-strategy: framework
 
 # ============================================
 # SPRING / BANCO DE DADOS
@@ -39,6 +47,9 @@ spring:
       idle-timeout: 600000
       max-lifetime: 1800000
       pool-name: CryptoMonitorPool
+      connection-test-query: SELECT 1
+      validation-timeout: 3000
+      leak-detection-threshold: 60000
 
   jpa:
     hibernate:
@@ -61,35 +72,32 @@ spring:
     validate-on-migrate: false
     out-of-order: false
 
-  # ============================================
-  # REDIS - DESABILITADO
-  # ============================================
   data:
     redis:
       repositories:
         enabled: false
 
-  # ============================================
-  # CACHE - APENAS CAFFEINE
-  # ============================================
   cache:
     type: caffeine
 
-  # ============================================
-  # TASK SCHEDULING
-  # ============================================
   task:
     scheduling:
       enabled: true
       pool:
         size: 5
 
-  # ============================================
-  # MAIN
-  # ============================================
   main:
     allow-circular-references: false
     lazy-initialization: false
+
+  security:
+    require-ssl: ${REQUIRE_SSL:false}
+    headers:
+      content-security-policy: "default-src 'self'"
+      x-frame-options: DENY
+      x-content-type-options: nosniff
+      x-xss-protection: "1; mode=block"
+      strict-transport-security: "max-age=31536000; includeSubDomains"
 
 # ============================================
 # SENDGRID EMAIL CONFIGURATION
@@ -100,12 +108,18 @@ sendgrid:
   from:
     email: ${SENDGRID_FROM_EMAIL:ddevnordeste@gmail.com}
     name: ${SENDGRID_FROM_NAME:Crypto Monitor}
+  rate-limit:
+    max-emails-per-hour: 100
+    max-emails-per-day: 1000
 
 email:
   provider: sendgrid
   verification:
     enabled: true
+    code-length: 6
     code-expiration-minutes: 15
+    max-attempts: 3
+    resend-cooldown-minutes: 2
   from: ${SENDGRID_FROM_EMAIL:ddevnordeste@gmail.com}
 
 # ============================================
@@ -115,6 +129,9 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000
   issuer: crypto-monitor
+  validate-issuer: true
+  validate-expiration: true
+  refresh-token-expiration: 604800000  # 7 dias
 
 # ============================================
 # CONFIGURAÇÕES ESPECÍFICAS DA APLICAÇÃO
@@ -127,17 +144,14 @@ alert:
     threshold: -5.0
   sell:
     threshold: 10.0
-  # ✅ AUMENTADO: Intervalo de 5min → 10min (reduz 50% das requisições)
-  check-interval: 600000  # 10 minutos (era 300000 = 5min)
+  check-interval: 600000  # 10 minutos
 
 notification:
   email:
     enabled: true
     from-name: Crypto Monitoring System
     from: ${SENDGRID_FROM_EMAIL:ddevnordeste@gmail.com}
-    # ✅ AUMENTADO: Cooldown de 30min → 60min (reduz spam de emails)
-    cooldown-minutes: 60  # 1 hora (era 30min)
-
+    cooldown-minutes: 60
   telegram:
     enabled: true
     bot-token: ${TELEGRAM_BOT_TOKEN:}
@@ -154,13 +168,21 @@ monitoring:
 coingecko:
   api:
     url: https://api.coingecko.com/api/v3
-  # ✅ NOVO: Rate limit da API gratuita
-  rate-limit: 25  # Requisições por minuto (margem de segurança, API permite 30)
-
-  # ✅ NOVO: Configurações de retry
+  rate-limit: 25
   retry:
-    max-attempts: 2  # Reduzido de 3 para 2 (menos requisições em caso de erro)
-    backoff-delay: 3000  # 3 segundos entre tentativas
+    max-attempts: 2
+    backoff-delay: 3000
+
+# ============================================
+# ✅ RATE LIMITING GERAL (NOVO)
+# ============================================
+rate-limit:
+  api:
+    requests-per-minute: 100
+  auth:
+    requests-per-minute: 10
+  admin:
+    requests-per-minute: 50
 
 # ============================================
 # LOGGING - OTIMIZADO PARA PRODUÇÃO
@@ -169,7 +191,11 @@ logging:
   level:
     root: WARN
     com.crypto: INFO
+    com.crypto.security.audit: INFO
+    com.crypto.security.RateLimitFilter: INFO
     org.springframework.security: WARN
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:WARN}
+    org.hibernate.type.descriptor.sql.BasicBinder: ${SQL_PARAM_LOG_LEVEL:WARN}
     org.hibernate: WARN
     org.springframework.web: WARN
     org.springframework.mail: ERROR
@@ -178,24 +204,32 @@ logging:
     org.springframework.data.redis: ERROR
     org.springframework.boot: WARN
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/crypto-monitor.log
     max-size: 10MB
     max-history: 7
 
 # ============================================
-# ACTUATOR
+# ACTUATOR / PROMETHEUS
 # ============================================
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,prometheus,info
       base-path: /actuator
   endpoint:
     health:
       show-details: when-authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+      environment: ${SPRING_PROFILES_ACTIVE:dev}
   health:
     mail:
       enabled: false
@@ -228,6 +262,68 @@ info:
 # ============================================
 app:
   cors:
-    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,https://crypto-monitor-frontend.vercel.app}
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,https://cryptomonitor-theta.vercel.app}
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS,PATCH
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
   security:
     enabled: true
+
+# ============================================
+# ✅ API SECURITY
+# ============================================
+api:
+  timeout: 30000
+  max-request-size: 10MB
+  max-file-size: 5MB
+
+# ============================================
+# ✅ PROFILES
+# ============================================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+rate-limit:
+  api:
+    requests-per-minute: 1000
+  auth:
+    requests-per-minute: 100
+
+logging:
+  level:
+    com.crypto: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: false  # HTTP OK em dev
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+rate-limit:
+  api:
+    requests-per-minute: 100
+  auth:
+    requests-per-minute: 10
+
+logging:
+  level:
+    com.crypto: INFO
+    org.hibernate.SQL: WARN
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true  # Apenas HTTPS
