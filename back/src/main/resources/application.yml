@@ -224,9 +224,6 @@ management:
     health:
       show-details: when-authorized
   metrics:
-    export:
-      prometheus:
-        enabled: true
     tags:
       application: ${spring.application.name}
       environment: ${SPRING_PROFILES_ACTIVE:dev}
@@ -236,6 +233,10 @@ management:
   info:
     env:
       enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
 
 # ============================================
 # INFORMAÇÕES DA APLICAÇÃO
