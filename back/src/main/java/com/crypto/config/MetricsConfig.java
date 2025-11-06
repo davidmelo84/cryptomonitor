@@ -15,13 +15,11 @@ import org.springframework.context.annotation.Configuration;
  *
  * Métricas disponíveis:
  * - crypto_api_requests_total: Total de requisições
- * - crypto_api_errors_total: Total de erros
  * - crypto_rate_limit_hits_total: Rate limit atingido
- * - crypto_email_sent_total: Emails enviados
- * - crypto_alert_triggered_total: Alertas disparados
- * - crypto_bot_trades_total: Trades dos bots
  * - crypto_coingecko_request_duration_seconds: Latência CoinGecko
  * - crypto_alert_processing_duration_seconds: Tempo de processamento alertas
+ * - crypto_websocket_connections_total: Conexões WebSocket
+ * - crypto_websocket_messages_total: Mensagens WebSocket
  *
  * Endpoint: /actuator/prometheus
  */
@@ -39,7 +37,7 @@ public class MetricsConfig {
     private String environment;
 
     /**
-     * ✅ Customizador para adicionar tags globais sem causar dependências
+     * ✅ Customizador para adicionar tags globais e filtrar métricas irrelevantes
      */
     @Bean
     public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
@@ -50,7 +48,6 @@ public class MetricsConfig {
                             "version", version,
                             "environment", environment
                     )
-                    // ✅ Filtrar métricas desnecessárias
                     .meterFilter(MeterFilter.deny(id -> {
                         String name = id.getName();
                         return name.startsWith("jvm.") ||
@@ -61,50 +58,61 @@ public class MetricsConfig {
                     }));
 
             log.info("✅ Métricas Prometheus configuradas");
-            log.info("   Endpoint: /actuator/prometheus");
+            log.info("   📊 Endpoint: /actuator/prometheus");
         };
     }
 
-    /**
-     * ✅ Timer para requisições CoinGecko API
-     * Uso: coinGeckoRequestTimer.record(() -> { ... });
-     */
+    // ✅ Timer: Requisições CoinGecko
     @Bean
     public Timer coinGeckoRequestTimer(MeterRegistry registry) {
-        return Timer.builder("crypto.coingecko.request.duration")
+        return Timer.builder("crypto_coingecko_request_duration_seconds")
                 .description("Duração de requisições para CoinGecko API")
                 .tag("api", "coingecko")
                 .register(registry);
     }
 
-    /**
-     * ✅ Timer para processamento de alertas
-     * Uso: alertProcessingTimer.record(() -> { ... });
-     */
+    // ✅ Timer: Processamento de alertas
     @Bean
     public Timer alertProcessingTimer(MeterRegistry registry) {
-        return Timer.builder("crypto.alert.processing.duration")
+        return Timer.builder("crypto_alert_processing_duration_seconds")
                 .description("Tempo de processamento de alertas")
                 .tag("type", "alert")
                 .register(registry);
     }
 
-    /**
-     * ✅ SPRINT 2: Métricas de WebSocket
-     */
+    // ✅ Counter: Total de conexões WebSocket
     @Bean
     public Counter websocketConnectionsCounter(MeterRegistry registry) {
-        return Counter.builder("crypto.websocket.connections")
+        return Counter.builder("crypto_websocket_connections_total")
                 .description("Total de conexões WebSocket")
                 .tag("type", "connection")
                 .register(registry);
     }
 
+    // ✅ Counter: Total de mensagens WebSocket
     @Bean
     public Counter websocketMessagesCounter(MeterRegistry registry) {
-        return Counter.builder("crypto.websocket.messages")
-                .description("Mensagens enviadas via WebSocket")
+        return Counter.builder("crypto_websocket_messages_total")
+                .description("Total de mensagens enviadas via WebSocket")
                 .tag("type", "message")
+                .register(registry);
+    }
+
+    // ✅ Counter: Total de vezes que o rate limit foi atingido
+    @Bean
+    public Counter rateLimitHitsCounter(MeterRegistry registry) {
+        return Counter.builder("crypto_rate_limit_hits_total")
+                .description("Total de vezes que o rate limit foi atingido")
+                .tag("type", "ratelimit")
+                .register(registry);
+    }
+
+    // ✅ Counter: Total de requisições à API (necessário para RateLimitFilter)
+    @Bean
+    public Counter apiRequestsCounter(MeterRegistry registry) {
+        return Counter.builder("crypto_api_requests_total")
+                .description("Total de requisições processadas pela API")
+                .tag("type", "request")
                 .register(registry);
     }
 }

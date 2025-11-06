@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/security/RateLimitFilter.java
 package com.crypto.security;
 
 import com.crypto.config.RateLimitConfig;
@@ -13,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -21,30 +21,20 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-/**
- * ✅ SPRINT 1 - RATE LIMITING FILTER
- *
- * Filtro que aplica rate limiting antes de qualquer processamento.
- *
- * Retorna:
- * - 429 Too Many Requests se limite excedido
- * - Headers:
- *   - X-Rate-Limit-Remaining: Tokens restantes
- *   - X-Rate-Limit-Retry-After: Segundos para retry
- */
 @Slf4j
 @Component
-@Order(1) // Executar ANTES do JwtAuthenticationFilter
+@Order(1)
 @RequiredArgsConstructor
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final RateLimitConfig rateLimitConfig;
 
-    // ✅ SPRINT 1: Métricas
     @Autowired(required = false)
+    @Qualifier("rateLimitHitsCounter")
     private Counter rateLimitHitsCounter;
 
     @Autowired(required = false)
+    @Qualifier("apiRequestsCounter")
     private Counter apiRequestsCounter;
 
     @Override
@@ -55,28 +45,24 @@ public class RateLimitFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String ip = getClientIp(request);
 
-        // ✅ Determinar tipo de bucket baseado no endpoint
         BucketType bucketType = determineBucketType(path);
-
-        // ✅ Resolver bucket para este IP + tipo
         String bucketKey = ip + ":" + bucketType;
         Bucket bucket = rateLimitConfig.resolveBucket(bucketKey, bucketType);
 
-        // ✅ Tentar consumir 1 token
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
         if (probe.isConsumed()) {
-            // ✅ Requisição permitida
-            response.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
+            if (apiRequestsCounter != null) apiRequestsCounter.increment();
 
+            response.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
             log.debug("✅ Rate limit OK: {} {} (IP: {}, Remaining: {})",
                     request.getMethod(), path, ip, probe.getRemainingTokens());
 
             filterChain.doFilter(request, response);
         } else {
-            // ❌ Limite excedido
-            long waitForRefill = TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill());
+            if (rateLimitHitsCounter != null) rateLimitHitsCounter.increment();
 
+            long waitForRefill = TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill());
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
             response.setContentType("application/json");
             response.addHeader("X-Rate-Limit-Retry-After", String.valueOf(waitForRefill));
@@ -94,50 +80,25 @@ public class RateLimitFilter extends OncePerRequestFilter {
         }
     }
 
-    /**
-     * ✅ Determinar tipo de bucket baseado no path
-     */
     private BucketType determineBucketType(String path) {
-        if (path.startsWith("/crypto-monitor/api/auth/")) {
-            return BucketType.AUTH;
-        }
-
-        if (path.startsWith("/crypto-monitor/api/admin/")) {
-            return BucketType.ADMIN;
-        }
-
+        if (path.startsWith("/crypto-monitor/api/auth/")) return BucketType.AUTH;
+        if (path.startsWith("/crypto-monitor/api/admin/")) return BucketType.ADMIN;
         return BucketType.API;
     }
 
-    /**
-     * ✅ Extrair IP real do cliente (considerando proxies)
-     */
     private String getClientIp(HttpServletRequest request) {
         String xForwardedFor = request.getHeader("X-Forwarded-For");
-
-        if (xForwardedFor != null && !xForwardedFor.isEmpty()) {
-            // Pegar o primeiro IP (cliente real)
-            return xForwardedFor.split(",")[0].trim();
-        }
+        if (xForwardedFor != null && !xForwardedFor.isEmpty()) return xForwardedFor.split(",")[0].trim();
 
         String xRealIp = request.getHeader("X-Real-IP");
-        if (xRealIp != null && !xRealIp.isEmpty()) {
-            return xRealIp;
-        }
+        if (xRealIp != null && !xRealIp.isEmpty()) return xRealIp;
 
         return request.getRemoteAddr();
     }
 
-    /**
-     * ✅ Não aplicar rate limit em:
-     * - Health checks
-     * - Actuator endpoints (métricas)
-     * - Arquivos estáticos
-     */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-
         return path.startsWith("/crypto-monitor/actuator/health") ||
                 path.startsWith("/crypto-monitor/actuator/prometheus") ||
                 path.endsWith(".css") ||
