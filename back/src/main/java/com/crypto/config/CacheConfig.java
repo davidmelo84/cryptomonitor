@@ -41,7 +41,9 @@ public class CacheConfig {
                 "cryptoPrices",       // Cache individual (30min)
                 "allCryptoPrices",    // Cache lista completa (30min)
                 "portfolioData",      // Cache portfolio (15min)
-                "userAlerts"          // Cache alertas (15min)
+                "userAlerts",            // Cache alertas (15min)
+                "binancePrices",      // ✅ usado em BinanceApiService
+                "topBinancePrices"    // ✅ usado em BinanceApiService.getTopPrices
         );
 
         // ✅ TTL de 30 minutos para preços

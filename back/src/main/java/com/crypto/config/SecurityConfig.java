@@ -53,7 +53,9 @@ public class SecurityConfig {
                                 "/ws/**",              // ✅ WebSocket STOMP
                                 "/topic/**",           // ✅ WebSocket topic
                                 "/app/**",             // ✅ WebSocket app
-                                "/sockjs-node/**"      // ✅ SockJS
+                                "/sockjs-node/**",      // ✅ SockJS
+                                "/crypto-monitor/actuator/prometheus", // ✅ PROMETHEUS (com context-path)
+                                "/crypto-monitor/actuator/health"    // ✅ HEALTH (com context-path)
                         ).permitAll()
 
                         // 🔒 Todos os outros exigem autenticação
