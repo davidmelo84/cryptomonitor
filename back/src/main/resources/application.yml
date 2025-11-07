@@ -148,13 +148,17 @@ monitoring:
   shutdown-timeout: 60
 
 # ============================================
-# COINGECKO API / RATE LIMIT
+# COINCAP API / RATE LIMIT
 # ============================================
-binance:
+bcoincap:
   api:
-    url: https://api.binance.com/api/v3
-    rate-limit: ~1200 req/min
+    url: https://api.coincap.io/v2
+    rate-limit: ~200 req/min
     cost: FREE
+    geo-blocking: false
+
+  crypto:
+    coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,matic-network,litecoin,bitcoin-cash
 
 rate-limit:
   api:
