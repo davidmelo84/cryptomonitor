@@ -52,7 +52,10 @@ public class CacheConfig {
                 "portfolioData",
                 "userAlerts",
                 "binancePrices",
-                "topBinancePrices"
+                "topBinancePrices",
+                "coinCapPrices",     // ✅ adicionado
+                "coinCapHistory",    // ✅ adicionado
+                "topCoinCapPrices"   // ✅ adicionado
         );
 
         cacheManager.setCaffeine(Caffeine.newBuilder()
