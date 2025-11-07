@@ -150,13 +150,11 @@ monitoring:
 # ============================================
 # COINGECKO API / RATE LIMIT
 # ============================================
-coingecko:
+binance:
   api:
-    url: https://api.coingecko.com/api/v3
-  rate-limit: 25
-  retry:
-    max-attempts: 2
-    backoff-delay: 3000
+    url: https://api.binance.com/api/v3
+    rate-limit: ~1200 req/min
+    cost: FREE
 
 rate-limit:
   api:
