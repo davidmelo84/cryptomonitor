@@ -121,6 +121,11 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        if ("OPTIONS".equals(method)) {
+            return true;
+        }
 
         // ✅ CORRIGIDO: Excluir WebSocket dos rate limits
         return path.startsWith("/crypto-monitor/actuator/health") ||

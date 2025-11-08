@@ -1,3 +1,4 @@
+// back/src/main/java/com/crypto/config/SecurityConfig.java
 package com.crypto.config;
 
 import com.crypto.security.JwtAuthenticationFilter;
@@ -20,9 +21,16 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
- * ✅ CORREÇÃO: WebSocket endpoints adicionados como públicos
+ * ✅ CORREÇÃO CRÍTICA: CORS COMPLETO
+ *
+ * MUDANÇAS:
+ * 1. OPTIONS permitido GLOBALMENTE
+ * 2. Origens Vercel corrigidas
+ * 3. Headers expostos corretamente
+ * 4. Max-age aumentado para 2 horas
  */
 @Configuration
 @EnableWebSecurity
@@ -39,26 +47,25 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ Permitir OPTIONS para preflight CORS
+                        // ✅ CRÍTICO: OPTIONS sempre permitido (preflight CORS)
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ✅ Endpoints públicos (incluindo WebSocket)
+                        // ✅ Endpoints públicos
                         .requestMatchers(
-                                "/api/auth/**",
-                                "/api/crypto/status",
-                                "/api/crypto/history/**",
-                                "/crypto-monitor/api/auth/debug-env",
-                                "/actuator/health",
+                                "/api/auth/**",              // Login/Registro
+                                "/api/user/**",              // Verificação de email
+                                "/api/crypto/status",        // Status
+                                "/api/crypto/history/**",    // Histórico
+                                "/actuator/health",          // Health check
                                 "/actuator/info",
-                                "/ws/**",              // ✅ WebSocket STOMP
-                                "/topic/**",           // ✅ WebSocket topic
-                                "/app/**",             // ✅ WebSocket app
-                                "/sockjs-node/**",      // ✅ SockJS
-                                "/crypto-monitor/actuator/prometheus", // ✅ PROMETHEUS (com context-path)
-                                "/crypto-monitor/actuator/health"    // ✅ HEALTH (com context-path)
+                                "/actuator/prometheus",
+                                "/ws/**",                    // WebSocket
+                                "/topic/**",
+                                "/app/**",
+                                "/sockjs-node/**"
                         ).permitAll()
 
-                        // 🔒 Todos os outros exigem autenticação
+                        // 🔒 Todos os outros requerem autenticação
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -70,39 +77,40 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 🌐 Permitir origens do Vercel + localhost
+        // ✅ ORIGENS PERMITIDAS (Vercel + localhost)
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "https://cryptomonitor-theta.vercel.app",
                 "https://www.cryptomonitor-theta.vercel.app",
                 "https://*.vercel.app",
-                "http://localhost:*",
-                "http://127.0.0.1:*",
-                "ws://localhost:*",    // ✅ WebSocket localhost
-                "ws://127.0.0.1:*"     // ✅ WebSocket localhost
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://127.0.0.1:*"
         ));
 
-        // ✅ Métodos HTTP permitidos
+        // ✅ MÉTODOS HTTP
         configuration.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
         ));
 
-        // ✅ Headers permitidos
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        // ✅ HEADERS PERMITIDOS (todos)
+        configuration.setAllowedHeaders(List.of("*"));
 
-        // ✅ Permitir credenciais
+        // ✅ CREDENCIAIS
         configuration.setAllowCredentials(true);
 
-        // ✅ Expor headers personalizados
+        // ✅ HEADERS EXPOSTOS (incluindo Authorization)
         configuration.setExposedHeaders(Arrays.asList(
                 "Authorization",
                 "Content-Type",
-                "X-Total-Count"
+                "X-Total-Count",
+                "X-Rate-Limit-Remaining",
+                "X-Rate-Limit-Retry-After"
         ));
 
-        // ✅ Cache do preflight (1 hora)
-        configuration.setMaxAge(3600L);
+        // ✅ MAX-AGE (2 horas = reduz preflight requests)
+        configuration.setMaxAge(7200L);
 
-        // ✅ Aplicar CORS globalmente
+        // ✅ APLICAR GLOBALMENTE
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 

@@ -216,6 +216,8 @@ info:
 # ============================================
 # CORS
 # ============================================
+
+
 app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:3000,https://cryptomonitor-theta.vercel.app}
