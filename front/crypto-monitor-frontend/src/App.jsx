@@ -1,13 +1,14 @@
 // front/crypto-monitor-frontend/src/App.jsx
-// ✅ VERSÃO FINAL — Registro com verificação de e-mail + TelegramProvider + React Query
+// ✅ VERSÃO COM LOGOUT AUTOMÁTICO AO FECHAR ABA
+// ✅ Mantém configurações (email, telegram) mesmo após logout
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ThemeProvider } from './contexts/ThemeContext';
-import { TelegramProvider } from './contexts/TelegramContext'; // ✅ NOVO
+import { TelegramProvider } from './contexts/TelegramContext';
 import { API_BASE_URL } from './utils/constants';
-import ErrorBoundary from './components/ErrorBoundary'; // ✅ Importado aqui
+import ErrorBoundary from './components/ErrorBoundary';
 
 // ✅ Lazy loading das páginas
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
@@ -41,19 +42,58 @@ function App() {
   const [token, setToken] = useState(null);
   const [authError, setAuthError] = useState('');
 
-  // Configurações gerais
+  // ✅ Configurações gerais (persistem após logout)
   const [selectedCryptos, setSelectedCryptos] = useState([]);
   const [monitoringEmail, setMonitoringEmail] = useState('');
   const [monitoringInterval, setMonitoringInterval] = useState(5);
   const [buyThreshold, setBuyThreshold] = useState(5.0);
   const [sellThreshold, setSellThreshold] = useState(10.0);
 
-  // ✅ Restaurar sessão
+  // ✅ CARREGAR CONFIGURAÇÕES SALVAS (independente de estar logado)
   useEffect(() => {
-    const savedToken = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
+    try {
+      const savedEmail = localStorage.getItem('monitoring_email');
+      const savedInterval = localStorage.getItem('monitoring_interval');
+      const savedBuyThreshold = localStorage.getItem('buy_threshold');
+      const savedSellThreshold = localStorage.getItem('sell_threshold');
+
+      if (savedEmail) setMonitoringEmail(savedEmail);
+      if (savedInterval) setMonitoringInterval(parseInt(savedInterval));
+      if (savedBuyThreshold) setBuyThreshold(parseFloat(savedBuyThreshold));
+      if (savedSellThreshold) setSellThreshold(parseFloat(savedSellThreshold));
+
+      console.log('✅ Configurações carregadas do localStorage');
+    } catch (error) {
+      console.error('❌ Erro ao carregar configurações:', error);
+    }
+  }, []);
+
+  // ✅ SALVAR CONFIGURAÇÕES SEMPRE QUE MUDAREM
+  useEffect(() => {
+    if (monitoringEmail) {
+      localStorage.setItem('monitoring_email', monitoringEmail);
+    }
+  }, [monitoringEmail]);
+
+  useEffect(() => {
+    localStorage.setItem('monitoring_interval', monitoringInterval.toString());
+  }, [monitoringInterval]);
+
+  useEffect(() => {
+    localStorage.setItem('buy_threshold', buyThreshold.toString());
+  }, [buyThreshold]);
+
+  useEffect(() => {
+    localStorage.setItem('sell_threshold', sellThreshold.toString());
+  }, [sellThreshold]);
+
+  // ✅ NOVA LÓGICA: Usar sessionStorage para token (limpa ao fechar aba)
+  useEffect(() => {
+    const savedToken = sessionStorage.getItem('token');
+    const savedUser = sessionStorage.getItem('user');
 
     if (!savedToken || !savedUser) {
+      console.log('🔒 Nenhuma sessão ativa - redirecionando para login');
       setCurrentPage('login');
       return;
     }
@@ -63,14 +103,31 @@ function App() {
       setToken(savedToken);
       setUser(parsedUser);
       setCurrentPage('dashboard');
+      console.log('✅ Sessão restaurada:', parsedUser.username);
     } catch (error) {
-      console.error('Erro ao restaurar sessão:', error);
-      localStorage.clear();
+      console.error('❌ Erro ao restaurar sessão:', error);
+      sessionStorage.clear();
       setCurrentPage('login');
     }
   }, []);
 
-  // ✅ Login com tratamento de erros melhorado
+  // ✅ LIMPAR TOKEN AO FECHAR ABA/NAVEGADOR
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      console.log('🚪 Fechando aba - limpando sessão');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('user');
+      // ✅ NÃO remove configurações (email, telegram, etc)
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
+  // ✅ Login com sessão temporária
   const handleLogin = useCallback(async (username, password) => {
     setAuthError('');
 
@@ -114,8 +171,14 @@ function App() {
 
       setToken(data.token);
       setUser({ username });
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify({ username }));
+      
+      // ✅ USA sessionStorage (limpa ao fechar aba)
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('user', JSON.stringify({ username }));
+      
+      // ✅ Salva username no localStorage (para lembrar último login)
+      localStorage.setItem('last_username', username);
+      
       setCurrentPage('dashboard');
 
     } catch (error) {
@@ -124,7 +187,7 @@ function App() {
     }
   }, []);
 
-  // ✅ Registro com tratamento de erros melhorado
+  // ✅ Registro
   const handleRegister = useCallback(async (regUsername, regEmail, regPassword, regConfirmPassword) => {
     setAuthError('');
 
@@ -198,14 +261,29 @@ function App() {
     }
   }, []);
 
-  // ✅ Logout
+  // ✅ Logout (limpa apenas sessão, mantém configurações)
   const handleLogout = () => {
+    console.log('🚪 Fazendo logout...');
+    
     setUser(null);
     setToken(null);
     setCurrentPage('login');
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    
+    // ✅ Remove apenas dados de autenticação
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
+    
+    // ✅ NÃO remove:
+    // - monitoring_email
+    // - monitoring_interval
+    // - buy_threshold
+    // - sell_threshold
+    // - telegram_config_enc (do TelegramContext)
+    // - last_username
+    
     queryClient.clear();
+    
+    console.log('✅ Logout concluído (configurações mantidas)');
   };
 
   // ✅ Seleção de criptos
