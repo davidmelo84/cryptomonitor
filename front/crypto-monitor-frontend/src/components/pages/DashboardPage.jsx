@@ -1,9 +1,12 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
-// ✅ VERSÃO COM MEMOIZAÇÃO DE TELEGRAM CONFIG
+// ✅ COM TOAST E SKELETON - SUBSTITUA O ARQUIVO COMPLETO
 
 import React, { useState, useCallback, useMemo } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTelegram } from '../../contexts/TelegramContext';
+import { useToast } from '../common/Toast'; // ✅ NOVO
+import { CryptoCardSkeleton } from '../common/Skeleton'; // ✅ NOVO
+
 import Header from '../dashboard/Header';
 import StatusCard from '../dashboard/StatusCard';
 import StatsCards from '../dashboard/StatsCards';
@@ -41,6 +44,7 @@ function DashboardPage({
 }) {
   const { isDark } = useTheme();
   const { telegramConfig, isConfigured } = useTelegram();
+  const { showToast, ToastContainer } = useToast(); // ✅ NOVO
   
   const [showTelegramConfig, setShowTelegramConfig] = useState(false);
 
@@ -61,7 +65,6 @@ function DashboardPage({
 
   const isMonitoringActive = monitoringStatusData?.active || false;
 
-  // ✅ MEMOIZAR TELEGRAM CONFIG PARA EVITAR RE-RENDERS
   const telegramConfigMemo = useMemo(() => telegramConfig, [
     telegramConfig.enabled,
     telegramConfig.botToken,
@@ -69,14 +72,8 @@ function DashboardPage({
     telegramConfig.isConnected
   ]);
 
-  // ✅ HANDLER ESTÁVEL E SEGURO
   const handleStartStopMonitoring = useCallback(async () => {
     console.log('🔘 handleStartStopMonitoring chamado');
-    console.log('   isMonitoringActive:', isMonitoringActive);
-    console.log('   monitoringEmail:', monitoringEmail);
-    console.log('   selectedCryptos:', selectedCryptos.length);
-    console.log('   Telegram configurado?', isConfigured());
-    console.log('   Telegram habilitado?', telegramConfigMemo.enabled);
 
     if (isMonitoringActive) {
       // ========== PARAR MONITORAMENTO ==========
@@ -86,9 +83,13 @@ function DashboardPage({
         const result = await stopMonitoringMutation.mutateAsync(token);
         console.log('✅ Monitoramento parado:', result);
         refetchMonitoringStatus();
+        
+        // ✅ TOAST ao invés de alert
+        showToast('Monitoramento parado com sucesso!', 'info');
+        
       } catch (error) {
         console.error('❌ Erro ao parar:', error);
-        alert('Erro ao parar monitoramento: ' + error.message);
+        showToast('Erro ao parar monitoramento: ' + error.message, 'error');
       }
       
     } else {
@@ -96,12 +97,12 @@ function DashboardPage({
       console.log('▶️ Tentando iniciar monitoramento...');
       
       if (!monitoringEmail || monitoringEmail.trim() === '') {
-        alert('⚠️ Configure um email válido antes de iniciar!');
+        showToast('Configure um email válido antes de iniciar!', 'error');
         return;
       }
 
       if (selectedCryptos.length === 0) {
-        alert('⚠️ Selecione pelo menos uma criptomoeda!');
+        showToast('Selecione pelo menos uma criptomoeda!', 'error');
         return;
       }
 
@@ -153,20 +154,16 @@ function DashboardPage({
         console.log('✅ Monitoramento iniciado:', result);
         refetchMonitoringStatus();
         
-        let alertMessage = `✅ Monitoramento iniciado!\n\n` +
-                          `• Email: ${monitoringEmail}\n` +
-                          `• Moedas: ${cryptocurrencies.length}\n` +
-                          `• Intervalo: ${monitoringInterval} min`;
-        
+        // ✅ TOAST ao invés de alert
+        let message = `Monitoramento iniciado! ${cryptocurrencies.length} moeda(s) sendo monitorada(s).`;
         if (telegramConfigMemo.enabled && isConfigured()) {
-          alertMessage += `\n• Telegram: Habilitado ✅`;
+          message += ' Telegram ativo!';
         }
-        
-        alert(alertMessage);
+        showToast(message, 'success', 4000);
         
       } catch (error) {
         console.error('❌ Erro ao iniciar:', error);
-        alert('Erro ao iniciar monitoramento: ' + error.message);
+        showToast('Erro ao iniciar monitoramento: ' + error.message, 'error');
       }
     }
   }, [
@@ -181,18 +178,23 @@ function DashboardPage({
     isConfigured,
     startMonitoringMutation,
     stopMonitoringMutation,
-    refetchMonitoringStatus
+    refetchMonitoringStatus,
+    showToast
   ]);
 
   const handleRefresh = () => {
     refetchCryptos();
     refetchMonitoringStatus();
+    showToast('Dados atualizados!', 'info', 2000); // ✅ TOAST
   };
 
   const lastUpdate = cryptosLoading ? null : new Date();
 
   return (
     <div className={`page-container ${isDark ? 'dark' : ''}`}>
+      {/* ✅ TOAST CONTAINER */}
+      <ToastContainer />
+      
       <Header
         user={user}
         lastUpdate={lastUpdate}
@@ -206,9 +208,30 @@ function DashboardPage({
 
       <div className="content-wrapper">
         {cryptosLoading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4" />
-            <p className="text-gray-600">Carregando criptomoedas...</p>
+          // ✅ SKELETON ao invés de spinner
+          <div>
+            <div style={{ 
+              background: isDark ? '#1f2937' : 'white',
+              padding: '2rem',
+              borderRadius: '20px',
+              marginBottom: '2rem',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)'
+            }}>
+              <div style={{ textAlign: 'center', color: isDark ? '#9ca3af' : '#6b7280' }}>
+                Carregando criptomoedas...
+              </div>
+            </div>
+            
+            <div className="cryptocurrencies-grid" style={{ 
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '1.25rem',
+              marginTop: '2rem'
+            }}>
+              {[...Array(6)].map((_, i) => (
+                <CryptoCardSkeleton key={i} />
+              ))}
+            </div>
           </div>
         ) : (
           <>

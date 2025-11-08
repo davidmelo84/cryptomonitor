@@ -1,23 +1,35 @@
 // front/crypto-monitor-frontend/src/components/pages/LoginPage.jsx
-// ✅ VERSÃO CORRIGIDA - Com visual original do projeto
+// ✅ COM VALIDAÇÃO EM TEMPO REAL - SUBSTITUA O ARQUIVO COMPLETO
 
-import React, { useState } from 'react';
+import React from 'react';
 import { LogIn, TrendingUp, Mail, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useFormValidation, commonValidations } from '../../hooks/useFormValidation'; // ✅ NOVO
 import ThemeToggle from '../common/ThemeToggle';
 import '../../styles/components.css';
 
 function LoginPage({ onLogin, onNavigateToRegister, authError }) {
   const { isDark } = useTheme();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    await onLogin(username, password);
-    setIsLoading(false);
+  // ✅ VALIDAÇÃO COM HOOK
+  const {
+    values,
+    errors,
+    touched,
+    isSubmitting,
+    handleChange,
+    handleBlur,
+    handleSubmit
+  } = useFormValidation(
+    { username: '', password: '' },
+    {
+      username: commonValidations.username,
+      password: commonValidations.password
+    }
+  );
+
+  const onSubmit = async () => {
+    await onLogin(values.username, values.password);
   };
 
   return (
@@ -45,7 +57,7 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
         <h1 className="auth-title">Crypto Monitor</h1>
         <p className="auth-subtitle">Monitore suas criptomoedas em tempo real</p>
 
-        {/* Erro */}
+        {/* Erro do servidor */}
         {authError && (
           <div className="alert alert-error">
             ⚠️ {authError}
@@ -53,46 +65,81 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
         )}
 
         {/* Formulário */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(onSubmit);
+        }}>
           {/* Usuário */}
           <div className="auth-input-wrapper">
             <input
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={values.username}
+              onChange={(e) => handleChange('username', e.target.value)}
+              onBlur={() => handleBlur('username')}
               placeholder="Digite seu usuário"
               className="auth-input"
-              disabled={isLoading}
-              required
+              disabled={isSubmitting}
+              style={{
+                borderColor: touched.username && errors.username ? '#ef4444' : undefined
+              }}
             />
             <button type="button" className="auth-icon" tabIndex="-1">
               <Mail size={20} />
             </button>
           </div>
+          
+          {/* ✅ ERRO EM TEMPO REAL */}
+          {touched.username && errors.username && (
+            <p style={{
+              color: '#ef4444',
+              fontSize: '0.875rem',
+              marginTop: '-0.5rem',
+              marginBottom: '0.5rem',
+              marginLeft: '0.25rem'
+            }}>
+              ⚠️ {errors.username}
+            </p>
+          )}
 
           {/* Senha */}
           <div className="auth-input-wrapper">
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={values.password}
+              onChange={(e) => handleChange('password', e.target.value)}
+              onBlur={() => handleBlur('password')}
               placeholder="Digite sua senha"
               className="auth-input"
-              disabled={isLoading}
-              required
+              disabled={isSubmitting}
+              style={{
+                borderColor: touched.password && errors.password ? '#ef4444' : undefined
+              }}
             />
             <button type="button" className="auth-icon" tabIndex="-1">
               <Lock size={20} />
             </button>
           </div>
 
+          {/* ✅ ERRO EM TEMPO REAL */}
+          {touched.password && errors.password && (
+            <p style={{
+              color: '#ef4444',
+              fontSize: '0.875rem',
+              marginTop: '-0.5rem',
+              marginBottom: '0.5rem',
+              marginLeft: '0.25rem'
+            }}>
+              ⚠️ {errors.password}
+            </p>
+          )}
+
           {/* Botão Entrar */}
           <button
             type="submit"
             className="auth-button"
-            disabled={isLoading}
+            disabled={isSubmitting || (touched.username && errors.username) || (touched.password && errors.password)}
           >
-            {isLoading ? (
+            {isSubmitting ? (
               <>
                 <div className="spinner" style={{ width: '20px', height: '20px' }}></div>
                 Entrando...

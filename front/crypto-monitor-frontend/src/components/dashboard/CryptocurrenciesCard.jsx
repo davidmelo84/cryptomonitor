@@ -1,7 +1,7 @@
 // front/crypto-monitor-frontend/src/components/dashboard/CryptocurrenciesCard.jsx
-// ✅ VERSÃO CORRIGIDA - Lista de Criptomoedas Funcionando
+// ✅ COM DEBOUNCE NA BUSCA - SUBSTITUA O ARQUIVO COMPLETO
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Coins } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import CryptoCard from './CryptoCard';
@@ -14,15 +14,25 @@ function CryptocurrenciesCard({
 }) {
   const { isDark } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(''); // ✅ NOVO
   const [sortBy, setSortBy] = useState('marketCap');
 
-  // ✅ Filtrar e ordenar cryptos
+  // ✅ DEBOUNCE - Atualiza após 300ms sem digitar
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // ✅ Filtrar e ordenar cryptos (usando debouncedSearchTerm)
   const filteredCryptos = useMemo(() => {
     let filtered = availableCryptos;
 
-    // Aplicar busca
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
+    // Aplicar busca com debounce
+    if (debouncedSearchTerm) {
+      const term = debouncedSearchTerm.toLowerCase();
       filtered = filtered.filter(crypto =>
         crypto.name?.toLowerCase().includes(term) ||
         crypto.symbol?.toLowerCase().includes(term)
@@ -46,7 +56,10 @@ function CryptocurrenciesCard({
     });
 
     return filtered;
-  }, [availableCryptos, searchTerm, sortBy]);
+  }, [availableCryptos, debouncedSearchTerm, sortBy]);
+
+  // ✅ Feedback visual durante busca
+  const isSearching = searchTerm !== debouncedSearchTerm;
 
   return (
     <div className={`cryptocurrencies-card ${isDark ? 'dark' : ''}`}>
@@ -60,6 +73,7 @@ function CryptocurrenciesCard({
           <p className="cryptocurrencies-subtitle">
             {filteredCryptos.length} de {availableCryptos.length} moedas
             {selectedCryptos.length > 0 && ` • ${selectedCryptos.length} selecionadas`}
+            {isSearching && ' • Buscando...'}
           </p>
         </div>
 
@@ -71,6 +85,9 @@ function CryptocurrenciesCard({
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="🔍 Buscar moeda..."
             className="search-input"
+            style={{
+              borderColor: isSearching ? '#667eea' : undefined
+            }}
           />
 
           <select
@@ -98,7 +115,12 @@ function CryptocurrenciesCard({
       {/* Grid de Cryptos */}
       {filteredCryptos.length === 0 ? (
         <div className="cryptocurrencies-empty">
-          <p>Nenhuma criptomoeda encontrada</p>
+          <p>
+            {debouncedSearchTerm 
+              ? `Nenhuma moeda encontrada para "${debouncedSearchTerm}"`
+              : 'Nenhuma criptomoeda encontrada'
+            }
+          </p>
         </div>
       ) : (
         <div className="cryptocurrencies-grid">

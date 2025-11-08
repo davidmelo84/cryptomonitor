@@ -9,6 +9,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { TelegramProvider } from './contexts/TelegramContext';
 import { API_BASE_URL } from './utils/constants';
 import ErrorBoundary from './components/ErrorBoundary';
+import { useToast } from './components/common/Toast';
 
 // ✅ Lazy loading das páginas
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
