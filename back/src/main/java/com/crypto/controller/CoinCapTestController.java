@@ -2,7 +2,6 @@
 package com.crypto.controller;
 
 import com.crypto.dto.CryptoCurrency;
-import com.crypto.service.CoinCapApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
