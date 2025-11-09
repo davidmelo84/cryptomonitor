@@ -49,7 +49,7 @@ public class CoinGeckoRequestQueue {
     private final AtomicInteger totalRequests = new AtomicInteger(0);
     private final AtomicInteger queuedRequests = new AtomicInteger(0);
 
-    private static final long MIN_INTERVAL_MS = 2000; // 2 segundos
+    private static final long MIN_INTERVAL_MS = 5000; // 2 segundos
     private static final int MAX_REQUESTS_PER_MINUTE = 30;
     private static final long REQUEST_TIMEOUT_MS = 30000; // 30 segundos
 
