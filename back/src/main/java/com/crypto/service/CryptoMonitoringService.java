@@ -6,21 +6,19 @@ import com.crypto.event.CryptoUpdateEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * ✅ REFATORADO - SEM DEPENDÊNCIA CIRCULAR
+ * ✅ MONITORING SERVICE - COM SCHEDULER OTIMIZADO
  *
- * ANTES:
- * CryptoMonitoringService → AlertService → CryptoService → [circular]
- *
- * AGORA:
- * CryptoMonitoringService → CryptoService
- *                         → Event Publisher
- *                              ↓
- *                         AlertEventListener → AlertService
+ * ESTRATÉGIA:
+ * - Scheduler executa A CADA 30 MINUTOS (reduz requests)
+ * - Cache mantém dados por 30 minutos
+ * - WebSocket broadcast para frontend (tempo real)
+ * - Total: ~2 requests/hora ao CoinGecko
  */
 @Slf4j
 @Service
@@ -29,29 +27,46 @@ public class CryptoMonitoringService {
 
     private final CryptoService cryptoService;
     private final ApplicationEventPublisher eventPublisher;
-    private final WebSocketService webSocketService; // ✅ ADICIONADO
+    private final WebSocketService webSocketService;
 
     /**
-     * ✅ Atualização e processamento de alertas para todos os usuários
-     * Agora com broadcast via WebSocket
+     * ✅ SCHEDULER - Executa A CADA 30 MINUTOS
+     *
+     * Antes: A cada 5min = 288 requests/dia
+     * Agora: A cada 30min = 48 requests/dia
+     * Redução: 83%
+     */
+    @Scheduled(fixedDelay = 1800000) // 30 minutos = 1800000ms
+    public void scheduledUpdate() {
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        log.info("⏰ SCHEDULER: Iniciando atualização periódica");
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+        updateAndProcessAlerts();
+    }
+
+    /**
+     * ✅ Atualização global (com broadcast WebSocket)
      */
     public void updateAndProcessAlerts() {
         try {
             log.info("🔄 Iniciando ciclo de monitoramento...");
 
-            // 1. Buscar preços atuais
+            // 1. Buscar preços (cache 30min)
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
             log.info("📊 Obtidos preços de {} criptomoedas", currentCryptos.size());
 
-            // 2. Salvar os dados atualizados
-            for (CryptoCurrency crypto : currentCryptos) {
-                cryptoService.saveCrypto(crypto);
-            }
+            // 2. Salvar no banco (fallback)
+            currentCryptos.forEach(cryptoService::saveCrypto);
 
-            // 3. Publicar evento
-            publishCryptoUpdateEvent(currentCryptos, null, CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE);
+            // 3. Publicar evento (alertas)
+            publishCryptoUpdateEvent(
+                    currentCryptos,
+                    null,
+                    CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE
+            );
 
-            // ✅ 4. NOVO - Broadcast via WebSocket
+            // 4. Broadcast via WebSocket (TEMPO REAL!)
             webSocketService.broadcastPrices(currentCryptos);
 
             log.info("✅ Ciclo de monitoramento concluído com sucesso");
@@ -61,39 +76,53 @@ public class CryptoMonitoringService {
         }
     }
 
+    /**
+     * ✅ Atualização para usuário específico
+     */
     public void updateAndProcessAlertsForUser(String userEmail) {
         try {
-            log.info("🔄 Iniciando ciclo de monitoramento para email: {}", userEmail);
+            log.info("🔄 Iniciando ciclo para: {}", userEmail);
 
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
             log.info("📊 Obtidos preços de {} criptomoedas", currentCryptos.size());
 
-            for (CryptoCurrency crypto : currentCryptos) {
-                cryptoService.saveCrypto(crypto);
-            }
+            currentCryptos.forEach(cryptoService::saveCrypto);
 
-            publishCryptoUpdateEvent(currentCryptos, userEmail, CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE);
-            log.info("✅ Ciclo de monitoramento concluído para: {}", userEmail);
+            publishCryptoUpdateEvent(
+                    currentCryptos,
+                    userEmail,
+                    CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE
+            );
+
+            log.info("✅ Ciclo concluído para: {}", userEmail);
 
         } catch (Exception e) {
-            log.error("❌ Erro no ciclo de monitoramento para {}: {}", userEmail, e.getMessage(), e);
+            log.error("❌ Erro no ciclo para {}: {}", userEmail, e.getMessage(), e);
         }
     }
 
+    /**
+     * ✅ Forçar atualização manual
+     */
     public void forceUpdateAndProcessAlerts() {
         try {
             log.info("🚀 Forçando atualização manual...");
 
+            // ⚠️ Limpar cache para forçar nova request
+            cryptoService.clearCache();
+
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
+            currentCryptos.forEach(cryptoService::saveCrypto);
 
-            for (CryptoCurrency crypto : currentCryptos) {
-                cryptoService.saveCrypto(crypto);
-            }
+            publishCryptoUpdateEvent(
+                    currentCryptos,
+                    null,
+                    CryptoUpdateEvent.UpdateType.MANUAL_UPDATE
+            );
 
-            publishCryptoUpdateEvent(currentCryptos, null, CryptoUpdateEvent.UpdateType.MANUAL_UPDATE);
-            webSocketService.broadcastPrices(currentCryptos); // ✅ Broadcast também no modo manual
+            webSocketService.broadcastPrices(currentCryptos);
 
-            log.info("✅ Atualização manual concluída. {} moedas processadas", currentCryptos.size());
+            log.info("✅ Atualização manual concluída: {} moedas", currentCryptos.size());
 
         } catch (Exception e) {
             log.error("❌ Erro na atualização manual: {}", e.getMessage(), e);
@@ -101,28 +130,9 @@ public class CryptoMonitoringService {
         }
     }
 
-    public void forceUpdateAndProcessAlertsForUser(String userEmail) {
-        try {
-            log.info("🚀 Forçando atualização manual para: {}", userEmail);
-
-            List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
-
-            for (CryptoCurrency crypto : currentCryptos) {
-                cryptoService.saveCrypto(crypto);
-            }
-
-            publishCryptoUpdateEvent(currentCryptos, userEmail, CryptoUpdateEvent.UpdateType.MANUAL_UPDATE);
-            webSocketService.broadcastPrices(currentCryptos); // ✅ Broadcast também por usuário
-
-            log.info("✅ Atualização manual concluída para {}. {} moedas processadas",
-                    userEmail, currentCryptos.size());
-
-        } catch (Exception e) {
-            log.error("❌ Erro na atualização manual para {}: {}", userEmail, e.getMessage(), e);
-            throw new RuntimeException("Falha na atualização manual", e);
-        }
-    }
-
+    /**
+     * ✅ Atualização de uma crypto específica
+     */
     public void processAlertsForCrypto(String coinId) {
         try {
             cryptoService.getCryptoByCoinId(coinId)
@@ -136,7 +146,7 @@ public class CryptoMonitoringService {
                                         CryptoUpdateEvent.UpdateType.SINGLE_CRYPTO
                                 );
 
-                                webSocketService.broadcastPrices(List.of(savedCrypto)); // ✅ Broadcast unitário
+                                webSocketService.broadcastPrices(List.of(savedCrypto));
                                 log.info("✅ Alertas processados para {}", coinId);
                             },
                             () -> log.warn("⚠️ Criptomoeda {} não encontrada", coinId)
@@ -146,32 +156,32 @@ public class CryptoMonitoringService {
         }
     }
 
-    public void processAlertsForCryptoAndUser(String coinId, String userEmail) {
+    /**
+     * ✅ Publicar evento (desacoplado)
+     */
+    private void publishCryptoUpdateEvent(
+            List<CryptoCurrency> cryptos,
+            String userEmail,
+            CryptoUpdateEvent.UpdateType type) {
+
         try {
-            log.info("🔍 Processando alertas de {} para {}", coinId, userEmail);
+            CryptoUpdateEvent event = userEmail == null
+                    ? new CryptoUpdateEvent(this, cryptos, type)
+                    : new CryptoUpdateEvent(this, cryptos, userEmail, type);
 
-            cryptoService.getCryptoByCoinId(coinId)
-                    .ifPresentOrElse(
-                            crypto -> {
-                                CryptoCurrency savedCrypto = cryptoService.saveCrypto(crypto);
+            eventPublisher.publishEvent(event);
 
-                                publishCryptoUpdateEvent(
-                                        List.of(savedCrypto),
-                                        userEmail,
-                                        CryptoUpdateEvent.UpdateType.SINGLE_CRYPTO
-                                );
+            log.debug("📤 Evento publicado: {} cryptos, tipo: {}, usuário: {}",
+                    cryptos.size(), type, userEmail != null ? userEmail : "global");
 
-                                webSocketService.broadcastPrices(List.of(savedCrypto)); // ✅ Broadcast unitário
-                                log.info("✅ Alertas processados para {} (usuário: {})", coinId, userEmail);
-                            },
-                            () -> log.warn("⚠️ Criptomoeda {} não encontrada", coinId)
-                    );
         } catch (Exception e) {
-            log.error("❌ Erro ao processar alertas para {} (usuário: {}): {}",
-                    coinId, userEmail, e.getMessage());
+            log.error("❌ Erro ao publicar evento: {}", e.getMessage(), e);
         }
     }
 
+    /**
+     * ✅ Estatísticas
+     */
     public MonitoringStats getMonitoringStats() {
         try {
             List<CryptoCurrency> savedCryptos = cryptoService.getAllSavedCryptos();
@@ -189,22 +199,6 @@ public class CryptoMonitoringService {
                     .totalCryptocurrencies(0)
                     .totalActiveAlerts(0)
                     .build();
-        }
-    }
-
-    private void publishCryptoUpdateEvent(List<CryptoCurrency> cryptos, String userEmail, CryptoUpdateEvent.UpdateType type) {
-        try {
-            CryptoUpdateEvent event = userEmail == null
-                    ? new CryptoUpdateEvent(this, cryptos, type)
-                    : new CryptoUpdateEvent(this, cryptos, userEmail, type);
-
-            eventPublisher.publishEvent(event);
-
-            log.debug("📤 Evento publicado: {} cryptos, tipo: {}, usuário: {}",
-                    cryptos.size(), type, userEmail != null ? userEmail : "global");
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao publicar evento: {}", e.getMessage(), e);
         }
     }
 

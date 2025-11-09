@@ -65,6 +65,8 @@ spring:
 
   cache:
     type: caffeine
+    caffeine:
+      spec: maximumSize=2000,expireAfterWrite=30m,recordStats
 
   task:
     scheduling:
@@ -72,7 +74,7 @@ spring:
         size: 5
 
   main:
-    web-application-type: servlet # 👈 evita conflito com WebFlux
+    web-application-type: servlet
     allow-circular-references: false
 
   security:
@@ -116,20 +118,49 @@ jwt:
   issuer: crypto-monitor
   validate-issuer: true
   validate-expiration: true
-  refresh-token-expiration: 604800000 # 7 dias
+  refresh-token-expiration: 604800000
+
+# ============================================
+# ✅ COINGECKO API CONFIGURATION
+# ============================================
+coingecko:
+  api:
+    url: https://api.coingecko.com/api/v3
+    rate-limit:
+      enabled: true
+      requests-per-minute: 30
+      min-request-interval-ms: 500
+      retry-attempts: 3
+      retry-backoff-seconds: 2
+      max-backoff-seconds: 10
+
+  cache:
+    ttl-minutes: 30
+    enabled: true
+    warm-up-on-startup: true
+
+  coins:
+    # ✅ IDs no formato CoinGecko (não usar symbols!)
+    ids: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,matic-network,litecoin,bitcoin-cash,ripple,dogecoin,binancecoin
+
+  tier: FREE
+
+  monitoring:
+    scheduler-interval-minutes: 30
+    broadcast-interval-seconds: 60
 
 # ============================================
 # APLICAÇÃO / NEGÓCIO
 # ============================================
 crypto:
-  coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,polygon,litecoin,bitcoin-cash
+  coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,matic-network,litecoin,bitcoin-cash,ripple,dogecoin,binancecoin
 
 alert:
   buy:
     threshold: -5.0
   sell:
     threshold: 10.0
-  check-interval: 600000 # 10 minutos
+  check-interval: 600000
 
 notification:
   email:
@@ -148,19 +179,14 @@ monitoring:
   shutdown-timeout: 60
 
 # ============================================
-# COINCAP API / RATE LIMIT
+# RATE LIMIT (BACKEND SIDE)
 # ============================================
-bcoincap:
-  api:
-    url: https://api.coincap.io/v2
-    rate-limit: ~200 req/min
-    cost: FREE
-    geo-blocking: false
-
-  crypto:
-    coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,matic-network,litecoin,bitcoin-cash
-
 rate-limit:
+  coingecko:
+    enabled: true
+    requests-per-minute: 30
+    request-interval-ms: 500
+
   api:
     requests-per-minute: 100
   auth:
@@ -169,12 +195,23 @@ rate-limit:
     requests-per-minute: 50
 
 # ============================================
+# WEBSOCKET (REAL-TIME SEM REQUESTS EXTRAS)
+# ============================================
+websocket:
+  enabled: true
+  heartbeat-interval: 30000
+  message-size-limit: 65536
+  broadcast-interval: 60000
+
+# ============================================
 # LOGGING
 # ============================================
 logging:
   level:
     root: WARN
     com.crypto: INFO
+    com.crypto.service.CoinGeckoApiService: INFO
+    com.crypto.service.CryptoMonitoringService: INFO
     org.springframework.security: WARN
     org.hibernate.SQL: WARN
     org.hibernate.type.descriptor.sql.BasicBinder: WARN
@@ -201,6 +238,7 @@ management:
     tags:
       application: ${spring.application.name}
       environment: ${SPRING_PROFILES_ACTIVE:dev}
+      version: 2.0.1-coingecko
 
 # ============================================
 # INFO
@@ -209,15 +247,16 @@ info:
   app:
     name: Crypto Monitor
     description: Sistema de Monitoramento de Criptomoedas
-    version: 2.0.1
+    version: 2.0.1-coingecko
+    api-provider: CoinGecko
+    api-tier: FREE
+    cache-strategy: Caffeine 30min + WebSocket
   java:
     version: 17
 
 # ============================================
 # CORS
 # ============================================
-
-
 app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:3000,https://cryptomonitor-theta.vercel.app}
@@ -237,7 +276,7 @@ api:
   max-file-size: 5MB
 
 # ============================================
-# PERFIS
+# PERFIS - DESENVOLVIMENTO
 # ============================================
 ---
 spring:
@@ -245,17 +284,31 @@ spring:
     activate:
       on-profile: dev
 
+# ✅ Rate limits mais altos em dev
 rate-limit:
   api:
     requests-per-minute: 1000
   auth:
     requests-per-minute: 100
+  coingecko:
+    enabled: false  # Desabilitar throttling em dev para testes
 
+# ✅ Logs detalhados em dev
 logging:
   level:
     com.crypto: DEBUG
+    com.crypto.service.CoinGeckoApiService: DEBUG
+    com.crypto.service.CryptoMonitoringService: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# ✅ Cache menor em dev (para testar mais rápido)
+coingecko:
+  cache:
+    ttl-minutes: 5  # 5 min em dev vs 30 min em prod
+
+  monitoring:
+    scheduler-interval-minutes: 5  # Atualizar mais rápido em dev
 
 server:
   servlet:
@@ -263,25 +316,47 @@ server:
       cookie:
         secure: false
 
+# ============================================
+# PERFIS - PRODUÇÃO
+# ============================================
 ---
 spring:
   config:
     activate:
       on-profile: prod
 
+# ✅ Rate limits conservadores em prod
 rate-limit:
   api:
     requests-per-minute: 100
   auth:
     requests-per-minute: 10
+  coingecko:
+    enabled: true  # Sempre habilitado em prod
 
+# ✅ Logs mínimos em prod
 logging:
   level:
     com.crypto: INFO
+    com.crypto.service.CoinGeckoApiService: INFO
+    com.crypto.service.CryptoMonitoringService: INFO
     org.hibernate.SQL: WARN
+
+# ✅ Cache máximo em prod (economizar requests)
+coingecko:
+  cache:
+    ttl-minutes: 30  # Cache longo em prod
+    warm-up-on-startup: true  # Aquecer cache no startup
+
+  monitoring:
+    scheduler-interval-minutes: 30  # Atualizar a cada 30min
 
 server:
   servlet:
     session:
       cookie:
         secure: true
+
+  # ✅ HTTPS obrigatório em prod
+  security:
+    require-ssl: true
