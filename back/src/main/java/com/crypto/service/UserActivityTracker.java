@@ -1,6 +1,7 @@
 package com.crypto.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * - Frontend envia heartbeat a cada 60 segundos
  * - Backend verifica a cada 5 minutos
  * - Usuários inativos têm monitoramento pausado
+ *
+ * ✅ FIX: Usa @Lazy para evitar dependência circular
  */
 @Slf4j
 @Service
@@ -33,7 +36,8 @@ public class UserActivityTracker {
     private static final long INACTIVITY_THRESHOLD_MS = 15 * 60 * 1000; // 15 minutos
     private static final long HEARTBEAT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutos
 
-    public UserActivityTracker(MonitoringControlService monitoringService) {
+    // ✅ FIX: @Lazy quebra a dependência circular
+    public UserActivityTracker(@Lazy MonitoringControlService monitoringService) {
         this.monitoringService = monitoringService;
         log.info("✅ UserActivityTracker inicializado");
         log.info("   Threshold de inatividade: {} minutos",
