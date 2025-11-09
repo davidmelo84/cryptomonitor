@@ -22,6 +22,8 @@ import {
   useStopMonitoring
 } from '../../hooks/useCryptoData';
 
+import useHeartbeat from '../../hooks/useHeartbeat'; // ✅ NOVO IMPORT
+
 import '../../styles/TelegramModal.css';
 
 function DashboardPage({
@@ -64,6 +66,12 @@ function DashboardPage({
   const stopMonitoringMutation = useStopMonitoring();
 
   const isMonitoringActive = monitoringStatusData?.active || false;
+  // ✅ NOVO: Ativar heartbeat quando monitoramento está ativo
+  useHeartbeat(
+   isMonitoringActive && !!user,  // Só ativa se monitoramento está rodando
+   user?.username,                // Username
+   null                           // stompClient (você pode adicionar depois)
+);
 
   const telegramConfigMemo = useMemo(() => telegramConfig, [
     telegramConfig.enabled,
