@@ -1,4 +1,26 @@
 # ============================================
+# HEALTH CHECK / MANAGEMENT
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always     # ✅ Mostrar detalhes completos
+      show-components: always
+  health:
+    defaults:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${SPRING_PROFILES_ACTIVE:dev}
+      version: 2.0.1-coingecko
+
+# ============================================
 # CONFIGURAÇÕES GERAIS DO SERVIDOR
 # ============================================
 server:
@@ -140,7 +162,6 @@ coingecko:
     warm-up-on-startup: true
 
   coins:
-    # ✅ IDs no formato CoinGecko (não usar symbols!)
     ids: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,matic-network,litecoin,bitcoin-cash,ripple,dogecoin,binancecoin
 
   tier: FREE
@@ -148,6 +169,17 @@ coingecko:
   monitoring:
     scheduler-interval-minutes: 30
     broadcast-interval-seconds: 60
+
+# ============================================
+# ✅ RESILIENCE4J - CIRCUIT BREAKER CONFIG
+# ============================================
+resilience4j:
+  circuitbreaker:
+    instances:
+      coingecko:
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 60000  # 1 minuto
+        sliding-window-size: 10
 
 # ============================================
 # APLICAÇÃO / NEGÓCIO
@@ -186,7 +218,6 @@ rate-limit:
     enabled: true
     requests-per-minute: 30
     request-interval-ms: 500
-
   api:
     requests-per-minute: 100
   auth:
@@ -195,7 +226,7 @@ rate-limit:
     requests-per-minute: 50
 
 # ============================================
-# WEBSOCKET (REAL-TIME SEM REQUESTS EXTRAS)
+# WEBSOCKET (REAL-TIME)
 # ============================================
 websocket:
   enabled: true
@@ -221,24 +252,6 @@ logging:
     name: logs/crypto-monitor.log
     max-size: 10MB
     max-history: 7
-
-# ============================================
-# MANAGEMENT / METRICS / PROMETHEUS
-# ============================================
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,prometheus,info,metrics
-      base-path: /actuator
-  endpoint:
-    health:
-      show-details: when-authorized
-  metrics:
-    tags:
-      application: ${spring.application.name}
-      environment: ${SPRING_PROFILES_ACTIVE:dev}
-      version: 2.0.1-coingecko
 
 # ============================================
 # INFO
@@ -284,16 +297,14 @@ spring:
     activate:
       on-profile: dev
 
-# ✅ Rate limits mais altos em dev
 rate-limit:
   api:
     requests-per-minute: 1000
   auth:
     requests-per-minute: 100
   coingecko:
-    enabled: false  # Desabilitar throttling em dev para testes
+    enabled: false
 
-# ✅ Logs detalhados em dev
 logging:
   level:
     com.crypto: DEBUG
@@ -302,13 +313,11 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-# ✅ Cache menor em dev (para testar mais rápido)
 coingecko:
   cache:
-    ttl-minutes: 5  # 5 min em dev vs 30 min em prod
-
+    ttl-minutes: 5
   monitoring:
-    scheduler-interval-minutes: 5  # Atualizar mais rápido em dev
+    scheduler-interval-minutes: 5
 
 server:
   servlet:
@@ -325,16 +334,14 @@ spring:
     activate:
       on-profile: prod
 
-# ✅ Rate limits conservadores em prod
 rate-limit:
   api:
     requests-per-minute: 100
   auth:
     requests-per-minute: 10
   coingecko:
-    enabled: true  # Sempre habilitado em prod
+    enabled: true
 
-# ✅ Logs mínimos em prod
 logging:
   level:
     com.crypto: INFO
@@ -342,21 +349,17 @@ logging:
     com.crypto.service.CryptoMonitoringService: INFO
     org.hibernate.SQL: WARN
 
-# ✅ Cache máximo em prod (economizar requests)
 coingecko:
   cache:
-    ttl-minutes: 30  # Cache longo em prod
-    warm-up-on-startup: true  # Aquecer cache no startup
-
+    ttl-minutes: 30
+    warm-up-on-startup: true
   monitoring:
-    scheduler-interval-minutes: 30  # Atualizar a cada 30min
+    scheduler-interval-minutes: 30
 
 server:
   servlet:
     session:
       cookie:
         secure: true
-
-  # ✅ HTTPS obrigatório em prod
   security:
     require-ssl: true
