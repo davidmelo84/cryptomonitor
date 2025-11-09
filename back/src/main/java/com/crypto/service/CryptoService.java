@@ -135,7 +135,7 @@ public class CryptoService {
     /**
      * ✅ Histórico para gráficos
      */
-    @Cacheable(value = "cryptoHistory", key = "#coinId + '_' + #days")
+    @Cacheable(value = "cryptoHistory", key = "#coinId + '_' + #days",cacheManager = "historyCacheManager")
     public List<Map<String, Object>> getHistory(String coinId, int days) {
         try {
             List<? extends Map<String, ? extends Number>> rawHistory = coinGeckoService.getHistory(coinId, days);

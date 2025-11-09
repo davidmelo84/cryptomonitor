@@ -5,23 +5,22 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ✅ FILA CENTRALIZADA PARA REQUESTS DO COINGECKO
  *
+ * 🔁 Agora com deduplicação de requisições idênticas:
+ * - Requests com a mesma chave (requestKey) compartilham o mesmo Future
+ * - Evita chamadas repetidas para o mesmo endpoint em paralelo
+ *
  * SOLUÇÃO PARA MÚLTIPLOS USUÁRIOS:
  * - Todos os requests passam por esta fila
  * - Rate limit global: 1 request a cada 2 segundos
  * - Máximo 30 requests por minuto
  * - Timeout de 30 segundos por request
- *
- * EXEMPLO:
- * 10 usuários iniciam monitoramento simultaneamente
- * → 10 requests enfileirados
- * → Processados 1 por vez (2s intervalo)
- * → Total: 20 segundos (vs rate limit instantâneo)
  */
 @Slf4j
 @Service
@@ -39,6 +38,10 @@ public class CoinGeckoRequestQueue {
                 return t;
             });
 
+    // ✅ Map para deduplicação
+    private final Map<String, CompletableFuture<?>> pendingRequests =
+            new ConcurrentHashMap<>(); // ✅ ADICIONADO
+
     // ✅ Rate limit tracking
     private final ConcurrentLinkedQueue<Instant> recentRequests =
             new ConcurrentLinkedQueue<>();
@@ -53,31 +56,41 @@ public class CoinGeckoRequestQueue {
     private volatile Instant lastRequestTime = Instant.now();
 
     public CoinGeckoRequestQueue() {
-        // ✅ Iniciar processador da fila
         queueProcessor.submit(this::processQueue);
-
         log.info("✅ CoinGecko Request Queue inicializada");
         log.info("   Rate Limit: {} req/min, {} ms entre requests",
                 MAX_REQUESTS_PER_MINUTE, MIN_INTERVAL_MS);
     }
 
     /**
-     * ✅ ENFILEIRAR REQUEST
-     *
-     * @param supplier Função que faz o request
-     * @param priority ALTA (0) = schedulers, NORMAL (1) = usuários, BAIXA (2) = background
-     * @return CompletableFuture com resultado
+     * ✅ ENFILEIRAR REQUEST (com deduplicação)
      */
+    @SuppressWarnings("unchecked")
     public <T> CompletableFuture<T> enqueue(
             Callable<T> supplier,
             RequestPriority priority
     ) {
+        // ✅ Gerar chave única baseada no callable
+        String requestKey = generateRequestKey(supplier);
+
+        // ✅ Reutilizar request pendente
+        CompletableFuture<?> existing = pendingRequests.get(requestKey);
+        if (existing != null && !existing.isDone()) {
+            log.debug("♻️ Reusando request existente: {}", requestKey);
+            return (CompletableFuture<T>) existing;
+        }
+
+        // ✅ Criar novo future e registrar no mapa
         CompletableFuture<T> future = new CompletableFuture<>();
+        pendingRequests.put(requestKey, future);
 
-        QueuedRequest request = new QueuedRequest(supplier, future, priority);
-
+        // ✅ Criar e enfileirar
+        QueuedRequest request = new QueuedRequest(supplier, future, priority, requestKey);
         queuedRequests.incrementAndGet();
         requestQueue.offer(request);
+
+        // ✅ Remover do mapa ao concluir
+        future.whenComplete((result, error) -> pendingRequests.remove(requestKey));
 
         log.debug("📥 Request enfileirado (Prioridade: {}, Fila: {})",
                 priority, requestQueue.size());
@@ -85,35 +98,31 @@ public class CoinGeckoRequestQueue {
         return future;
     }
 
+    // ✅ Gera uma chave única para deduplicação
+    private String generateRequestKey(Callable<?> supplier) {
+        return supplier.getClass().getName() + "@" + System.identityHashCode(supplier);
+    }
+
     /**
-     * ✅ PROCESSAR FILA (loop infinito)
+     * ✅ PROCESSAR FILA
      */
     private void processQueue() {
         log.info("🔄 Queue processor iniciado");
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                // ✅ Aguardar próximo request (blocking)
                 QueuedRequest request = requestQueue.poll(1, TimeUnit.SECONDS);
 
-                if (request == null) {
-                    continue; // Sem requests na fila
-                }
+                if (request == null) continue;
 
-                // ✅ Verificar timeout
                 if (request.isExpired(REQUEST_TIMEOUT_MS)) {
-                    log.warn("⏰ Request expirado após {}ms na fila",
-                            REQUEST_TIMEOUT_MS);
+                    log.warn("⏰ Request expirado após {}ms na fila", REQUEST_TIMEOUT_MS);
                     request.future.completeExceptionally(
-                            new TimeoutException("Request timeout na fila")
-                    );
+                            new TimeoutException("Request timeout na fila"));
                     continue;
                 }
 
-                // ✅ Aguardar rate limit
                 waitForRateLimit();
-
-                // ✅ Executar request
                 executeRequest(request);
 
             } catch (InterruptedException e) {
@@ -137,13 +146,9 @@ public class CoinGeckoRequestQueue {
         try {
             log.debug("🚀 Executando request (Prioridade: {})", request.priority);
 
-            // ✅ Executar
             T result = (T) request.callable.call();
-
-            // ✅ Completar future
             ((CompletableFuture<T>) request.future).complete(result);
 
-            // ✅ Registrar sucesso
             totalRequests.incrementAndGet();
             queuedRequests.decrementAndGet();
             lastRequestTime = Instant.now();
@@ -161,16 +166,13 @@ public class CoinGeckoRequestQueue {
      * ✅ AGUARDAR RATE LIMIT
      */
     private void waitForRateLimit() throws InterruptedException {
-        // 1️⃣ Limpar requests antigos (> 1 minuto)
         cleanOldRequests();
 
-        // 2️⃣ Verificar limite por minuto
         if (recentRequests.size() >= MAX_REQUESTS_PER_MINUTE) {
             Instant oldest = recentRequests.peek();
             if (oldest != null) {
                 long waitMs = Duration.between(oldest, Instant.now()).toMillis();
-                waitMs = 60000 - waitMs; // Tempo até completar 1 minuto
-
+                waitMs = 60000 - waitMs;
                 if (waitMs > 0) {
                     log.warn("⏸️ Rate limit atingido! Aguardando {}ms...", waitMs);
                     Thread.sleep(waitMs);
@@ -178,7 +180,6 @@ public class CoinGeckoRequestQueue {
             }
         }
 
-        // 3️⃣ Verificar intervalo mínimo
         long elapsed = Duration.between(lastRequestTime, Instant.now()).toMillis();
         if (elapsed < MIN_INTERVAL_MS) {
             long waitMs = MIN_INTERVAL_MS - elapsed;
@@ -186,7 +187,6 @@ public class CoinGeckoRequestQueue {
             Thread.sleep(waitMs);
         }
 
-        // 4️⃣ Registrar request
         recentRequests.offer(Instant.now());
     }
 
@@ -223,13 +223,15 @@ public class CoinGeckoRequestQueue {
         final CompletableFuture<?> future;
         final RequestPriority priority;
         final Instant enqueuedAt;
+        final String requestKey;  // ✅ ADICIONADO
 
         QueuedRequest(Callable<?> callable, CompletableFuture<?> future,
-                      RequestPriority priority) {
+                      RequestPriority priority, String requestKey) { // ✅ ADICIONADO
             this.callable = callable;
             this.future = future;
             this.priority = priority;
             this.enqueuedAt = Instant.now();
+            this.requestKey = requestKey; // ✅ ADICIONADO
         }
 
         boolean isExpired(long timeoutMs) {
@@ -238,7 +240,6 @@ public class CoinGeckoRequestQueue {
 
         @Override
         public int compareTo(QueuedRequest other) {
-            // Menor valor = maior prioridade
             return Integer.compare(this.priority.value, other.priority.value);
         }
     }

@@ -88,7 +88,7 @@ spring:
   cache:
     type: caffeine
     caffeine:
-      spec: maximumSize=2000,expireAfterWrite=30m,recordStats
+      spec: maximumSize=2000,expireAfterWrite=60m,recordStats
 
   task:
     scheduling:
@@ -180,6 +180,10 @@ resilience4j:
         failure-rate-threshold: 50
         wait-duration-in-open-state: 60000  # 1 minuto
         sliding-window-size: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        slow-call-duration-threshold: 5000
+        slow-call-rate-threshold: 50
 
 # ============================================
 # APLICAÇÃO / NEGÓCIO
@@ -354,7 +358,7 @@ coingecko:
     ttl-minutes: 30
     warm-up-on-startup: true
   monitoring:
-    scheduler-interval-minutes: 30
+    scheduler-interval-minutes: 60
 
 server:
   servlet:
