@@ -1,21 +1,20 @@
-// CryptoMonitorApplication.java
 package com.crypto;
 
-import ch.qos.logback.classic.Logger;
 import com.crypto.service.CryptoService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+@Slf4j 
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
 @RequiredArgsConstructor
-
-public class    CryptoMonitorApplication {
+public class CryptoMonitorApplication {
 
     private final CryptoService cryptoService;
 
@@ -32,7 +31,6 @@ public class    CryptoMonitorApplication {
 
     @PostConstruct
     public void warmUpCache() {
-        Logger log = null;
         log.info("🔥 Aquecendo cache na inicialização...");
         try {
             cryptoService.warmUpCache();
