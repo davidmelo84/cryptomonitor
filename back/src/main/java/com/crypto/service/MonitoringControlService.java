@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/service/MonitoringControlService.java
 package com.crypto.service;
 
 import lombok.RequiredArgsConstructor;
@@ -6,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
-
 import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.time.Instant;
@@ -17,7 +15,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * ✅ CORRIGIDO - Auto-stop de monitoramento duplicado
+ * ✅ Atualizado - Adicionado UserActivityTracker e registro de atividade
  */
 @Slf4j
 @Service
@@ -25,6 +23,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MonitoringControlService {
 
     private final CryptoMonitoringService cryptoMonitoringService;
+    private final UserActivityTracker activityTracker; // ✅ NOVO: Rastreador de atividade
 
     private final Map<String, ScheduledFuture<?>> activeMonitors = new ConcurrentHashMap<>();
     private final Map<String, Lock> userLocks = new ConcurrentHashMap<>();
@@ -33,7 +32,7 @@ public class MonitoringControlService {
     private final TaskScheduler taskScheduler = createTaskScheduler();
 
     /**
-     * ✅ CORRIGIDO - Para automaticamente monitoramento anterior
+     * ✅ CORRIGIDO - Auto-stop e registro de atividade
      */
     public boolean startMonitoring(String username, String userEmail) {
         if (username == null || username.trim().isEmpty()) {
@@ -47,10 +46,10 @@ public class MonitoringControlService {
         }
 
         Lock userLock = userLocks.computeIfAbsent(username, k -> new ReentrantLock());
-
         userLock.lock();
+
         try {
-            // ✅ NOVO: Parar monitoramento anterior automaticamente
+            // ✅ Parar monitoramento anterior, se existir
             if (isMonitoringActiveInternal(username)) {
                 log.info("♻️ Monitoramento já ativo para {}, reiniciando...", username);
                 stopMonitoring(username);
@@ -75,14 +74,15 @@ public class MonitoringControlService {
 
             log.info("✅ Monitoramento INICIADO para: {} (email: {})", username, userEmail);
 
-            runFirstCheckAsync(username, userEmail);
+            // ✅ NOVO: registrar atividade do usuário
+            activityTracker.recordActivity(username);
 
+            runFirstCheckAsync(username, userEmail);
             return true;
 
         } catch (Exception e) {
             log.error("❌ Erro ao iniciar monitoramento para {}: {}", username, e.getMessage(), e);
             return false;
-
         } finally {
             userLock.unlock();
         }
@@ -95,8 +95,8 @@ public class MonitoringControlService {
         }
 
         Lock userLock = userLocks.computeIfAbsent(username, k -> new ReentrantLock());
-
         userLock.lock();
+
         try {
             ScheduledFuture<?> scheduledTask = activeMonitors.get(username);
 
@@ -127,7 +127,6 @@ public class MonitoringControlService {
         } catch (Exception e) {
             log.error("❌ Erro ao parar monitoramento para {}: {}", username, e.getMessage(), e);
             return false;
-
         } finally {
             userLock.unlock();
         }
@@ -190,7 +189,6 @@ public class MonitoringControlService {
             }
 
             cryptoMonitoringService.updateAndProcessAlertsForUser(userEmail);
-
             log.debug("✅ Ciclo concluído para: {}", username);
 
         } catch (Exception e) {
@@ -223,11 +221,10 @@ public class MonitoringControlService {
     @PreDestroy
     public void shutdown() {
         log.info("🔌 Encerrando MonitoringControlService...");
-
         stopAllMonitoring();
 
-        if (taskScheduler instanceof ThreadPoolTaskScheduler) {
-            ((ThreadPoolTaskScheduler) taskScheduler).shutdown();
+        if (taskScheduler instanceof ThreadPoolTaskScheduler scheduler) {
+            scheduler.shutdown();
         }
 
         log.info("✅ MonitoringControlService encerrado");

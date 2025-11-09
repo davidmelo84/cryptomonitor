@@ -4,7 +4,6 @@ package com.crypto.service;
 import com.crypto.controller.ApiStatusController;
 import com.crypto.dto.CryptoCurrency;
 import com.crypto.repository.CryptoCurrencyRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,53 +17,76 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
 
 /**
  * ✅ COINGECKO API SERVICE - FREE TIER OPTIMIZADO
  *
- * RATE LIMIT SOLUTION:
- * - Cache 30 minutos (reduz requests de 30/min para 1 a cada 30min)
- * - Request throttling (500ms entre chamadas)
- * - Retry automático com backoff exponencial
- * - Fallback para banco de dados
- * - WebSocket para tempo real (0 requests adicionais)
- * - Backend faz requests, frontend consome cache
- *
- * FREE TIER: 30 req/min → COM CACHE: ~2 req/hora
+ * Agora com integração com CoinGeckoRequestQueue:
+ * → Enfileira chamadas para respeitar rate limit global.
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class CoinGeckoApiService {
 
     private final WebClient webClient;
     private final CryptoCurrencyRepository cryptoRepository;
-    private final RateLimitMetricsService metricsService; // ✅ ADICIONADO
+    private final RateLimitMetricsService metricsService;
+    private final CoinGeckoRequestQueue requestQueue;
 
     private static final String COINGECKO_API_URL = "https://api.coingecko.com/api/v3";
-
-    // ✅ RATE LIMIT CONTROL
-    private static final long MIN_REQUEST_INTERVAL_MS = 500; // 500ms entre requests
+    private static final long MIN_REQUEST_INTERVAL_MS = 500;
     private final AtomicLong lastRequestTime = new AtomicLong(0);
 
-    /**
-     * ✅ IDs das moedas (formato CoinGecko)
-     */
     private static final List<String> COIN_IDS = List.of(
             "bitcoin", "ethereum", "cardano", "polkadot", "chainlink",
             "solana", "avalanche-2", "matic-network", "litecoin",
             "bitcoin-cash", "ripple", "dogecoin", "binancecoin"
     );
 
-    /**
-     * ✅ MÉTODO PRINCIPAL - Cache 30 minutos
-     */
+    // ✅ Construtor manual (injeção explícita)
+    public CoinGeckoApiService(
+            WebClient webClient,
+            CryptoCurrencyRepository cryptoRepository,
+            RateLimitMetricsService metricsService,
+            CoinGeckoRequestQueue requestQueue
+    ) {
+        this.webClient = webClient;
+        this.cryptoRepository = cryptoRepository;
+        this.metricsService = metricsService;
+        this.requestQueue = requestQueue;
+    }
+
+    // ==========================================================
+    // ✅ MÉTODO PRINCIPAL - agora usa fila de requisições
+    // ==========================================================
     @CircuitBreaker(name = "coingecko", fallbackMethod = "getFallbackPrices")
     @Cacheable(value = "allCryptoPrices", unless = "#result == null || #result.isEmpty()")
     public List<CryptoCurrency> getAllPrices() {
+        try {
+            CompletableFuture<List<CryptoCurrency>> future = requestQueue.enqueue(
+                    this::performGetAllPrices,
+                    CoinGeckoRequestQueue.RequestPriority.NORMAL
+            );
+            return future.get(30, TimeUnit.SECONDS);
+
+        } catch (TimeoutException e) {
+            log.error("⏱️ Timeout ao aguardar resposta da CoinGecko API");
+            metricsService.recordFailure();
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error("❌ Erro ao enfileirar chamada CoinGecko: {}", e.getMessage(), e);
+            metricsService.recordFailure();
+            return Collections.emptyList();
+        }
+    }
+
+    // ==========================================================
+    // 🔍 Lógica interna original (antes dentro de getAllPrices)
+    // ==========================================================
+    private List<CryptoCurrency> performGetAllPrices() {
         try {
             log.info("🔄 Buscando preços via CoinGecko API...");
             long startTime = System.currentTimeMillis();
@@ -86,7 +108,7 @@ public class CoinGeckoApiService {
                     .retrieve()
                     .onStatus(status -> status.value() == 429, clientResponse -> {
                         log.error("❌ RATE LIMIT 429 atingido!");
-                        metricsService.recordRateLimitHit(); // ✅ NOVO
+                        metricsService.recordRateLimitHit();
                         return Mono.error(new RuntimeException("Rate limit exceeded"));
                     })
                     .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
@@ -101,7 +123,7 @@ public class CoinGeckoApiService {
 
             if (response == null || response.isEmpty()) {
                 log.warn("⚠️ CoinGecko retornou lista vazia");
-                metricsService.recordFailure(); // ✅ NOVO
+                metricsService.recordFailure();
                 return Collections.emptyList();
             }
 
@@ -113,7 +135,7 @@ public class CoinGeckoApiService {
                     .collect(Collectors.toList());
 
             long elapsed = System.currentTimeMillis() - startTime;
-            metricsService.recordSuccess(); // ✅ NOVO
+            metricsService.recordSuccess();
             ApiStatusController.recordSuccessfulRequest();
             log.info("✅ CoinGecko: {} moedas em {}ms", cryptos.size(), elapsed);
 
@@ -121,19 +143,19 @@ public class CoinGeckoApiService {
 
         } catch (Exception e) {
             log.error("❌ Erro ao buscar preços: {}", e.getMessage(), e);
-            metricsService.recordFailure(); // ✅ NOVO
+            metricsService.recordFailure();
 
             if (e.getMessage().contains("429") || e.getMessage().contains("Rate limit")) {
-                metricsService.recordRateLimitHit(); // ✅ NOVO
+                metricsService.recordRateLimitHit();
             }
 
             return Collections.emptyList();
         }
     }
 
-    /**
-     * ✅ FALLBACK - usado quando o Circuit Breaker é acionado
-     */
+    // ==========================================================
+    // 🔁 Fallback - usado pelo CircuitBreaker
+    // ==========================================================
     @SuppressWarnings("unused")
     private List<CryptoCurrency> getFallbackPrices(Exception e) {
         log.warn("⚠️ Circuit breaker aberto, usando fallback local (banco de dados). Erro: {}", e.getMessage());
@@ -151,184 +173,9 @@ public class CoinGeckoApiService {
         }
     }
 
-    /**
-     * ✅ Buscar UMA moeda específica
-     */
-    @Cacheable(value = "cryptoPrices", key = "#coinId")
-    public Optional<CryptoCurrency> getPrice(String coinId) {
-        try {
-            waitForRateLimit();
-
-            String url = String.format(
-                    "%s/coins/markets?vs_currency=usd&ids=%s&price_change_percentage=1h,24h,7d",
-                    COINGECKO_API_URL, coinId
-            );
-
-            log.debug("🔍 Buscando {} no CoinGecko...", coinId);
-
-            List<Map<String, Object>> response = webClient
-                    .get()
-                    .uri(url)
-                    .retrieve()
-                    .onStatus(status -> status.value() == 429, clientResponse -> {
-                        metricsService.recordRateLimitHit(); // ✅ NOVO
-                        return Mono.error(new RuntimeException("Rate limit exceeded"));
-                    })
-                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
-                    .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1)))
-                    .block();
-
-            if (response != null && !response.isEmpty()) {
-                CryptoCurrency crypto = mapCoinGeckoToCrypto(response.get(0));
-                metricsService.recordSuccess(); // ✅ NOVO
-                ApiStatusController.recordSuccessfulRequest();
-                log.debug("✅ {} = ${}", coinId, crypto.getCurrentPrice());
-                return Optional.ofNullable(crypto);
-            }
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao buscar {}: {}", coinId, e.getMessage());
-            metricsService.recordFailure(); // ✅ NOVO
-        }
-
-        return Optional.empty();
-    }
-
-    /**
-     * ✅ TOP N moedas por market cap
-     */
-    @Cacheable(value = "topCryptoPrices", key = "#limit")
-    public List<CryptoCurrency> getTopPrices(int limit) {
-        try {
-            waitForRateLimit();
-
-            String url = String.format(
-                    "%s/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=%d&page=1&price_change_percentage=1h,24h,7d",
-                    COINGECKO_API_URL, limit
-            );
-
-            log.info("🔍 Buscando Top {}", limit);
-
-            List<Map<String, Object>> response = webClient
-                    .get()
-                    .uri(url)
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
-                    .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1)))
-                    .block();
-
-            if (response != null) {
-                metricsService.recordSuccess(); // ✅ NOVO
-                return response.stream()
-                        .map(this::mapCoinGeckoToCrypto)
-                        .filter(Objects::nonNull)
-                        .limit(limit)
-                        .collect(Collectors.toList());
-            }
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao buscar Top: {}", e.getMessage());
-            metricsService.recordFailure(); // ✅ NOVO
-        }
-
-        return Collections.emptyList();
-    }
-
-    /**
-     * ✅ LAZY LOADING - Buscar múltiplas moedas específicas
-     */
-    @Cacheable(value = "cryptoPrices", key = "#coinIds")
-    public List<CryptoCurrency> getPricesByIds(List<String> coinIds) {
-        if (coinIds == null || coinIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        try {
-            waitForRateLimit();
-
-            String ids = String.join(",", coinIds);
-            String url = String.format(
-                    "%s/coins/markets?vs_currency=usd&ids=%s&price_change_percentage=1h,24h,7d",
-                    COINGECKO_API_URL, ids
-            );
-
-            log.info("🔍 Lazy Loading: {} moedas", coinIds.size());
-
-            List<Map<String, Object>> response = webClient
-                    .get()
-                    .uri(url)
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
-                    .retryWhen(Retry.fixedDelay(2, Duration.ofSeconds(1)))
-                    .block();
-
-            if (response != null) {
-                metricsService.recordSuccess(); // ✅ NOVO
-                return response.stream()
-                        .map(this::mapCoinGeckoToCrypto)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());
-            }
-
-        } catch (Exception e) {
-            log.error("❌ Erro no Lazy Loading: {}", e.getMessage());
-            metricsService.recordFailure(); // ✅ NOVO
-        }
-
-        return Collections.emptyList();
-    }
-
-    // ✅ HISTÓRICO PARA GRÁFICOS
-    @Cacheable(value = "cryptoHistory", key = "#coinId + '_' + #days")
-    public List<Map<String,? extends Number>> getHistory(String coinId, int days) {
-        try {
-            waitForRateLimit();
-
-            String url = String.format(
-                    "%s/coins/%s/market_chart?vs_currency=usd&days=%d&interval=daily",
-                    COINGECKO_API_URL, coinId, days
-            );
-
-            log.info("📊 Buscando histórico de {} ({} dias)...", coinId, days);
-
-            Map<String, Object> response = webClient
-                    .get()
-                    .uri(url)
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
-                    .block();
-
-            if (response != null && response.containsKey("prices")) {
-                @SuppressWarnings("unchecked")
-                List<List<Object>> prices = (List<List<Object>>) response.get("prices");
-
-                List<Map<String, ? extends Number>> history = prices.stream()
-                        .filter(p -> p.size() >= 2 && p.get(0) instanceof Number && p.get(1) instanceof Number)
-                        .map(p -> Map.of(
-                                "timestamp", ((Number) p.get(0)).longValue(),
-                                "price", ((Number) p.get(1)).doubleValue()))
-                        .collect(Collectors.toList());
-
-                metricsService.recordSuccess(); // ✅ NOVO
-                log.info("✅ Histórico obtido: {} pontos", history.size());
-                return history;
-            }
-
-            metricsService.recordFailure(); // ✅ NOVO
-            log.warn("⚠️ Nenhum dado de histórico para {}", coinId);
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao buscar histórico de {}: {}", coinId, e.getMessage(), e);
-            metricsService.recordFailure(); // ✅ NOVO
-        }
-
-        return Collections.emptyList();
-    }
-
-    // =====================================
-    // 🧠 Métodos auxiliares
-    // =====================================
-
+    // ==========================================================
+    // 🧩 Métodos auxiliares
+    // ==========================================================
     private CryptoCurrency mapCoinGeckoToCrypto(Map<String, Object> coin) {
         try {
             CryptoCurrency crypto = new CryptoCurrency();
