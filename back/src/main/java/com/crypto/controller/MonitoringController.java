@@ -4,16 +4,12 @@ package com.crypto.controller;
 
 import com.crypto.model.AlertRule;
 import com.crypto.service.AlertService;
-import com.crypto.service.BinanceApiService;
 import com.crypto.service.MonitoringControlService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.crypto.dto.CryptoCurrency;
-
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -84,15 +80,6 @@ public class MonitoringController {
             // ✅ CRIAR NOVOS ALERTAS **APENAS** PARA AS CRYPTOS SELECIONADAS
             int rulesCreated = createAlertRulesForUser(email, cryptocurrencies, buyThreshold, sellThreshold);
             log.info("📋 TOTAL DE REGRAS CRIADAS: {}", rulesCreated);
-
-            if (cryptocurrencies != null && !cryptocurrencies.isEmpty()) {
-                log.info("🔍 Lazy loading: {} cryptos selecionadas", cryptocurrencies.size());
-
-                // Buscar apenas as cryptos selecionadas do cache
-                BinanceApiService cryptoService = null;
-                List<CryptoCurrency> selectedCryptos = cryptoService.getPricesByIds(cryptocurrencies);
-                log.info("📊 Preços carregados: {} cryptos", selectedCryptos.size());
-            }
 
             // ✅ INICIAR O MONITORAMENTO
             boolean started = monitoringControlService.startMonitoring(username, email);
