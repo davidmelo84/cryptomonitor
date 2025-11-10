@@ -6,7 +6,6 @@ import com.crypto.event.CryptoUpdateEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,13 +15,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * ✅ VERSÃO FINAL - SCHEDULER SEGURO
+ * ✅ VERSÃO CORRIGIDA - SCHEDULER GLOBAL DESABILITADO
  *
- * GARANTIAS:
- * - Apenas 1 execução por vez (lock)
- * - Intervalo de 30 minutos FIXO
- * - Fallback automático se API falhar
- * - Sem requests duplicados
+ * MUDANÇAS:
+ * - @Scheduled REMOVIDO (não dispara mais automaticamente)
+ * - Alertas SÓ processam quando usuário EXPLICITAMENTE inicia monitoramento
+ * - Scheduler user-specific no MonitoringControlService
  */
 @Slf4j
 @Service
@@ -37,69 +35,22 @@ public class CryptoMonitoringService {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private LocalDateTime lastSuccessfulRun = null;
 
-    private static final long SCHEDULER_INTERVAL_MS = 1800000; // 30 minutos
-
     /**
-     * ✅ SCHEDULER ÚNICO - 30 MINUTOS
+     * ❌ SCHEDULER GLOBAL - **DESABILITADO**
      *
-     * MUDANÇAS:
-     * - Lock para prevenir concorrência
-     * - Flag isRunning para skip durante execução
-     * - Timeout de 5 minutos para adquirir lock
+     * ⚠️ MOTIVO: Disparava alertas automaticamente para TODOS os usuários
+     * mesmo sem ninguém estar logado/monitorando.
+     *
+     * ✅ SOLUÇÃO: Usar apenas schedulers USER-SPECIFIC no MonitoringControlService
      */
-    @Scheduled(fixedRate = SCHEDULER_INTERVAL_MS, initialDelay = 60000)
+    // @Scheduled(fixedRate = 1800000, initialDelay = 60000) // ❌ DESABILITADO
     public void scheduledUpdate() {
-        // ✅ 1. Skip se já está rodando
-        if (isRunning.get()) {
-            log.warn("⚠️ Scheduler já em execução, pulando ciclo");
-            return;
-        }
-
-        boolean lockAcquired = false;
-        try {
-            // ✅ 2. Tentar adquirir lock (timeout 5 min)
-            lockAcquired = schedulerLock.tryLock(5, java.util.concurrent.TimeUnit.MINUTES);
-
-            if (!lockAcquired) {
-                log.error("❌ Timeout ao aguardar lock do scheduler");
-                return;
-            }
-
-            // ✅ 3. Marcar como em execução
-            isRunning.set(true);
-
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            log.info("⏰ SCHEDULER: Iniciando atualização periódica");
-            log.info("   Última execução: {}",
-                    lastSuccessfulRun != null ? lastSuccessfulRun : "Primeira vez");
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-            // ✅ 4. Executar atualização
-            updateAndProcessAlerts();
-
-            // ✅ 5. Registrar sucesso
-            lastSuccessfulRun = LocalDateTime.now();
-            log.info("✅ Scheduler concluído às {}", lastSuccessfulRun);
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("❌ Scheduler interrompido: {}", e.getMessage());
-
-        } catch (Exception e) {
-            log.error("❌ Erro no scheduler: {}", e.getMessage(), e);
-
-        } finally {
-            // ✅ 6. Sempre liberar recursos
-            isRunning.set(false);
-            if (lockAcquired) {
-                schedulerLock.unlock();
-            }
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        }
+        log.warn("⚠️ Scheduler Global: DESABILITADO");
+        log.warn("   Use /api/monitoring/start para ativar monitoramento por usuário");
     }
 
     /**
-     * ✅ ATUALIZAÇÃO GLOBAL
+     * ✅ ATUALIZAÇÃO GLOBAL (PROTEGIDA)
      *
      * Usa getCurrentPrices() que:
      * - Verifica cache primeiro (TTL 30min)
@@ -110,12 +61,10 @@ public class CryptoMonitoringService {
         try {
             log.info("🔄 Iniciando ciclo de monitoramento...");
 
-            // ✅ CRÍTICO: Este método USA CACHE + FILA
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             if (currentCryptos.isEmpty()) {
-                log.error("❌ NENHUM DADO DISPONÍVEL (cache + banco + API vazios)");
-                log.error("   Sistema sem dados para processar!");
+                log.error("❌ NENHUM DADO DISPONÍVEL");
                 return;
             }
 
@@ -139,15 +88,12 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * ✅ ATUALIZAÇÃO POR USUÁRIO
-     *
-     * Usa os mesmos dados do cache global
+     * ✅ ATUALIZAÇÃO POR USUÁRIO (CHAMADO PELO SCHEDULER USER-SPECIFIC)
      */
     public void updateAndProcessAlertsForUser(String userEmail) {
         try {
             log.info("🔄 Processando alertas para: {}", userEmail);
 
-            // ✅ USA CACHE - sem request extra
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             if (currentCryptos.isEmpty()) {
@@ -167,64 +113,6 @@ public class CryptoMonitoringService {
         } catch (Exception e) {
             log.error("❌ Erro ao processar alertas para {}: {}",
                     userEmail, e.getMessage());
-        }
-    }
-
-    /**
-     * ⚠️ FORCE UPDATE - ADMIN APENAS
-     *
-     * ATENÇÃO: Consome rate limit!
-     * Use apenas em emergências.
-     */
-    public void forceUpdateAndProcessAlerts() {
-        if (isRunning.get()) {
-            throw new IllegalStateException(
-                    "Scheduler em execução. Aguarde o ciclo terminar."
-            );
-        }
-
-        boolean lockAcquired = false;
-        try {
-            lockAcquired = schedulerLock.tryLock(5, java.util.concurrent.TimeUnit.SECONDS);
-
-            if (!lockAcquired) {
-                throw new IllegalStateException("Timeout ao aguardar lock");
-            }
-
-            log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            log.warn("⚠️ FORCE UPDATE SOLICITADO!");
-            log.warn("   Consumindo rate limit do CoinGecko...");
-            log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-            // Limpar cache para forçar nova request
-            cryptoService.clearCache();
-
-            List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
-
-            publishCryptoUpdateEvent(
-                    currentCryptos,
-                    null,
-                    CryptoUpdateEvent.UpdateType.MANUAL_UPDATE
-            );
-
-            webSocketService.broadcastPrices(currentCryptos);
-
-            log.warn("✅ Force update concluído: {} moedas (RATE LIMIT CONSUMIDO!)",
-                    currentCryptos.size());
-            log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Force update interrompido", e);
-
-        } catch (Exception e) {
-            log.error("❌ Erro no force update: {}", e.getMessage(), e);
-            throw new RuntimeException("Falha no force update", e);
-
-        } finally {
-            if (lockAcquired) {
-                schedulerLock.unlock();
-            }
         }
     }
 

@@ -1,22 +1,14 @@
 package com.crypto;
 
-import com.crypto.service.CryptoService;
-import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@Slf4j
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-@RequiredArgsConstructor
 public class CryptoMonitorApplication {
-
-    private final CryptoService cryptoService;
 
     public static void main(String[] args) {
         SpringApplication.run(CryptoMonitorApplication.class, args);
@@ -29,14 +21,16 @@ public class CryptoMonitorApplication {
                 "📈 Status: http://localhost:8080/crypto-monitor/api/crypto/status\n");
     }
 
-    @PostConstruct
+    /**
+     * ❌ CACHE WARMUP - **DESABILITADO**
+     *
+     * ⚠️ MOTIVO: Causava timeout de 60 segundos na inicialização
+     *
+     * ✅ SOLUÇÃO: Cache é populado no primeiro request (lazy loading)
+     */
+    // @PostConstruct // ❌ REMOVIDO
     public void warmUpCache() {
-        log.info("🔥 Aquecendo cache na inicialização...");
-        try {
-            cryptoService.warmUpCache();
-            log.info("✅ Cache aquecido com sucesso!");
-        } catch (Exception e) {
-            log.error("❌ Erro ao aquecer cache: {}", e.getMessage());
-        }
+        // Desabilitado para evitar timeout na inicialização
+        // Cache será populado automaticamente no primeiro request
     }
 }

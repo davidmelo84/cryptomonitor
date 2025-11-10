@@ -262,6 +262,12 @@ public class AlertService {
         log.info("✅ {} alertas disparados para {}", alertsTriggered, userEmail);
     }
 
+    /**
+     * ✅ Processar alertas APENAS para usuários ATIVOS
+     *
+     * ⚠️ IMPORTANTE: Não processa alertas "órfãos" (sem monitoramento ativo)
+     */
+    @Transactional
     public void processAlerts(List<CryptoCurrency> cryptos) {
         try {
             log.info("🔍 Processando alertas para todos os usuários");
@@ -273,38 +279,20 @@ public class AlertService {
                 return;
             }
 
+            // ✅ NOVO: Agrupar por email
             Map<String, List<AlertRule>> rulesByEmail = allActiveRules.stream()
                     .collect(Collectors.groupingBy(AlertRule::getNotificationEmail));
 
-            int totalTriggered = 0;
+            // ✅ MUDANÇA CRÍTICA: Apenas logar, NÃO disparar
+            log.info("📊 Total de {} usuários com alertas ativos", rulesByEmail.size());
 
-            for (Map.Entry<String, List<AlertRule>> entry : rulesByEmail.entrySet()) {
-                String email = entry.getKey();
-                List<AlertRule> userRules = entry.getValue();
-
-                Map<String, List<AlertRule>> rulesBySymbol = userRules.stream()
-                        .collect(Collectors.groupingBy(rule -> rule.getCoinSymbol().toUpperCase()));
-
-                for (CryptoCurrency crypto : cryptos) {
-                    String normalizedSymbol = crypto.getSymbol().toUpperCase();
-                    List<AlertRule> rules = rulesBySymbol.get(normalizedSymbol);
-
-                    if (rules == null || rules.isEmpty()) continue;
-
-                    for (AlertRule rule : rules) {
-                        try {
-                            if (shouldTriggerAlert(crypto, rule)) {
-                                triggerAlert(crypto, rule);
-                                totalTriggered++;
-                            }
-                        } catch (Exception e) {
-                            log.error("Erro ao processar regra {}: {}", rule.getId(), e.getMessage());
-                        }
-                    }
-                }
+            for (String email : rulesByEmail.keySet()) {
+                List<AlertRule> userRules = rulesByEmail.get(email);
+                log.debug("   👤 {}: {} alertas", email, userRules.size());
             }
 
-            log.info("✅ Total de {} alertas disparados", totalTriggered);
+            log.info("ℹ️  Alertas NÃO serão disparados automaticamente");
+            log.info("   Use /api/monitoring/start para ativar monitoramento");
 
         } catch (Exception e) {
             log.error("❌ Erro ao processar alertas: {}", e.getMessage(), e);
