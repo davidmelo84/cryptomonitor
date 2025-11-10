@@ -303,4 +303,203 @@ public class CoinGeckoApiService {
                 "supportedCoins", COIN_IDS.size()
         );
     }
+
+    // ==========================================================
+    // 🔍 MÉTODOS AUXILIARES (usados por CryptoService)
+    // ==========================================================
+
+    /**
+     * ✅ Buscar UMA moeda específica
+     */
+    @Cacheable(value = "cryptoPrices", key = "#coinId")
+    public Optional<CryptoCurrency> getPrice(String coinId) {
+        try {
+            CompletableFuture<Optional<CryptoCurrency>> future = requestQueue.enqueue(
+                    () -> performGetPrice(coinId),
+                    CoinGeckoRequestQueue.RequestPriority.NORMAL
+            );
+            return future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.error("❌ Erro ao buscar {}: {}", coinId, e.getMessage());
+            metricsService.recordFailure();
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * ✅ Buscar múltiplas moedas
+     */
+    @Cacheable(value = "cryptoPrices", key = "#coinIds")
+    public List<CryptoCurrency> getPricesByIds(List<String> coinIds) {
+        try {
+            CompletableFuture<List<CryptoCurrency>> future = requestQueue.enqueue(
+                    () -> performGetPricesByIds(coinIds),
+                    CoinGeckoRequestQueue.RequestPriority.NORMAL
+            );
+            return future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.error("❌ Erro ao buscar múltiplas: {}", e.getMessage());
+            metricsService.recordFailure();
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * ✅ Top N moedas
+     */
+    @Cacheable(value = "topCryptoPrices", key = "#limit")
+    public List<CryptoCurrency> getTopPrices(int limit) {
+        try {
+            CompletableFuture<List<CryptoCurrency>> future = requestQueue.enqueue(
+                    () -> performGetTopPrices(limit),
+                    CoinGeckoRequestQueue.RequestPriority.NORMAL
+            );
+            return future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.error("❌ Erro ao buscar Top {}: {}", limit, e.getMessage());
+            metricsService.recordFailure();
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * ✅ Histórico
+     */
+    @Cacheable(value = "cryptoHistory", key = "#coinId + '_' + #days")
+    public List<Map<String, Number>> getHistory(String coinId, int days) {
+        try {
+            CompletableFuture<List<Map<String, Number>>> future = requestQueue.enqueue(
+                    () -> performGetHistory(coinId, days),
+                    CoinGeckoRequestQueue.RequestPriority.NORMAL
+            );
+            return future.get(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            log.error("❌ Erro ao buscar histórico: {}", e.getMessage());
+            metricsService.recordFailure();
+            return Collections.emptyList();
+        }
+    }
+
+    // ==========================================================
+    // 🔧 IMPLEMENTAÇÕES INTERNAS DOS MÉTODOS AUXILIARES
+    // ==========================================================
+
+    private Optional<CryptoCurrency> performGetPrice(String coinId) {
+        try {
+            String url = String.format("%s/coins/markets?vs_currency=usd&ids=%s",
+                    COINGECKO_API_URL, coinId);
+
+            List<Map<String, Object>> response = webClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                    .timeout(Duration.ofSeconds(30))
+                    .block();
+
+            if (response != null && !response.isEmpty()) {
+                CryptoCurrency crypto = mapCoinGeckoToCrypto(response.get(0));
+                metricsService.recordSuccess();
+                return Optional.ofNullable(crypto);
+            }
+
+            return Optional.empty();
+        } catch (Exception e) {
+            log.error("❌ Erro ao buscar {}: {}", coinId, e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    private List<CryptoCurrency> performGetPricesByIds(List<String> coinIds) {
+        try {
+            String ids = String.join(",", coinIds);
+            String url = String.format("%s/coins/markets?vs_currency=usd&ids=%s",
+                    COINGECKO_API_URL, ids);
+
+            List<Map<String, Object>> response = webClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                    .timeout(Duration.ofSeconds(30))
+                    .block();
+
+            if (response != null) {
+                metricsService.recordSuccess();
+                return response.stream()
+                        .map(this::mapCoinGeckoToCrypto)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+            }
+
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error("❌ Erro ao buscar múltiplas: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private List<CryptoCurrency> performGetTopPrices(int limit) {
+        try {
+            String url = String.format(
+                    "%s/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=%d&page=1",
+                    COINGECKO_API_URL, limit);
+
+            List<Map<String, Object>> response = webClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<List<Map<String, Object>>>() {})
+                    .timeout(Duration.ofSeconds(30))
+                    .block();
+
+            if (response != null) {
+                metricsService.recordSuccess();
+                return response.stream()
+                        .map(this::mapCoinGeckoToCrypto)
+                        .filter(Objects::nonNull)
+                        .limit(limit)
+                        .collect(Collectors.toList());
+            }
+
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error("❌ Erro ao buscar Top: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    private List<Map<String, Number>> performGetHistory(String coinId, int days) {
+        try {
+            String url = String.format("%s/coins/%s/market_chart?vs_currency=usd&days=%d",
+                    COINGECKO_API_URL, coinId, days);
+
+            Map<String, Object> response = webClient
+                    .get()
+                    .uri(url)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
+                    .timeout(Duration.ofSeconds(30))
+                    .block();
+
+            if (response != null && response.containsKey("prices")) {
+                @SuppressWarnings("unchecked")
+                List<List<Number>> prices = (List<List<Number>>) response.get("prices");
+
+                metricsService.recordSuccess();
+
+                return prices.stream()
+                        .map(point -> Map.<String, Number>of(
+                                "timestamp", point.get(0).longValue(),
+                                "price", point.get(1).doubleValue()
+                        ))
+                        .collect(Collectors.toList());
+            }
+
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error("❌ Erro ao buscar histórico: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 }
