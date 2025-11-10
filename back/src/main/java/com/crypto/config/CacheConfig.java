@@ -17,29 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
     /**
-     * ✅ CACHE LEGADO (ConcurrentMap compatível)
-     * Usado como fallback para caches não registrados no Caffeine.
-     */
-    @Bean("legacyCacheManager")
-    public CacheManager legacyCacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
-                "coinCapPrices",
-                "coinCapHistory",
-                "topCoinCapPrices"
-        );
-
-        cacheManager.setCaffeine(Caffeine.newBuilder()
-                .maximumSize(500)
-                .expireAfterWrite(15, TimeUnit.MINUTES)
-                .recordStats()
-        );
-
-        log.info("🧩 Legacy Cache configurado (TTL=15min)");
-        return cacheManager;
-    }
-
-    /**
-     * ✅ CACHE PRINCIPAL — TTL 30 minutos
+     * ✅ CACHE PRINCIPAL - TTL 30 minutos
+     * Inclui TODOS os caches da aplicação
      */
     @Primary
     @Bean("caffeineCacheManager")
@@ -53,9 +32,14 @@ public class CacheConfig {
                 "userAlerts",
                 "binancePrices",
                 "topBinancePrices",
-                "coinCapPrices",     // ✅ adicionado
-                "coinCapHistory",    // ✅ adicionado
-                "topCoinCapPrices"   // ✅ adicionado
+                "coinCapPrices",
+                "coinCapHistory",
+                "topCoinCapPrices",
+                "cryptoHistory",        // ✅ ADICIONADO
+                "topCryptoPrices",      // ✅ ADICIONADO
+                "userPortfolio",        // ✅ ADICIONADO
+                "userTransactions",     // ✅ ADICIONADO
+                "userAlertRules"        // ✅ ADICIONADO
         );
 
         cacheManager.setCaffeine(Caffeine.newBuilder()
@@ -64,12 +48,15 @@ public class CacheConfig {
                 .recordStats()
         );
 
+        // ✅ CRÍTICO: Permitir criação dinâmica de caches
+        cacheManager.setAllowNullValues(false);
+
         log.info("✅ Caffeine Cache configurado com TTL=30min (2000 entradas)");
         return cacheManager;
     }
 
     /**
-     * ✅ CACHE PARA HISTÓRICO — TTL 2 horas
+     * ✅ CACHE PARA HISTÓRICO - TTL 2 horas
      */
     @Bean("historyCacheManager")
     public CacheManager historyCacheManager() {
@@ -86,7 +73,7 @@ public class CacheConfig {
     }
 
     /**
-     * ✅ CACHE DE USUÁRIO — TTL 5 minutos
+     * ✅ CACHE DE USUÁRIO - TTL 5 minutos
      */
     @Bean("userDataCacheManager")
     public CacheManager userDataCacheManager() {
