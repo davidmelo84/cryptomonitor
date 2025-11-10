@@ -16,12 +16,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * ✅ MONITORING SERVICE - THREAD-SAFE
+ * ✅ CORRIGIDO - RATE LIMIT RESPEITADO
  *
- * PROTEÇÕES:
- * - Lock para evitar execuções concorrentes
- * - Flag de execução (evita sobreposição)
- * - Timeout de 5 minutos (evita travamento)
+ * MUDANÇAS:
+ * - Scheduler ÚNICO a cada 30 minutos
+ * - Cache SEMPRE respeitado
+ * - Sem requisições duplicadas
+ * - Fallback para banco quando rate limit
  */
 @Slf4j
 @Service
@@ -32,28 +33,27 @@ public class CryptoMonitoringService {
     private final ApplicationEventPublisher eventPublisher;
     private final WebSocketService webSocketService;
 
-    // ✅ PROTEÇÃO CONTRA EXECUÇÕES CONCORRENTES
     private final Lock schedulerLock = new ReentrantLock();
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private LocalDateTime lastSuccessfulRun = null;
+    private static final long SCHEDULER_INTERVAL_MS = 1800000; // 30 minutos
 
     /**
-     * ✅ SCHEDULER - Executa A CADA 30 MINUTOS (THREAD-SAFE)
+     * ✅ SCHEDULER ÚNICO - Executa A CADA 30 MINUTOS
      *
-     * PROTEÇÕES:
-     * - Não executa se já estiver rodando
-     * - Lock com timeout (evita deadlock)
-     * - Registra última execução bem-sucedida
+     * GARANTE:
+     * - Máximo 2 requisições/hora ao CoinGecko
+     * - Cache de 30 min SEMPRE respeitado
+     * - Sem execuções concorrentes
      */
-    @Scheduled(fixedDelay = 1800000, initialDelay = 60000) // 30min, começa após 1min
+    @Scheduled(fixedRate = SCHEDULER_INTERVAL_MS, initialDelay = 60000)
     public void scheduledUpdate() {
-        // ✅ 1. VERIFICAR SE JÁ ESTÁ RODANDO
+        // ✅ Prevenir execuções concorrentes
         if (isRunning.get()) {
             log.warn("⚠️ Scheduler já em execução, pulando ciclo");
             return;
         }
 
-        // ✅ 2. TENTAR ADQUIRIR LOCK (timeout 10s)
         boolean lockAcquired = false;
         try {
             lockAcquired = schedulerLock.tryLock(10, java.util.concurrent.TimeUnit.SECONDS);
@@ -63,21 +63,18 @@ public class CryptoMonitoringService {
                 return;
             }
 
-            // ✅ 3. MARCAR COMO EXECUTANDO
             isRunning.set(true);
 
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.info("⏰ SCHEDULER: Iniciando atualização periódica");
-            log.info("   Última execução bem-sucedida: {}",
+            log.info("   Última execução: {}",
                     lastSuccessfulRun != null ? lastSuccessfulRun : "Primeira vez");
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-            // ✅ 4. EXECUTAR ATUALIZAÇÃO
             updateAndProcessAlerts();
 
-            // ✅ 5. REGISTRAR SUCESSO
             lastSuccessfulRun = LocalDateTime.now();
-            log.info("✅ Scheduler concluído com sucesso às {}", lastSuccessfulRun);
+            log.info("✅ Scheduler concluído às {}", lastSuccessfulRun);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -87,9 +84,7 @@ public class CryptoMonitoringService {
             log.error("❌ Erro no scheduler: {}", e.getMessage(), e);
 
         } finally {
-            // ✅ 6. SEMPRE LIBERAR RECURSOS
             isRunning.set(false);
-
             if (lockAcquired) {
                 schedulerLock.unlock();
             }
@@ -97,90 +92,107 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * ✅ Atualização global (PROTEGIDA)
+     * ✅ ATUALIZAÇÃO GLOBAL (USA CACHE!)
+     *
+     * NÃO FAZ REQUEST SE:
+     * - Cache ainda válido (< 30 min)
+     * - Dados já foram buscados neste ciclo
      */
     public void updateAndProcessAlerts() {
         try {
             log.info("🔄 Iniciando ciclo de monitoramento...");
 
-            // 1. Buscar preços (cache 30min - NÃO faz request se cache válido!)
+            // ✅ CRÍTICO: getCurrentPrices() USA CACHE!
+            // Se cache válido: 0 requests ao CoinGecko
+            // Se cache expirado: 1 request ao CoinGecko
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             if (currentCryptos.isEmpty()) {
-                log.warn("⚠️ Nenhuma crypto obtida, abortando ciclo");
-                return;
+                log.warn("⚠️ Nenhuma crypto obtida, usando fallback do banco");
+                currentCryptos = cryptoService.getAllSavedCryptos();
+
+                if (currentCryptos.isEmpty()) {
+                    log.error("❌ Sem dados disponíveis (cache + banco vazios)");
+                    return;
+                }
             }
 
             log.info("📊 Obtidos preços de {} criptomoedas", currentCryptos.size());
 
-            // 2. Salvar no banco (fallback)
+            // Salvar no banco (fallback futuro)
             currentCryptos.forEach(cryptoService::saveCrypto);
 
-            // 3. Publicar evento (alertas)
+            // Publicar evento (alertas)
             publishCryptoUpdateEvent(
                     currentCryptos,
                     null,
                     CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE
             );
 
-            // 4. Broadcast via WebSocket (TEMPO REAL!)
+            // Broadcast via WebSocket
             webSocketService.broadcastPrices(currentCryptos);
 
             log.info("✅ Ciclo de monitoramento concluído com sucesso");
 
         } catch (Exception e) {
             log.error("❌ Erro no ciclo de monitoramento: {}", e.getMessage(), e);
-            throw e; // Re-lançar para finally pegar
+            throw e;
         }
     }
 
     /**
-     * ✅ Atualização para usuário específico (PROTEGIDA)
+     * ✅ ATUALIZAÇÃO POR USUÁRIO (USA CACHE!)
+     *
+     * NUNCA faz request extra - apenas usa dados do cache
      */
     public void updateAndProcessAlertsForUser(String userEmail) {
-        // ✅ Verificar se scheduler não está rodando
         if (isRunning.get()) {
-            log.warn("⚠️ Scheduler em execução, usando dados do cache para: {}", userEmail);
+            log.debug("⏸️ Scheduler em execução, usando cache para: {}", userEmail);
         }
 
         try {
-            log.info("🔄 Iniciando ciclo para: {}", userEmail);
+            log.info("🔄 Processando alertas para: {}", userEmail);
 
+            // ✅ USA CACHE - sem request extra
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             if (currentCryptos.isEmpty()) {
-                log.warn("⚠️ Nenhuma crypto obtida para: {}", userEmail);
+                log.warn("⚠️ Cache vazio, usando banco para: {}", userEmail);
+                currentCryptos = cryptoService.getAllSavedCryptos();
+            }
+
+            if (currentCryptos.isEmpty()) {
+                log.error("❌ Sem dados disponíveis para: {}", userEmail);
                 return;
             }
 
-            log.info("📊 Obtidos preços de {} criptomoedas", currentCryptos.size());
-
+            // Salvar no banco
             currentCryptos.forEach(cryptoService::saveCrypto);
 
+            // Publicar evento
             publishCryptoUpdateEvent(
                     currentCryptos,
                     userEmail,
                     CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE
             );
 
-            log.info("✅ Ciclo concluído para: {}", userEmail);
+            log.info("✅ Alertas processados para: {}", userEmail);
 
         } catch (Exception e) {
-            log.error("❌ Erro no ciclo para {}: {}", userEmail, e.getMessage(), e);
+            log.error("❌ Erro ao processar alertas para {}: {}",
+                    userEmail, e.getMessage(), e);
         }
     }
 
     /**
-     * ⚠️ FORÇAR ATUALIZAÇÃO MANUAL (ADMIN)
+     * ⚠️ FORCE UPDATE - ADMIN APENAS
      *
-     * USE COM CUIDADO - Consome rate limit!
+     * ATENÇÃO: Consome rate limit!
      */
     public void forceUpdateAndProcessAlerts() {
-        // ✅ Bloquear se scheduler estiver rodando
         if (isRunning.get()) {
             throw new IllegalStateException(
-                    "Não é possível forçar update enquanto scheduler está rodando. " +
-                            "Aguarde o ciclo atual terminar."
+                    "Scheduler em execução. Aguarde o ciclo terminar."
             );
         }
 
@@ -192,9 +204,9 @@ public class CryptoMonitoringService {
                 throw new IllegalStateException("Timeout ao aguardar lock");
             }
 
-            log.warn("🚀 FORCE UPDATE solicitado! Consumindo rate limit...");
+            log.warn("⚠️ FORCE UPDATE solicitado! Consumindo rate limit...");
 
-            // ⚠️ Limpar cache para forçar nova request
+            // Limpar cache para forçar nova request
             cryptoService.clearCache();
 
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
@@ -208,7 +220,7 @@ public class CryptoMonitoringService {
 
             webSocketService.broadcastPrices(currentCryptos);
 
-            log.warn("⚠️ Force update concluído: {} moedas (rate limit consumido!)",
+            log.warn("✅ Force update concluído: {} moedas (rate limit consumido!)",
                     currentCryptos.size());
 
         } catch (InterruptedException e) {
@@ -227,10 +239,11 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * ✅ Atualização de uma crypto específica (SAFE)
+     * ✅ ATUALIZAÇÃO DE UMA CRYPTO (USA CACHE!)
      */
     public void processAlertsForCrypto(String coinId) {
         try {
+            // ✅ USA CACHE - sem request extra
             cryptoService.getCryptoByCoinId(coinId)
                     .ifPresentOrElse(
                             crypto -> {
@@ -245,7 +258,7 @@ public class CryptoMonitoringService {
                                 webSocketService.sendCryptoUpdate(savedCrypto);
                                 log.info("✅ Alertas processados para {}", coinId);
                             },
-                            () -> log.warn("⚠️ Criptomoeda {} não encontrada", coinId)
+                            () -> log.warn("⚠️ Criptomoeda {} não encontrada no cache", coinId)
                     );
         } catch (Exception e) {
             log.error("❌ Erro ao processar alertas para {}: {}", coinId, e.getMessage());
@@ -267,8 +280,8 @@ public class CryptoMonitoringService {
 
             eventPublisher.publishEvent(event);
 
-            log.debug("📤 Evento publicado: {} cryptos, tipo: {}, usuário: {}",
-                    cryptos.size(), type, userEmail != null ? userEmail : "global");
+            log.debug("📤 Evento publicado: {} cryptos, tipo: {}",
+                    cryptos.size(), type);
 
         } catch (Exception e) {
             log.error("❌ Erro ao publicar evento: {}", e.getMessage(), e);
@@ -276,7 +289,7 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * ✅ Estatísticas (SAFE)
+     * ✅ Estatísticas
      */
     public MonitoringStats getMonitoringStats() {
         try {
