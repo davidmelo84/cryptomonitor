@@ -49,8 +49,8 @@ public class CoinGeckoRequestQueue {
     private final AtomicInteger totalRequests = new AtomicInteger(0);
     private final AtomicInteger queuedRequests = new AtomicInteger(0);
 
-    private static final long MIN_INTERVAL_MS = 5000; // 2 segundos
-    private static final int MAX_REQUESTS_PER_MINUTE = 30;
+    private static final long MIN_INTERVAL_MS = 30000;
+    private static final int MAX_REQUESTS_PER_MINUTE = 3;
     private static final long REQUEST_TIMEOUT_MS = 30000; // 30 segundos
 
     private volatile Instant lastRequestTime = Instant.now();
@@ -139,7 +139,7 @@ public class CoinGeckoRequestQueue {
     }
 
     /**
-     * ✅ EXECUTAR REQUEST
+     * ✅ EXECUTAR REQUEST (com detecção de HTTP 429)
      */
     @SuppressWarnings("unchecked")
     private <T> void executeRequest(QueuedRequest request) {
@@ -156,11 +156,25 @@ public class CoinGeckoRequestQueue {
             log.debug("✅ Request executado com sucesso");
 
         } catch (Exception e) {
-            log.error("❌ Erro ao executar request: {}", e.getMessage());
+            String message = e.getMessage() != null ? e.getMessage() : "";
+
+            // 🚨 Detecta erro HTTP 429 e aplica cooldown
+            if (message.contains("429") || message.contains("Too Many Requests")) {
+                log.warn("⚠️ Erro HTTP 429 detectado! Entrando em cooldown por 60 segundos...");
+                try {
+                    Thread.sleep(60000); // pausa 1 minuto
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+            } else {
+                log.error("❌ Erro ao executar request: {}", message);
+            }
+
             request.future.completeExceptionally(e);
             queuedRequests.decrementAndGet();
         }
     }
+
 
     /**
      * ✅ AGUARDAR RATE LIMIT
@@ -183,6 +197,7 @@ public class CoinGeckoRequestQueue {
         long elapsed = Duration.between(lastRequestTime, Instant.now()).toMillis();
         if (elapsed < MIN_INTERVAL_MS) {
             long waitMs = MIN_INTERVAL_MS - elapsed;
+            log.info("⏳ Respeitando intervalo mínimo entre requisições: {}ms", waitMs);
             log.debug("⏳ Aguardando {}ms (intervalo mínimo)...", waitMs);
             Thread.sleep(waitMs);
         }
