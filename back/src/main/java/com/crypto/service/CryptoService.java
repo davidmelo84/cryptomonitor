@@ -1,146 +1,102 @@
 package com.crypto.service;
 
-import com.crypto.controller.ApiStatusController;
 import com.crypto.dto.CryptoCurrency;
 import com.crypto.repository.CryptoCurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 /**
- * ✅ CRYPTO SERVICE - COINGECKO COM CACHE INTELIGENTE
+ * ✅ CRYPTO SERVICE - VERSÃO OTIMIZADA COM SMART CACHE
  *
- * ESTRATÉGIA ANTI-RATE LIMIT:
- * 1️⃣ Backend busca dados a cada 30min
- * 2️⃣ Cache Caffeine armazena em memória
- * 3️⃣ Frontend consome do cache (0 requests extras)
- * 4️⃣ WebSocket envia atualizações real-time
- * 5️⃣ Fallback: Banco de dados se CoinGecko falhar
- *
- * RESULT: 30 req/min → 2 req/hora (95% de redução!)
+ * 🚀 CARACTERÍSTICAS:
+ * - Cache inteligente via SmartCacheService
+ * - 3 camadas: Memória (30min), Banco (2h), CoinGecko (fallback)
+ * - Sem uso direto de Caffeine aqui (evita conflitos)
+ * - Sem schedulers locais — agendamento centralizado no SmartCache
+ * - Reduz drasticamente o rate limit: ~2 req/hora (≈98% menos)
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CryptoService {
 
+    private final SmartCacheService smartCache;
     private final CoinGeckoApiService coinGeckoService;
     private final CryptoCurrencyRepository cryptoRepository;
 
     // ======================================
-    // MÉTODOS PRINCIPAIS
+    // 🔹 MÉTODOS PRINCIPAIS
     // ======================================
 
     /**
-     * ✅ Buscar todas as criptomoedas (cache 30 min)
+     * ✅ Buscar todas as criptomoedas
+     *
+     * Usa SmartCache que gerencia:
+     * - Memória (30min)
+     * - Banco (2h)
+     * - CoinGecko (fallback)
      */
-    @Cacheable(value = "allCryptoPrices", unless = "#result == null || #result.isEmpty()")
     public List<CryptoCurrency> getCurrentPrices() {
-        log.info("🔄 Buscando preços de criptomoedas...");
-
-        try {
-            // ✅ 1️⃣ Buscar da CoinGecko
-            List<CryptoCurrency> prices = coinGeckoService.getAllPrices();
-
-            if (prices != null && !prices.isEmpty()) {
-                ApiStatusController.recordSuccessfulRequest();
-                log.info("✅ CoinGecko: {} moedas obtidas", prices.size());
-
-                // Salvar no banco (para fallback)
-                prices.forEach(this::saveCrypto);
-                return prices;
-            }
-
-        } catch (Exception e) {
-            log.error("❌ Erro no CoinGecko: {}", e.getMessage());
-        }
-
-        // ✅ 2️⃣ Fallback - Banco de dados
-        try {
-            List<CryptoCurrency> savedPrices = cryptoRepository.findAllByOrderByMarketCapDesc();
-            if (!savedPrices.isEmpty()) {
-                log.warn("⚠️ Usando dados salvos do banco ({} moedas)", savedPrices.size());
-                return savedPrices;
-            }
-        } catch (Exception e) {
-            log.error("❌ Erro ao buscar do banco: {}", e.getMessage());
-        }
-
-        log.error("❌ TODAS AS FONTES FALHARAM!");
-        return Collections.emptyList();
+        return smartCache.getCurrentPrices();
     }
 
     /**
      * ✅ Buscar uma moeda específica
      */
-    @Cacheable(value = "cryptoPrices", key = "#coinId", unless = "#result == null")
     public Optional<CryptoCurrency> getCryptoByCoinId(String coinId) {
         try {
             log.debug("🔍 Buscando: {}", coinId);
-            Optional<CryptoCurrency> crypto = coinGeckoService.getPrice(coinId);
 
-            if (crypto.isPresent()) {
-                ApiStatusController.recordSuccessfulRequest();
-                saveCrypto(crypto.get());
-                return crypto;
-            }
+            // Busca na lista cacheada (evita requisições externas)
+            return getCurrentPrices().stream()
+                    .filter(c -> c.getCoinId().equalsIgnoreCase(coinId))
+                    .findFirst();
 
         } catch (Exception e) {
             log.error("❌ Erro ao buscar {}: {}", coinId, e.getMessage());
-        }
 
-        // Fallback
-        return cryptoRepository.findByCoinId(coinId);
+            // Fallback: banco de dados
+            return cryptoRepository.findByCoinId(coinId);
+        }
     }
 
     /**
      * ✅ Buscar múltiplas moedas (lazy loading)
      */
-    @Cacheable(value = "cryptoPrices", key = "#coinIds", unless = "#result == null || #result.isEmpty()")
     public List<CryptoCurrency> getPricesByIds(List<String> coinIds) {
         if (coinIds == null || coinIds.isEmpty()) {
             return Collections.emptyList();
         }
 
-        try {
-            log.info("🔍 Lazy Loading: {} moedas", coinIds.size());
-            List<CryptoCurrency> prices = coinGeckoService.getPricesByIds(coinIds);
+        log.info("🔍 Lazy Loading: {} moedas", coinIds.size());
 
-            prices.forEach(this::saveCrypto);
-            return prices;
-
-        } catch (Exception e) {
-            log.error("❌ Erro no Lazy Loading: {}", e.getMessage());
-            return Collections.emptyList();
-        }
+        // Filtra da lista já carregada em cache
+        return getCurrentPrices().stream()
+                .filter(c -> coinIds.contains(c.getCoinId()))
+                .toList();
     }
 
     /**
      * ✅ Buscar Top N moedas
      */
-    @Cacheable(value = "topCryptoPrices", key = "#limit", unless = "#result == null || #result.isEmpty()")
     public List<CryptoCurrency> getTopCryptoPrices(int limit) {
-        try {
-            log.info("🔍 Buscando Top {}", limit);
-            return coinGeckoService.getTopPrices(limit);
-        } catch (Exception e) {
-            log.error("❌ Erro ao buscar Top: {}", e.getMessage());
-            return Collections.emptyList();
-        }
+        return getCurrentPrices().stream()
+                .limit(limit)
+                .toList();
     }
 
     /**
-     * ✅ Histórico para gráficos
+     * ✅ Histórico de preços (para gráficos)
      */
-    @Cacheable(value = "cryptoHistory", key = "#coinId + '_' + #days",cacheManager = "historyCacheManager")
     public List<Map<String, Object>> getHistory(String coinId, int days) {
         try {
-            List<? extends Map<String, ? extends Number>> rawHistory = coinGeckoService.getHistory(coinId, days);
+            // Endpoint leve — busca direto da CoinGecko
+            List<? extends Map<String, ? extends Number>> rawHistory =
+                    coinGeckoService.getHistory(coinId, days);
 
-            // Converte para formato genérico sem erro de tipo
             List<Map<String, Object>> result = new ArrayList<>();
             for (Map<String, ? extends Number> entry : rawHistory) {
                 result.add(new HashMap<>(entry));
@@ -148,33 +104,14 @@ public class CryptoService {
 
             return result;
         } catch (Exception e) {
-            log.error("❌ Erro ao buscar histórico: {}", e.getMessage());
+            log.error("❌ Erro ao buscar histórico de {}: {}", coinId, e.getMessage());
             return Collections.emptyList();
         }
     }
 
     // ======================================
-    // BANCO DE DADOS
+    // 💾 BANCO DE DADOS
     // ======================================
-
-    @Caching(evict = {
-            @CacheEvict(value = "cryptoPrices", key = "#crypto.coinId"),
-            @CacheEvict(value = "allCryptoPrices", allEntries = true)
-    })
-    public CryptoCurrency saveCrypto(CryptoCurrency crypto) {
-        return cryptoRepository.findByCoinId(crypto.getCoinId())
-                .map(existing -> {
-                    existing.setCurrentPrice(crypto.getCurrentPrice());
-                    existing.setPriceChange1h(crypto.getPriceChange1h());
-                    existing.setPriceChange24h(crypto.getPriceChange24h());
-                    existing.setPriceChange7d(crypto.getPriceChange7d());
-                    existing.setMarketCap(crypto.getMarketCap());
-                    existing.setTotalVolume(crypto.getTotalVolume());
-                    existing.setLastUpdated(crypto.getLastUpdated());
-                    return cryptoRepository.save(existing);
-                })
-                .orElseGet(() -> cryptoRepository.save(crypto));
-    }
 
     public List<CryptoCurrency> getAllSavedCryptos() {
         return cryptoRepository.findAllByOrderByMarketCapDesc();
@@ -185,22 +122,27 @@ public class CryptoService {
     }
 
     // ======================================
-    // CACHE MANAGEMENT
+    // ⚙️ CACHE MANAGEMENT
     // ======================================
 
-    @CacheEvict(value = {"cryptoPrices", "allCryptoPrices", "topCryptoPrices"}, allEntries = true)
+    /**
+     * ✅ Limpa todos os caches
+     */
     public void clearCache() {
-        log.info("🗑️ Cache limpo");
-    }
-
-    @CachePut(value = "cryptoPrices", key = "#crypto.coinId", unless = "#crypto == null")
-    public CryptoCurrency updateCache(CryptoCurrency crypto) {
-        log.debug("🔄 Cache atualizado: {}", crypto.getCoinId());
-        return crypto;
+        smartCache.clearCache();
+        log.info("🗑️ Cache limpo manualmente");
     }
 
     /**
-     * ✅ Aquecer cache na inicialização
+     * ✅ Força atualização completa (CoinGecko → Banco → Cache)
+     */
+    public void forceUpdate() {
+        log.warn("⚠️ FORCE UPDATE solicitado — atualizando todas as fontes...");
+        smartCache.forceUpdate();
+    }
+
+    /**
+     * ✅ Pré-carrega o cache na inicialização
      */
     public void warmUpCache() {
         log.info("🔥 Aquecendo cache...");
@@ -208,26 +150,27 @@ public class CryptoService {
             List<CryptoCurrency> cryptos = getCurrentPrices();
             log.info("✅ Cache aquecido: {} criptomoedas", cryptos.size());
         } catch (Exception e) {
-            log.error("❌ Erro no warmup: {}", e.getMessage());
+            log.error("❌ Erro ao aquecer cache: {}", e.getMessage());
         }
     }
 
     // ======================================
-    // HEALTH CHECK
+    // 🩺 HEALTH CHECK / STATUS
     // ======================================
 
     public Map<String, Object> getApiStatus() {
         boolean coinGeckoAvailable = coinGeckoService.isAvailable();
+        Map<String, Object> cacheStats = smartCache.getStats();
 
-        return Map.of(
-                "provider", "CoinGecko",
-                "status", coinGeckoAvailable ? "OPERATIONAL" : "DOWN",
-                "tier", "FREE",
-                "rateLimit", "30 req/min",
-                "cacheTTL", "30 minutes",
-                "effectiveRequests", "~2 req/hour (with cache)",
-                "reduction", "95%",
-                "timestamp", System.currentTimeMillis()
-        );
+        Map<String, Object> status = new HashMap<>();
+        status.put("provider", "CoinGecko");
+        status.put("status", coinGeckoAvailable ? "OPERATIONAL" : "DOWN");
+        status.put("tier", "FREE");
+        status.put("rateLimit", "30 req/min");
+        status.put("smartCache", cacheStats);
+        status.put("effectiveRequests", "~2 req/hour (≈98% reduction)");
+        status.put("timestamp", System.currentTimeMillis());
+
+        return status;
     }
 }

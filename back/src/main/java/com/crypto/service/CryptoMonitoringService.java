@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/service/CryptoMonitoringService.java
 package com.crypto.service;
 
 import com.crypto.dto.CryptoCurrency;
@@ -11,16 +10,14 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * ✅ VERSÃO CORRIGIDA - SCHEDULER GLOBAL DESABILITADO
+ * ✅ VERSÃO OTIMIZADA - SCHEDULER GLOBAL DESABILITADO
  *
  * MUDANÇAS:
- * - @Scheduled REMOVIDO (não dispara mais automaticamente)
- * - Alertas SÓ processam quando usuário EXPLICITAMENTE inicia monitoramento
- * - Scheduler user-specific no MonitoringControlService
+ * - Scheduler automático REMOVIDO (causava rate limit)
+ * - Apenas SmartCacheService faz updates (1x/hora)
+ * - Monitoramento só acontece quando usuário ativa
  */
 @Slf4j
 @Service
@@ -31,69 +28,33 @@ public class CryptoMonitoringService {
     private final ApplicationEventPublisher eventPublisher;
     private final WebSocketService webSocketService;
 
-    private final Lock schedulerLock = new ReentrantLock();
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private LocalDateTime lastSuccessfulRun = null;
 
     /**
-     * ❌ SCHEDULER GLOBAL - **DESABILITADO**
+     * ❌ SCHEDULER GLOBAL - **PERMANENTEMENTE DESABILITADO**
      *
-     * ⚠️ MOTIVO: Disparava alertas automaticamente para TODOS os usuários
-     * mesmo sem ninguém estar logado/monitorando.
+     * ⚠️ MOTIVO: Causava múltiplos requests ao CoinGecko
      *
-     * ✅ SOLUÇÃO: Usar apenas schedulers USER-SPECIFIC no MonitoringControlService
+     * ✅ SOLUÇÃO: SmartCacheService.scheduledUpdate() (1x/hora)
      */
-    // @Scheduled(fixedRate = 1800000, initialDelay = 60000) // ❌ DESABILITADO
+    // @Scheduled(...) // ❌ REMOVIDO PERMANENTEMENTE
     public void scheduledUpdate() {
-        log.warn("⚠️ Scheduler Global: DESABILITADO");
-        log.warn("   Use /api/monitoring/start para ativar monitoramento por usuário");
+        log.info("ℹ️ Scheduler Global: DESABILITADO");
+        log.info("   Update automático: SmartCacheService (1x/hora)");
+        log.info("   Monitoramento: User-specific via MonitoringControlService");
     }
 
     /**
-     * ✅ ATUALIZAÇÃO GLOBAL (PROTEGIDA)
+     * ✅ ATUALIZAÇÃO MANUAL (para usuário específico)
      *
-     * Usa getCurrentPrices() que:
-     * - Verifica cache primeiro (TTL 30min)
-     * - Se cache expirado, enfileira request
-     * - Se request falhar, usa banco
-     */
-    public void updateAndProcessAlerts() {
-        try {
-            log.info("🔄 Iniciando ciclo de monitoramento...");
-
-            List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
-
-            if (currentCryptos.isEmpty()) {
-                log.error("❌ NENHUM DADO DISPONÍVEL");
-                return;
-            }
-
-            log.info("📊 Obtidos {} criptomoedas", currentCryptos.size());
-
-            // Publicar evento (alertas)
-            publishCryptoUpdateEvent(
-                    currentCryptos,
-                    null,
-                    CryptoUpdateEvent.UpdateType.SCHEDULED_UPDATE
-            );
-
-            // Broadcast via WebSocket
-            webSocketService.broadcastPrices(currentCryptos);
-
-            log.info("✅ Ciclo concluído");
-
-        } catch (Exception e) {
-            log.error("❌ Erro no ciclo: {}", e.getMessage(), e);
-        }
-    }
-
-    /**
-     * ✅ ATUALIZAÇÃO POR USUÁRIO (CHAMADO PELO SCHEDULER USER-SPECIFIC)
+     * Usado pelo MonitoringControlService quando usuário ativa monitoramento
      */
     public void updateAndProcessAlertsForUser(String userEmail) {
         try {
             log.info("🔄 Processando alertas para: {}", userEmail);
 
+            // Buscar preços (já cacheados pelo SmartCache)
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             if (currentCryptos.isEmpty()) {
@@ -101,7 +62,7 @@ public class CryptoMonitoringService {
                 return;
             }
 
-            // Publicar evento
+            // Publicar evento (processamento de alertas)
             publishCryptoUpdateEvent(
                     currentCryptos,
                     userEmail,
@@ -113,6 +74,23 @@ public class CryptoMonitoringService {
         } catch (Exception e) {
             log.error("❌ Erro ao processar alertas para {}: {}",
                     userEmail, e.getMessage());
+        }
+    }
+
+    /**
+     * ✅ BROADCAST VIA WEBSOCKET (manual)
+     */
+    public void broadcastPrices() {
+        try {
+            List<CryptoCurrency> cryptos = cryptoService.getCurrentPrices();
+
+            if (!cryptos.isEmpty()) {
+                webSocketService.broadcastPrices(cryptos);
+                log.debug("📡 Broadcast: {} moedas", cryptos.size());
+            }
+
+        } catch (Exception e) {
+            log.error("❌ Erro no broadcast: {}", e.getMessage());
         }
     }
 
@@ -148,7 +126,7 @@ public class CryptoMonitoringService {
 
             return MonitoringStats.builder()
                     .totalCryptocurrencies(savedCryptos.size())
-                    .isSchedulerRunning(isRunning.get())
+                    .isSchedulerRunning(false) // Sempre false agora
                     .lastSuccessfulRun(lastSuccessfulRun)
                     .lastUpdate(savedCryptos.isEmpty() ? null :
                             savedCryptos.get(0).getLastUpdated())
