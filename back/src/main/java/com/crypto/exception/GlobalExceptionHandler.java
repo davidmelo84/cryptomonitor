@@ -1,5 +1,3 @@
-// GlobalExceptionHandler.java
-// Localização: src/main/java/com/crypto/exception/GlobalExceptionHandler.java
 package com.crypto.exception;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,57 +17,118 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // =============================
+    // 1. VALIDAÇÃO (400)
+    // =============================
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex, WebRequest request) {
 
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String field = ((FieldError) error).getField();
+            String msg = error.getDefaultMessage();
+            errors.put(field, msg);
         });
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("error", "Validation Failed");
-        response.put("message", "Dados de entrada inválidos");
-        response.put("errors", errors);
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return ResponseEntity.badRequest().body(response);
+        return buildResponse(
+                HttpStatus.BAD_REQUEST,
+                "Validation Failed",
+                "Dados de entrada inválidos",
+                errors,
+                request
+        );
     }
 
+    // =============================
+    // 2. NOT FOUND (404)
+    // =============================
+    @ExceptionHandler({
+            UserNotFoundException.class,
+            CryptoNotFoundException.class
+    })
+    public ResponseEntity<Map<String, Object>> handleNotFound(RuntimeException ex, WebRequest request) {
+
+        return buildResponse(
+                HttpStatus.NOT_FOUND,
+                "Not Found",
+                ex.getMessage(),
+                null,
+                request
+        );
+    }
+
+    // =============================
+    // 3. RATE LIMIT (429)
+    // =============================
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<Map<String, Object>> handleRateLimit(RateLimitExceededException ex, WebRequest request) {
+
+        return buildResponse(
+                HttpStatus.TOO_MANY_REQUESTS,
+                "Too Many Requests",
+                ex.getMessage(),
+                null,
+                request
+        );
+    }
+
+    // =============================
+    // 4. RUNTIME ERROR (500)
+    // =============================
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<Map<String, Object>> handleRuntimeException(
-            RuntimeException ex, WebRequest request) {
+    public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex, WebRequest request) {
 
-        log.error("Runtime exception: ", ex);
+        log.error("Runtime exception:", ex);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("error", "Internal Server Error");
-        response.put("message", ex.getMessage());
-        response.put("path", request.getDescription(false).replace("uri=", ""));
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal Server Error",
+                ex.getMessage(),
+                null,
+                request
+        );
     }
 
+    // =============================
+    // 5. EXCEÇÃO GLOBAL (500)
+    // =============================
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGlobalException(
-            Exception ex, WebRequest request) {
+    public ResponseEntity<Map<String, Object>> handleGlobalException(Exception ex, WebRequest request) {
 
-        log.error("Unexpected exception: ", ex);
+        log.error("Unexpected exception:", ex);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("error", "Internal Server Error");
-        response.put("message", "Ocorreu um erro inesperado");
-        response.put("path", request.getDescription(false).replace("uri=", ""));
+        return buildResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal Server Error",
+                "Ocorreu um erro inesperado",
+                null,
+                request
+        );
+    }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    // =============================
+    // MÉTODO UTILITÁRIO
+    // =============================
+    private ResponseEntity<Map<String, Object>> buildResponse(
+            HttpStatus status,
+            String error,
+            String message,
+            Object errors,
+            WebRequest request
+    ) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", status.value());
+        body.put("error", error);
+        body.put("message", message);
+        body.put("path", request.getDescription(false).replace("uri=", ""));
+
+        if (errors != null) {
+            body.put("errors", errors);
+        }
+
+        return ResponseEntity.status(status).body(body);
     }
 }

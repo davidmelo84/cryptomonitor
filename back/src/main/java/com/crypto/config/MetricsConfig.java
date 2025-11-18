@@ -1,14 +1,21 @@
 package com.crypto.config;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Timer;
+import com.crypto.service.CoinGeckoRequestQueue;
+import com.crypto.service.MonitoringControlService;
+import com.github.benmanes.caffeine.cache.stats.CacheStats;
+import io.micrometer.core.instrument.*;
 import io.micrometer.core.instrument.config.MeterFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCustomizer;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.net.InetAddress;
+import java.util.Map;
 
 /**
  * ✅ SPRINT 1 & 2: Configuração de Métricas Prometheus
@@ -104,5 +111,70 @@ public class MetricsConfig {
                 .description("Total de requisições processadas pela API")
                 .tag("type", "request")
                 .register(registry);
+    }
+
+    // Adicionar ao MetricsConfig.java existente
+
+    @Bean
+    public Gauge cacheHitRateGauge(MeterRegistry registry, CacheManager cacheManager) {
+        return Gauge.builder("crypto_cache_hit_rate", () -> {
+                    Cache cache = cacheManager.getCache("allCryptoPrices");
+                    if (cache instanceof CaffeineCache) {
+                        com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCache =
+                                ((CaffeineCache) cache).getNativeCache();
+                        CacheStats stats = nativeCache.stats();
+
+                        long hits = stats.hitCount();
+                        long misses = stats.missCount();
+                        long total = hits + misses;
+
+                        return total > 0 ? (double) hits / total : 0.0;
+                    }
+                    return 0.0;
+                })
+                .description("Taxa de acertos do cache principal")
+                .tag("cache", "allCryptoPrices")
+                .register(registry);
+    }
+
+    @Bean
+    public Gauge activeMonitoringUsersGauge(MeterRegistry registry,
+                                            MonitoringControlService monitoringService) {
+        return Gauge.builder("crypto_active_monitoring_users", () -> {
+                    Map<String, Object> status = monitoringService.getGlobalStatus();
+                    return ((Number) status.getOrDefault("totalActiveMonitors", 0)).doubleValue();
+                })
+                .description("Número de usuários com monitoramento ativo")
+                .register(registry);
+    }
+
+    @Bean
+    public Gauge rateLimitQueueSizeGauge(MeterRegistry registry,
+                                         CoinGeckoRequestQueue requestQueue) {
+        return Gauge.builder("crypto_rate_limit_queue_size", () -> {
+                    CoinGeckoRequestQueue.QueueStats stats = requestQueue.getStats();
+                    return stats.queueSize();
+                })
+                .description("Tamanho da fila de requisições para CoinGecko")
+                .register(registry);
+    }
+
+    // Métrica de latência por endpoint
+    @Bean
+    public MeterFilter addEndpointTag() {
+        return MeterFilter.commonTags(
+                Tags.of(
+                        "application", "crypto-monitor",
+                        "instance", getHostname()
+                )
+        );
+    }
+
+    private String getHostname() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            return "unknown";
+        }
     }
 }

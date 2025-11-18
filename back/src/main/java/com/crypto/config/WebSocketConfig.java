@@ -1,29 +1,36 @@
 package com.crypto.config;
 
+import com.crypto.exception.RateLimitExceededException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.socket.config.annotation.*;
 
-/**
- * ✅ SPRINT 2 - WEBSOCKET PARA REAL-TIME
- *
- * CORREÇÕES:
- * - Removido endpoint duplicado
- * - CORS simplificado e correto
- * - SockJS habilitado como fallback
- */
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
 @Slf4j
 @Configuration
 @EnableWebSocketMessageBroker
+@EnableScheduling
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    /** 🔐 Rate-limit por sessão WebSocket */
+    private final Map<String, AtomicInteger> messageCount = new ConcurrentHashMap<>();
+
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // ✅ Broker simples em memória
         config.enableSimpleBroker("/topic");
-
-        // ✅ Prefixo para mensagens do cliente
         config.setApplicationDestinationPrefixes("/app");
 
         log.info("✅ WebSocket Message Broker configurado");
@@ -31,7 +38,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // ✅ CORRIGIDO: Endpoint único com SockJS
+
         registry.addEndpoint("/ws/crypto")
                 .setAllowedOriginPatterns(
                         "https://cryptomonitor-theta.vercel.app",
@@ -40,10 +47,49 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "http://localhost:8080",
                         "http://127.0.0.1:*"
                 )
-                .withSockJS();  // ✅ SockJS como fallback
+                .withSockJS();
 
         log.info("✅ WebSocket endpoint registrado: /ws/crypto");
-        log.info("   📡 STOMP destination: /topic/prices");
-        log.info("   🌐 CORS: Vercel + localhost");
+    }
+
+    /**
+     * 🔐 RATE-LIMIT contra flood de WebSocket
+     * Limite: 100 mensagens por minuto por sessão
+     */
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(new ChannelInterceptor() {
+
+            @Override
+            public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+
+                if (StompCommand.SEND.equals(accessor.getCommand())) {
+
+                    String sessionId = accessor.getSessionId();
+                    int count = messageCount
+                            .computeIfAbsent(sessionId, k -> new AtomicInteger(0))
+                            .incrementAndGet();
+
+                    if (count > 100) {
+                        log.warn("⚠️ Rate limit WebSocket atingido - Sessão {}", sessionId);
+                        throw new RateLimitExceededException("WebSocket rate limit exceeded");
+                    }
+                }
+
+                return message;
+            }
+        });
+    }
+
+    /**
+     * 🔁 Limpa contador a cada minuto
+     */
+    @Scheduled(fixedDelay = 60000)
+    public void resetWebSocketRateLimits() {
+        if (!messageCount.isEmpty()) {
+            log.debug("🧹 Reset WebSocket rate limits ({} sessões)", messageCount.size());
+            messageCount.clear();
+        }
     }
 }

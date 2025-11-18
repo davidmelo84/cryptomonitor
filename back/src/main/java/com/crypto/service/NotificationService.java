@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -19,8 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class NotificationService {
 
-    // ✅ REMOVIDO: JavaMailSender
-    // ✅ ADICIONADO: EmailService (que usa SendGrid)
     private final EmailService emailService;
     private final WebClient webClient;
 
@@ -45,10 +44,33 @@ public class NotificationService {
     @Value("${notification.email.cooldown-minutes:5}")
     private int notificationCooldownMinutes;
 
+    /** 🔥 Cache com cooldowns */
     private final Map<String, LocalDateTime> notificationCache = new ConcurrentHashMap<>();
 
     /**
-     * ✅ CORRIGIDO: Usa EmailService ao invés de JavaMailSender
+     * 🧹 LIMPEZA AUTOMÁTICA DO CACHE A CADA 1 HORA
+     * Remove notificações com mais de 2 horas
+     */
+    @Scheduled(fixedDelay = 3600000)
+    public void cleanupNotificationCache() {
+        LocalDateTime cutoff = LocalDateTime.now().minusHours(2);
+
+        long before = notificationCache.size();
+
+        notificationCache.entrySet().removeIf(
+                entry -> entry.getValue().isBefore(cutoff)
+        );
+
+        long after = notificationCache.size();
+        long removed = before - after;
+
+        if (removed > 0) {
+            log.debug("🗑️ Cleanup executado: {} entradas removidas do cache de notificações", removed);
+        }
+    }
+
+    /**
+     * Envia notificação
      */
     @Async
     public CompletableFuture<Void> sendNotification(NotificationMessage message) {
@@ -64,7 +86,7 @@ public class NotificationService {
             if (isInCooldown(message)) {
                 log.warn("⏰ Notificação em COOLDOWN para {} ({})",
                         message.getCoinSymbol(), message.getAlertType());
-                log.warn("   ⏱️  Cooldown configurado: {} minutos", notificationCooldownMinutes);
+                log.warn("   ⏱️ Cooldown configurado: {} minutos", notificationCooldownMinutes);
                 log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
                 return CompletableFuture.completedFuture(null);
             }
@@ -95,9 +117,6 @@ public class NotificationService {
         return CompletableFuture.completedFuture(null);
     }
 
-    /**
-     * ✅ CORRIGIDO: Usa EmailService (SendGrid)
-     */
     private boolean sendEmailNotification(NotificationMessage message) {
         try {
             log.info("📧 Preparando email...");
@@ -109,7 +128,6 @@ public class NotificationService {
 
             log.info("📤 Enviando email para: {}", message.getRecipient());
 
-            // ✅ USA EMAILSERVICE QUE USA SENDGRID
             emailService.sendEmail(message.getRecipient(), subject, emailBody);
 
             log.info("✅ Email ENVIADO com sucesso para {}", message.getRecipient());
@@ -170,16 +188,13 @@ public class NotificationService {
         return inCooldown;
     }
 
+    /** ⛔ AGORA sem limpeza aqui — limpeza é feita pelo Scheduler */
     private void updateNotificationCache(NotificationMessage message) {
         String cacheKey = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
         notificationCache.put(cacheKey, LocalDateTime.now());
 
         log.debug("📝 Cooldown registrado: {} (próximo alerta em {} minutos)",
                 cacheKey, notificationCooldownMinutes);
-
-        notificationCache.entrySet().removeIf(entry ->
-                LocalDateTime.now().isAfter(entry.getValue().plusHours(2))
-        );
     }
 
     public void clearCooldown(String coinSymbol, String alertType) {
@@ -290,9 +305,6 @@ public class NotificationService {
         sendNotification(testMessage);
     }
 
-    /**
-     * ✅ CORRIGIDO: Usa EmailService
-     */
     public void sendEmailAlert(String to, String subject, String message) {
         try {
             log.info("📧 Enviando alerta genérico para: {}", to);

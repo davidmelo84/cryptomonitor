@@ -177,10 +177,10 @@ resilience4j:
   circuitbreaker:
     instances:
       coingecko:
-        failure-rate-threshold: 50
-        wait-duration-in-open-state: 60000  # 1 minuto
-        sliding-window-size: 10
-        minimum-number-of-calls: 5
+        failure-rate-threshold: 70
+        wait-duration-in-open-state: 120000  # 2 minuto
+        sliding-window-size: 20
+        minimum-number-of-calls: 10
         permitted-number-of-calls-in-half-open-state: 3
         slow-call-duration-threshold: 5000
         slow-call-rate-threshold: 50
