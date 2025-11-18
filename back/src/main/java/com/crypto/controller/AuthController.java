@@ -6,6 +6,7 @@ import com.crypto.repository.UserRepository;
 import com.crypto.security.JwtUtil;
 import com.crypto.service.EmailService;
 import com.crypto.service.VerificationService;
+import com.crypto.util.InputSanitizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,8 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final VerificationService verificationService;
-    private final EmailService emailService;  // ✅ ADICIONAR
+    private final EmailService emailService;
+    private final InputSanitizer sanitizer;
 
     /**
      * Registro de usuário
@@ -37,36 +39,61 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody User user) {
         log.info("📝 Tentativa de registro: {}", user.getUsername());
 
+        // ================================
+        // ✅ Sanitização
+        // ================================
+        try {
+            user.setUsername(sanitizer.sanitizeUsername(user.getUsername()));
+            user.setEmail(sanitizer.sanitizeEmail(user.getEmail()));
+
+            if (user.getPassword() == null || user.getPassword().length() < 8) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Senha deve ter no mínimo 8 caracteres"));
+            }
+        } catch (IllegalArgumentException e) {
+            log.warn("⚠️ Input inválido no registro: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+
+        // ================================
+        // Validações
+        // ================================
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Usuário já existe"));
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Usuário já existe"
+            ));
         }
 
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Email já cadastrado"));
+            return ResponseEntity.badRequest().body(Map.of(
+                    "error", "Email já cadastrado"
+            ));
         }
 
+        // ================================
+        // Criação do usuário
+        // ================================
         try {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setEnabled(false);
             user.setRole("USER");
 
             User saved = userRepository.save(user);
+
             verificationService.createVerificationToken(saved);
 
-            log.info("✅ Usuário registrado: {}", saved.getUsername());
+            Map<String, Object> resp = new HashMap<>();
+            resp.put("success", true);
+            resp.put("message", "Usuário criado! Verifique seu email.");
+            resp.put("requiresVerification", true);
+            resp.put("email", saved.getEmail());
 
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "Usuário criado! Verifique seu email.");
-            response.put("requiresVerification", true);
-            response.put("email", saved.getEmail());
+            log.info("✅ Usuário registrado com sucesso: {}", saved.getUsername());
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(resp);
 
         } catch (Exception e) {
-            log.error("❌ Erro no registro:", e);
+            log.error("❌ Erro ao registrar:", e);
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", "Erro ao criar conta: " + e.getMessage()));
         }
@@ -79,6 +106,16 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody User user) {
         log.info("🔐 Tentativa de login: {}", user.getUsername());
 
+        // ================================
+        // ✅ Sanitização
+        // ================================
+        try {
+            user.setUsername(sanitizer.sanitizeUsername(user.getUsername()));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("error", "Credenciais inválidas"));
+        }
+
         try {
             User dbUser = userRepository.findByUsername(user.getUsername())
                     .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -87,24 +124,28 @@ public class AuthController {
                 Map<String, Object> resp = new HashMap<>();
                 resp.put("success", false);
                 resp.put("error", "Conta não verificada");
-                resp.put("message", "Verifique seu email antes de fazer login");
                 resp.put("email", dbUser.getEmail());
                 return ResponseEntity.status(403).body(resp);
             }
 
             Authentication authentication = authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+                    new UsernamePasswordAuthenticationToken(
+                            user.getUsername(), user.getPassword()
+                    )
             );
 
             String token = jwtUtil.generateToken(user.getUsername());
+
             return ResponseEntity.ok(Map.of("token", token));
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(401)
                     .body(Map.of("success", false, "error", "Credenciais inválidas"));
+
         } catch (DisabledException e) {
             return ResponseEntity.status(403)
                     .body(Map.of("success", false, "error", "Conta desabilitada"));
+
         } catch (Exception e) {
             log.error("❌ Erro no login:", e);
             return ResponseEntity.status(500)
@@ -118,7 +159,7 @@ public class AuthController {
     @PostMapping("/verify")
     public ResponseEntity<?> verifyUser(@RequestBody VerificationRequest request) {
         try {
-            log.info("🔍 Verificando código: {}", request.getCode());
+            log.info("🔍 Verificando código {}", request.getCode());
 
             boolean verified = verificationService.verifyCode(request.getCode());
 
@@ -127,15 +168,15 @@ public class AuthController {
                         "success", true,
                         "message", "Conta verificada com sucesso!"
                 ));
-            } else {
-                return ResponseEntity.status(400).body(Map.of(
-                        "success", false,
-                        "error", "Código inválido, expirado ou já utilizado"
-                ));
             }
 
+            return ResponseEntity.status(400).body(Map.of(
+                    "success", false,
+                    "error", "Código inválido, expirado ou já utilizado"
+            ));
+
         } catch (Exception e) {
-            log.error("❌ Erro ao verificar código: {}", e.getMessage());
+            log.error("❌ Erro ao verificar código", e);
             return ResponseEntity.status(500).body(Map.of(
                     "success", false,
                     "error", "Erro interno ao verificar o código"
@@ -150,19 +191,21 @@ public class AuthController {
     public ResponseEntity<?> resendCode(@RequestParam String email) {
         boolean sent = verificationService.resendCode(email);
 
-        Map<String, Object> response = new HashMap<>();
         if (sent) {
-            response.put("success", true);
-            response.put("message", "Código reenviado com sucesso!");
-        } else {
-            response.put("success", false);
-            response.put("error", "Falha ao reenviar código");
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "Código reenviado com sucesso!"
+            ));
         }
-        return ResponseEntity.ok(response);
+
+        return ResponseEntity.ok(Map.of(
+                "success", false,
+                "error", "Falha ao reenviar código"
+        ));
     }
 
     /**
-     * ✅ NOVO: Endpoint para testar SendGrid
+     * Testar envio de email
      */
     @PostMapping("/test-email")
     public ResponseEntity<?> testEmail(@RequestBody Map<String, String> request) {
@@ -174,56 +217,42 @@ public class AuthController {
                         .body(Map.of("error", "Email é obrigatório"));
             }
 
-            log.info("🧪 Testando envio de email para: {}", testEmail);
+            log.info("🧪 Testando envio de email para {}", testEmail);
 
             emailService.sendEmail(
                     testEmail,
                     "🧪 Teste - Crypto Monitor",
                     "Este é um email de teste do sistema Crypto Monitor.\n\n" +
-                            "Se você recebeu este email, a configuração está funcionando! ✅\n\n" +
-                            "Data/Hora: " + java.time.LocalDateTime.now()
+                            "Se você recebeu esta mensagem, o envio está funcionando!\n" +
+                            "Timestamp: " + java.time.LocalDateTime.now()
             );
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", "Email de teste enviado para " + testEmail
+                    "message", "Email enviado para " + testEmail
             ));
 
         } catch (Exception e) {
-            log.error("❌ Erro ao enviar email de teste: {}", e.getMessage(), e);
+            log.error("❌ Erro ao enviar email de teste", e);
             return ResponseEntity.status(500).body(Map.of(
                     "success", false,
-                    "error", e.getMessage(),
-                    "help", "Verifique se SENDGRID_API_KEY está configurada no Render"
+                    "error", e.getMessage()
             ));
         }
     }
 
     /**
-     * ✅ NOVO: Debug de variáveis de ambiente
+     * Debug de variáveis de ambiente
      */
     @GetMapping("/debug-env")
     public ResponseEntity<?> debugEnv() {
-        log.info("🔍 Verificando variáveis de ambiente...");
-
         Map<String, Object> debug = new HashMap<>();
 
         String apiKey = System.getenv("SENDGRID_API_KEY");
-        String fromEmail = System.getenv("SENDGRID_FROM_EMAIL");
-        String fromName = System.getenv("SENDGRID_FROM_NAME");
 
         debug.put("SENDGRID_API_KEY_EXISTS", apiKey != null && !apiKey.isEmpty());
         debug.put("SENDGRID_API_KEY_LENGTH", apiKey != null ? apiKey.length() : 0);
-        debug.put("SENDGRID_API_KEY_PREFIX",
-                apiKey != null && apiKey.length() > 5
-                        ? apiKey.substring(0, 5) + "..."
-                        : "N/A");
-        debug.put("SENDGRID_FROM_EMAIL", fromEmail != null ? fromEmail : "NOT_SET");
-        debug.put("SENDGRID_FROM_NAME", fromName != null ? fromName : "NOT_SET");
         debug.put("timestamp", System.currentTimeMillis());
-
-        log.info("📋 Variáveis de ambiente:");
-        debug.forEach((key, value) -> log.info("   {}: {}", key, value));
 
         return ResponseEntity.ok(debug);
     }

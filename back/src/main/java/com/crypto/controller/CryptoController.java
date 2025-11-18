@@ -1,8 +1,9 @@
-// back/src/main/java/com/crypto/controller/CryptoController.java
+// Localização: back/src/main/java/com/crypto/controller/CryptoController.java
 package com.crypto.controller;
 
 import com.crypto.dto.CryptoCurrency;
 import com.crypto.service.CryptoService;
+import com.crypto.util.InputSanitizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.CacheControl;
@@ -15,13 +16,13 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ✅ CRYPTO CONTROLLER - PROTEGIDO CONTRA RATE LIMIT
+ * ✅ CRYPTO CONTROLLER - PROTEGIDO CONTRA RATE LIMIT + SANITIZAÇÃO
  *
- * REGRAS:
- * - TODOS os endpoints SEMPRE usam cache
- * - NUNCA chamam API diretamente
- * - Cache-Control headers para browser cache
- * - Rate limit no nível do controller
+ * Recursos:
+ * - Cache em todos endpoints
+ * - Browser Cache-Control
+ * - Sanitização de coinId
+ * - Proteção contra inputs inválidos
  */
 @Slf4j
 @RestController
@@ -31,23 +32,23 @@ public class CryptoController {
 
     private final CryptoService cryptoService;
 
+    // ✅ Sanitização adicionada
+    private final InputSanitizer sanitizer;
+
     /**
      * ✅ BUSCAR PREÇOS ATUAIS
      *
-     * PROTEÇÕES:
-     * - Cache 30min no backend
-     * - Cache-Control 5min no browser
-     * - NUNCA bypassa cache
+     * Cache:
+     * - Backend: 30min (via Service)
+     * - Browser: 5min
      */
     @GetMapping("/current")
     public ResponseEntity<List<CryptoCurrency>> getCurrentPrices() {
         try {
             log.debug("📊 Endpoint /current chamado");
 
-            // ✅ SEMPRE usa cache
             List<CryptoCurrency> cryptos = cryptoService.getCurrentPrices();
 
-            // ✅ Adicionar cache no browser (5 minutos)
             return ResponseEntity.ok()
                     .cacheControl(CacheControl.maxAge(5, TimeUnit.MINUTES))
                     .body(cryptos);
@@ -60,10 +61,15 @@ public class CryptoController {
 
     /**
      * ✅ BUSCAR UMA MOEDA ESPECÍFICA
+     *
+     * Agora com sanitização da coinId
      */
     @GetMapping("/current/{coinId}")
     public ResponseEntity<CryptoCurrency> getCryptoByCoinId(@PathVariable String coinId) {
         try {
+            // 🔒 Sanitização
+            coinId = sanitizer.sanitizeCoinId(coinId);
+
             log.debug("🔍 Buscando: {}", coinId);
 
             Optional<CryptoCurrency> crypto = cryptoService.getCryptoByCoinId(coinId);
@@ -74,6 +80,9 @@ public class CryptoController {
                             .body(c))
                     .orElse(ResponseEntity.notFound().build());
 
+        } catch (IllegalArgumentException e) {
+            log.warn("⚠️ CoinId inválido: {}", coinId);
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             log.error("❌ Erro ao buscar {}: {}", coinId, e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -81,9 +90,9 @@ public class CryptoController {
     }
 
     /**
-     * ✅ BUSCAR HISTÓRICO (para gráficos)
+     * ✅ BUSCAR HISTÓRICO DE PREÇOS (para gráficos)
      *
-     * Cache 2 horas (histórico muda menos)
+     * Cache backend: 2h
      */
     @GetMapping("/history/{coinId}")
     public ResponseEntity<Map<String, Object>> getCryptoHistory(
@@ -91,6 +100,15 @@ public class CryptoController {
             @RequestParam(defaultValue = "7") int days
     ) {
         try {
+            // 🔒 Sanitização
+            coinId = sanitizer.sanitizeCoinId(coinId);
+
+            // Validar dias
+            if (days < 1 || days > 365) {
+                log.warn("⚠️ Valor inválido para days: {}", days);
+                return ResponseEntity.badRequest().build();
+            }
+
             log.debug("📈 Buscando histórico: {} ({}d)", coinId, days);
 
             List<Map<String, Object>> history = cryptoService.getHistory(coinId, days);
@@ -110,6 +128,9 @@ public class CryptoController {
                     .cacheControl(CacheControl.maxAge(2, TimeUnit.HOURS))
                     .body(response);
 
+        } catch (IllegalArgumentException e) {
+            log.warn("⚠️ Input inválido: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             log.error("❌ Erro ao buscar histórico: {}", e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -117,16 +138,13 @@ public class CryptoController {
     }
 
     /**
-     * ⚠️ FORÇAR ATUALIZAÇÃO (ADMIN APENAS!)
-     *
-     * Use com CUIDADO - consome rate limit!
+     * ⚠️ FORÇAR ATUALIZAÇÃO (ADMIN SOMENTE)
      */
     @PostMapping("/force-update")
     public ResponseEntity<Map<String, Object>> forceUpdate() {
         try {
             log.warn("⚠️ FORCE UPDATE solicitado!");
 
-            // ✅ Limpar cache e buscar novos dados
             cryptoService.clearCache();
             List<CryptoCurrency> cryptos = cryptoService.getCurrentPrices();
 
@@ -145,7 +163,7 @@ public class CryptoController {
     }
 
     /**
-     * ✅ STATUS DA API (sem consumir rate limit)
+     * ✅ STATUS DA API
      */
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getApiStatus() {
@@ -155,11 +173,4 @@ public class CryptoController {
                 .cacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES))
                 .body(status);
     }
-
-    /**
-     * ❌ REMOVIDO: /update endpoint
-     *
-     * Motivo: Permitia bypass do cache
-     * Use o scheduler automático ao invés!
-     */
 }

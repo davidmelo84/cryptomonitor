@@ -1,15 +1,17 @@
-// back/src/main/java/com/crypto/controller/PortfolioController.java
+// Localização: back/src/main/java/com/crypto/controller/PortfolioController.java
 
 package com.crypto.controller;
 
 import com.crypto.model.Transaction;
 import com.crypto.service.PortfolioService;
+import com.crypto.util.InputSanitizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +23,11 @@ public class PortfolioController {
 
     private final PortfolioService portfolioService;
 
+    // ✅ Sanitização e proteção contra ataques (injeção, XSS, etc.)
+    private final InputSanitizer sanitizer;
+
     /**
-     * Busca portfolio do usuário autenticado
+     * 🔍 Retorna portfolio do usuário autenticado
      */
     @GetMapping
     public ResponseEntity<Map<String, Object>> getPortfolio(Authentication authentication) {
@@ -38,7 +43,7 @@ public class PortfolioController {
     }
 
     /**
-     * Adiciona uma transação
+     * ➕ Adiciona uma transação
      */
     @PostMapping("/transaction")
     public ResponseEntity<?> addTransaction(
@@ -47,17 +52,45 @@ public class PortfolioController {
     ) {
         try {
             String username = authentication.getName();
+
+            // 🔐 Sanitização e validação antes do processamento
+            transaction.setCoinSymbol(
+                    sanitizer.sanitizeCoinSymbol(transaction.getCoinSymbol())
+            );
+
+            transaction.setCoinName(
+                    sanitizer.validateAndSanitize(transaction.getCoinName(), "coinName")
+            );
+
+            // 🧮 Quantidade e preço precisam ser > 0
+            if (transaction.getQuantity() == null ||
+                    transaction.getQuantity().compareTo(BigDecimal.ZERO) <= 0) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Quantidade deve ser maior que zero"));
+            }
+
+            if (transaction.getPricePerUnit() == null ||
+                    transaction.getPricePerUnit().compareTo(BigDecimal.ZERO) <= 0) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Preço deve ser maior que zero"));
+            }
+
             Transaction savedTransaction = portfolioService.addTransaction(username, transaction);
             return ResponseEntity.ok(savedTransaction);
+
+        } catch (IllegalArgumentException e) {
+            log.error("❌ Input inválido: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            log.error("Erro ao adicionar transação: {}", e.getMessage());
+            log.error("❌ Erro ao adicionar transação: {}", e.getMessage());
             return ResponseEntity.badRequest()
                     .body(Map.of("error", e.getMessage()));
         }
     }
 
     /**
-     * Busca histórico de transações
+     * 📜 Histórico de transações
      */
     @GetMapping("/transactions")
     public ResponseEntity<List<Transaction>> getTransactions(Authentication authentication) {
@@ -72,7 +105,7 @@ public class PortfolioController {
     }
 
     /**
-     * Deleta uma transação
+     * 🗑 Deleta uma transação
      */
     @DeleteMapping("/transaction/{id}")
     public ResponseEntity<?> deleteTransaction(

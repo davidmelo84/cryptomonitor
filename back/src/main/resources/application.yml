@@ -177,14 +177,41 @@ resilience4j:
   circuitbreaker:
     instances:
       coingecko:
-        failure-rate-threshold: 70
-        wait-duration-in-open-state: 120000  # 2 minuto
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+
+        failure-rate-threshold: 50
+        slow-call-rate-threshold: 50
+        slow-call-duration-threshold: 10s
+
+        sliding-window-type: COUNT_BASED
         sliding-window-size: 20
         minimum-number-of-calls: 10
-        permitted-number-of-calls-in-half-open-state: 3
-        slow-call-duration-threshold: 5000
-        slow-call-rate-threshold: 50
 
+        wait-duration-in-open-state: 60s
+        permitted-number-of-calls-in-half-open-state: 5
+
+        automatic-transition-from-open-to-half-open-enabled: true
+        max-wait-duration-in-half-open-state: 10s
+
+  retry:
+    instances:
+      coingecko:
+        max-attempts: 3
+        wait-duration: 5s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - java.net.ConnectException
+          - java.net.SocketTimeoutException
+        ignore-exceptions:
+          - com.crypto.exception.RateLimitExceededException
+
+  timelimiter:
+    instances:
+      coingecko:
+        timeout-duration: 30s
+        cancel-running-future: true
 # ============================================
 # APLICAÇÃO / NEGÓCIO
 # ============================================

@@ -5,6 +5,7 @@ import com.crypto.model.User;
 import com.crypto.repository.UserRepository;
 import com.crypto.security.JwtUtil;
 import com.crypto.service.VerificationService;
+import com.crypto.util.InputSanitizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +28,11 @@ public class UserController {
     private final JwtUtil jwtUtil;
     private final VerificationService verificationService;
 
+    // ✅ ADICIONADO
+    private final InputSanitizer sanitizer;
+
     // ==========================================
-    // ✅ REGISTRO COM RETRY E CLEANUP
+    // ✅ REGISTRO COM SANITIZAÇÃO
     // ==========================================
     @PostMapping
     @Transactional
@@ -38,67 +42,57 @@ public class UserController {
         log.info("   👤 Username: {}", newUser.getUsername());
         log.info("   📧 Email: {}", newUser.getEmail());
 
-        // ✅ 1. VALIDAÇÕES BÁSICAS
+        // 🔒 SANITIZAÇÃO DE ENTRADA
+        try {
+            newUser.setUsername(sanitizer.sanitizeUsername(newUser.getUsername()));
+            newUser.setEmail(sanitizer.sanitizeEmail(newUser.getEmail()));
+        } catch (IllegalArgumentException e) {
+            log.warn("⚠️ Input inválido: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+
+        // 🔒 VALIDAÇÃO DE EMAIL (nova)
         if (!isValidEmail(newUser.getEmail())) {
             log.warn("❌ Email inválido");
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email inválido"));
         }
 
-        // ✅ 2. VERIFICAR USUÁRIO EXISTENTE
+        // ==========================================
+        // 2. VERIFICAR USUÁRIO EXISTENTE
+        // ==========================================
         Optional<User> existingByUsername = userRepository.findByUsername(newUser.getUsername());
         Optional<User> existingByEmail = userRepository.findByEmail(newUser.getEmail());
 
-        // ✅ 3. CENÁRIO: Usuário já existe e está VERIFICADO
+        // Usuário já verificado
         if (existingByUsername.isPresent() && existingByUsername.get().getEnabled()) {
-            log.warn("❌ Username já existe e está ativo");
             return ResponseEntity.badRequest()
-                    .body(Map.of(
-                            "error", "Usuário já existe",
-                            "message", "Este username já está em uso"
-                    ));
+                    .body(Map.of("error", "Usuário já existe"));
         }
 
         if (existingByEmail.isPresent() && existingByEmail.get().getEnabled()) {
-            log.warn("❌ Email já cadastrado e verificado");
             return ResponseEntity.badRequest()
-                    .body(Map.of(
-                            "error", "Email já cadastrado",
-                            "message", "Este email já está em uso"
-                    ));
+                    .body(Map.of("error", "Email já cadastrado"));
         }
 
-        // ✅ 4. CENÁRIO: Conta NÃO VERIFICADA existe (permitir retry)
-        User userToRegister = null;
+        User userToRegister;
         boolean isRetry = false;
 
+        // Retry para contas não verificadas
         if (existingByUsername.isPresent() && !existingByUsername.get().getEnabled()) {
-            // Usuário não verificado existe
             userToRegister = existingByUsername.get();
             isRetry = true;
-
-            log.info("♻️ RETRY DETECTADO: Conta não verificada existe");
-            log.info("   📅 Criada em: {}", userToRegister.getCreatedAt());
-
-            // Atualizar dados (caso tenha mudado email, etc)
             userToRegister.setEmail(newUser.getEmail());
             userToRegister.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
         } else if (existingByEmail.isPresent() && !existingByEmail.get().getEnabled()) {
-            // Email não verificado existe
             userToRegister = existingByEmail.get();
             isRetry = true;
-
-            log.info("♻️ RETRY DETECTADO: Email não verificado existe");
-            log.info("   📅 Criada em: {}", userToRegister.getCreatedAt());
-
-            // Atualizar dados
             userToRegister.setUsername(newUser.getUsername());
             userToRegister.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
         } else {
-            // ✅ 5. CRIAR NOVA CONTA
-            log.info("✨ Criando NOVA conta");
+            // Criar nova conta
             userToRegister = new User();
             userToRegister.setUsername(newUser.getUsername());
             userToRegister.setEmail(newUser.getEmail());
@@ -108,45 +102,25 @@ public class UserController {
         }
 
         try {
-            // ✅ 6. SALVAR USUÁRIO
             User savedUser = userRepository.save(userToRegister);
             log.info("✅ Usuário salvo no banco - ID: {}", savedUser.getId());
 
-            // ✅ 7. TENTAR ENVIAR EMAIL COM RETRY
+            // Tentar enviar email c/ retry
             String code = null;
             int maxRetries = 3;
-            int retryCount = 0;
-            Exception lastError = null;
+            int retry = 0;
 
-            while (retryCount < maxRetries && code == null) {
+            while (retry < maxRetries && code == null) {
                 try {
-                    log.info("📧 Tentativa {} de {} de envio de email...",
-                            retryCount + 1, maxRetries);
-
                     code = verificationService.createVerificationToken(savedUser);
-
-                    log.info("✅ EMAIL ENVIADO COM SUCESSO!");
                     break;
-
                 } catch (Exception e) {
-                    lastError = e;
-                    retryCount++;
-
-                    log.error("❌ Tentativa {} falhou: {}", retryCount, e.getMessage());
-
-                    if (retryCount < maxRetries) {
-                        log.info("⏳ Aguardando 2 segundos antes de retry...");
-                        Thread.sleep(2000);
-                    }
+                    retry++;
+                    Thread.sleep(2000);
                 }
             }
 
-            // ✅ 8. VERIFICAR RESULTADO DO ENVIO
             if (code != null) {
-                // ✅ SUCESSO!
-                log.info("🎉 REGISTRO CONCLUÍDO COM SUCESSO!");
-                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
                 return ResponseEntity.ok(Map.of(
                         "success", true,
                         "message", isRetry
@@ -156,40 +130,17 @@ public class UserController {
                         "requiresVerification", true,
                         "isRetry", isRetry
                 ));
-
-            } else {
-                // ❌ TODAS AS TENTATIVAS FALHARAM
-                log.error("❌ TODAS AS {} TENTATIVAS DE ENVIO FALHARAM!", maxRetries);
-                log.error("   Último erro: {}", lastError != null ? lastError.getMessage() : "unknown");
-                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-                // ⚠️ Usuário está salvo, mas email não foi enviado
-                return ResponseEntity.status(500).body(Map.of(
-                        "success", false,
-                        "error", "Erro ao enviar email de verificação",
-                        "message", "Sua conta foi criada, mas o email não pôde ser enviado. " +
-                                "Tente fazer login novamente em alguns minutos para reenviar o código.",
-                        "email", savedUser.getEmail(),
-                        "canRetry", true,
-                        "username", savedUser.getUsername()
-                ));
             }
 
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("❌ Thread interrompida durante retry");
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("error", "Processo interrompido"));
+            return ResponseEntity.status(500).body(Map.of(
+                    "success", false,
+                    "error", "Erro ao enviar email de verificação",
+                    "canRetry", true
+            ));
 
         } catch (Exception e) {
-            log.error("❌ ERRO CRÍTICO no registro:", e);
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
             return ResponseEntity.internalServerError()
-                    .body(Map.of(
-                            "error", "Erro ao criar conta",
-                            "message", e.getMessage()
-                    ));
+                    .body(Map.of("error", "Erro ao criar conta"));
         }
     }
 
@@ -200,119 +151,65 @@ public class UserController {
     public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> request) {
         String code = request.get("code");
 
-        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        log.info("🔍 TENTATIVA DE VERIFICAÇÃO");
-        log.info("   Código recebido: {}", code);
-
         if (code == null || code.length() != 6) {
-            log.warn("❌ Código inválido (tamanho)");
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Código inválido"));
+            return ResponseEntity.badRequest().body(Map.of("error", "Código inválido"));
         }
 
         boolean verified = verificationService.verifyCode(code);
 
-        if (verified) {
-            log.info("✅ VERIFICAÇÃO BEM-SUCEDIDA!");
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "message", "Email verificado com sucesso! Você já pode fazer login."
-            ));
-        } else {
-            log.warn("❌ Código inválido ou expirado");
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-            return ResponseEntity.badRequest()
-                    .body(Map.of(
-                            "error", "Código inválido ou expirado",
-                            "message", "Verifique se digitou corretamente ou solicite um novo código."
-                    ));
-        }
+        return verified
+                ? ResponseEntity.ok(Map.of("success", true, "message", "Email verificado!"))
+                : ResponseEntity.badRequest().body(Map.of("error", "Código inválido ou expirado"));
     }
 
     // ==========================================
-    // ✅ REENVIAR CÓDIGO (MELHORADO)
+    // ✅ REENVIAR CÓDIGO COM SANITIZAÇÃO
     // ==========================================
     @PostMapping("/resend-code")
     @Transactional
     public ResponseEntity<?> resendCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
 
-        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        log.info("🔄 REQUISIÇÃO DE REENVIO DE CÓDIGO");
-        log.info("   Email: {}", email);
-
-        if (email == null || !isValidEmail(email)) {
-            log.warn("❌ Email inválido");
+        // 🔒 Sanitização
+        try {
+            email = sanitizer.sanitizeEmail(email);
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email inválido"));
         }
 
-        // ✅ TENTAR REENVIAR COM RETRY
         int maxRetries = 3;
-        int retryCount = 0;
-        Exception lastError = null;
+        int retry = 0;
 
-        while (retryCount < maxRetries) {
+        while (retry < maxRetries) {
             try {
-                log.info("📧 Tentativa {} de {} de reenvio...", retryCount + 1, maxRetries);
-
                 boolean sent = verificationService.resendCode(email);
 
                 if (sent) {
-                    log.info("✅ CÓDIGO REENVIADO COM SUCESSO!");
-                    log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
                     return ResponseEntity.ok(Map.of(
                             "success", true,
-                            "message", "Novo código enviado para seu email!",
+                            "message", "Novo código enviado!",
                             "email", email
                     ));
-                } else {
-                    log.warn("⚠️ Não foi possível reenviar (conta pode estar verificada)");
-                    log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-                    return ResponseEntity.badRequest()
-                            .body(Map.of(
-                                    "error", "Não foi possível reenviar o código",
-                                    "message", "Verifique se o email está correto ou se a conta já foi verificada."
-                            ));
                 }
+
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Conta não encontrada ou já verificada"));
 
             } catch (Exception e) {
-                lastError = e;
-                retryCount++;
-
-                log.error("❌ Tentativa {} falhou: {}", retryCount, e.getMessage());
-
-                if (retryCount < maxRetries) {
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
-                }
+                retry++;
+                try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
             }
         }
 
-        // ❌ TODAS AS TENTATIVAS FALHARAM
-        log.error("❌ TODAS AS TENTATIVAS DE REENVIO FALHARAM!");
-        log.error("   Último erro: {}", lastError != null ? lastError.getMessage() : "unknown");
-        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
         return ResponseEntity.status(500).body(Map.of(
                 "success", false,
-                "error", "Erro ao reenviar código",
-                "message", "Não foi possível enviar o email. Tente novamente mais tarde.",
-                "details", lastError != null ? lastError.getMessage() : "Erro desconhecido"
+                "error", "Erro ao reenviar código"
         ));
     }
 
     // ==========================================
-    // ✅ PERFIL
+    // PERFIL
     // ==========================================
     @GetMapping("/me")
     public ResponseEntity<User> getProfile(@RequestHeader("Authorization") String authHeader) {
@@ -320,15 +217,15 @@ public class UserController {
         String username = jwtUtil.extractUsername(token);
 
         return userRepository.findByUsername(username)
-                .map(user -> {
-                    user.setPassword(null);
-                    return ResponseEntity.ok(user);
+                .map(u -> {
+                    u.setPassword(null);
+                    return ResponseEntity.ok(u);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // ==========================================
-    // ✅ ATUALIZAÇÃO DE PERFIL
+    // ATUALIZAR PERFIL
     // ==========================================
     @PutMapping("/me")
     public ResponseEntity<User> updateProfile(
@@ -344,15 +241,15 @@ public class UserController {
                     if (updated.getPassword() != null && !updated.getPassword().isBlank()) {
                         user.setPassword(passwordEncoder.encode(updated.getPassword()));
                     }
-                    User savedUser = userRepository.save(user);
-                    savedUser.setPassword(null);
-                    return ResponseEntity.ok(savedUser);
+                    User saved = userRepository.save(user);
+                    saved.setPassword(null);
+                    return ResponseEntity.ok(saved);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     // ==========================================
-    // ✅ VALIDAÇÃO DE EMAIL
+    // VALIDAÇÃO DE EMAIL
     // ==========================================
     private boolean isValidEmail(String email) {
         if (email == null || email.isEmpty()) return false;

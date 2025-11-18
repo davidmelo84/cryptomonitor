@@ -3,13 +3,17 @@
 package com.crypto.controller;
 
 import com.crypto.model.AlertRule;
+import com.crypto.util.InputSanitizer;
 import com.crypto.service.AlertService;
 import com.crypto.service.MonitoringControlService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +26,7 @@ public class MonitoringController {
 
     private final MonitoringControlService monitoringControlService;
     private final AlertService alertService;
+    private final InputSanitizer sanitizer;
 
     /**
      * Inicia o monitoramento para o usuário autenticado
@@ -32,12 +37,39 @@ public class MonitoringController {
             Authentication authentication
     ) {
         try {
-            String email = (String) request.get("email");
-            List<String> cryptocurrencies = (List<String>) request.get("cryptocurrencies");
+            // ✅ SANITIZAÇÃO DE EMAIL
+            String emailRaw = (String) request.get("email");
+            if (emailRaw == null || emailRaw.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Email é obrigatório"));
+            }
+            String email = sanitizer.sanitizeEmail(emailRaw);
+
+            // ✅ SANITIZAÇÃO DE CRYPTOS
+            @SuppressWarnings("unchecked")
+            List<String> cryptocurrenciesRaw = (List<String>) request.get("cryptocurrencies");
+
+            if (cryptocurrenciesRaw == null || cryptocurrenciesRaw.isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "Selecione pelo menos uma criptomoeda"));
+            }
+
+            List<String> cryptocurrencies = cryptocurrenciesRaw.stream()
+                    .map(crypto -> {
+                        try {
+                            return sanitizer.sanitizeCoinId(crypto);
+                        } catch (IllegalArgumentException e) {
+                            throw new IllegalArgumentException("Criptomoeda inválida: " + crypto);
+                        }
+                    })
+                    .toList();
+
             Integer checkIntervalMinutes = (Integer) request.get("checkIntervalMinutes");
+
             Double buyThreshold = request.get("buyThreshold") != null
                     ? ((Number) request.get("buyThreshold")).doubleValue()
                     : 5.0;
+
             Double sellThreshold = request.get("sellThreshold") != null
                     ? ((Number) request.get("sellThreshold")).doubleValue()
                     : 10.0;
@@ -46,64 +78,53 @@ public class MonitoringController {
                     ? authentication.getName()
                     : "guest";
 
-            // ✅ VALIDAÇÕES
-            if (email == null || email.isEmpty()) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Email é obrigatório"));
-            }
-
-            if (cryptocurrencies == null || cryptocurrencies.isEmpty()) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Selecione pelo menos uma criptomoeda"));
-            }
-
-            // ✅ LOGS DETALHADOS PARA DEBUG
+            // ✅ LOG DETALHADO
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.info("📥 REQUISIÇÃO PARA INICIAR MONITORAMENTO");
             log.info("   👤 Usuário: {}", username);
             log.info("   📧 Email: {}", email);
-            log.info("   📊 Criptomoedas recebidas: {}", cryptocurrencies);
-            log.info("   📊 Quantidade: {}", cryptocurrencies.size());
+            log.info("   📊 Cryptos (sanitizadas): {}", cryptocurrencies);
             log.info("   ⏱️  Intervalo: {} minutos", checkIntervalMinutes);
             log.info("   📉 Threshold compra: -{}%", buyThreshold);
             log.info("   📈 Threshold venda: +{}%", sellThreshold);
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-            // ✅ DELETAR ALERTAS ANTIGOS DO USUÁRIO (EVITAR DUPLICAÇÃO)
+            // ✅ Deletar alertas antigos
             try {
-                log.info("🗑️  Deletando alertas antigos do email: {}", email);
+                log.info("🗑️  Apagando alertas antigos de {}", email);
                 alertService.deactivateAllAlertsForUser(email);
             } catch (Exception e) {
                 log.warn("⚠️  Erro ao deletar alertas antigos: {}", e.getMessage());
             }
 
-            // ✅ CRIAR NOVOS ALERTAS **APENAS** PARA AS CRYPTOS SELECIONADAS
+            // ✅ Criar novas regras
             int rulesCreated = createAlertRulesForUser(email, cryptocurrencies, buyThreshold, sellThreshold);
-            log.info("📋 TOTAL DE REGRAS CRIADAS: {}", rulesCreated);
 
-            // ✅ INICIAR O MONITORAMENTO
+            // ✅ Iniciar monitoramento
             boolean started = monitoringControlService.startMonitoring(username, email);
 
             if (started) {
-                log.info("✅ MONITORAMENTO INICIADO COM SUCESSO!");
-                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
                 return ResponseEntity.ok(Map.of(
                         "message", "Monitoramento iniciado com sucesso",
                         "username", username,
                         "email", email,
                         "cryptocurrencies", cryptocurrencies,
                         "alertRulesCreated", rulesCreated,
-                        "interval", checkIntervalMinutes,
+                        "interval", checkIntervalMinutes != null ? checkIntervalMinutes : 5,
                         "active", true
                 ));
             } else {
                 return ResponseEntity.badRequest()
                         .body(Map.of(
                                 "error", "Monitoramento já está ativo",
-                                "message", "Você já tem um monitoramento ativo. Pare o atual antes de iniciar um novo."
+                                "message", "Pare o atual antes de iniciar outro."
                         ));
             }
+
+        } catch (IllegalArgumentException e) {
+            log.error("⚠️  Entrada inválida: {}", e.getMessage());
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
 
         } catch (Exception e) {
             log.error("❌ ERRO AO INICIAR MONITORAMENTO: {}", e.getMessage(), e);
@@ -118,20 +139,23 @@ public class MonitoringController {
     /**
      * Cria alertas apenas para as criptomoedas selecionadas
      */
-    private int createAlertRulesForUser(String email, List<String> cryptos, Double buyThreshold, Double sellThreshold) {
+    private int createAlertRulesForUser(
+            String email,
+            List<String> cryptos,
+            Double buyThreshold,
+            Double sellThreshold
+    ) {
         int count = 0;
 
-        log.info("🔧 Iniciando criação de alertas para {} cryptos", cryptos.size());
+        log.info("🔧 Criando alertas para {} cryptos", cryptos.size());
 
         for (String cryptoId : cryptos) {
             try {
                 String symbol = mapCoinIdToSymbol(cryptoId);
 
-                log.info("   🔹 Criando alertas para:");
-                log.info("      - CoinId recebido: {}", cryptoId);
-                log.info("      - Símbolo mapeado: {}", symbol);
+                log.info("   🔹 Criando alertas para: {} ({})", symbol, cryptoId);
 
-                // CRIAR REGRA DE QUEDA (Oportunidade de COMPRA)
+                // ✅ Regra de COMPRA (queda de preço)
                 AlertRule buyRule = new AlertRule();
                 buyRule.setCoinSymbol(symbol);
                 buyRule.setNotificationEmail(email);
@@ -142,12 +166,9 @@ public class MonitoringController {
                 alertService.createAlertRule(buyRule);
                 count++;
 
-                log.info("   ✅ Regra de COMPRA criada:");
-                log.info("      - Símbolo: {}", symbol);
-                log.info("      - Email: {}", email);
-                log.info("      - Threshold: -{}%", buyThreshold);
+                log.info("   ✅ Regra de COMPRA criada: {} (threshold: -{}%)", symbol, buyThreshold);
 
-                // CRIAR REGRA DE ALTA (Oportunidade de VENDA)
+                // ✅ Regra de VENDA (alta de preço)
                 AlertRule sellRule = new AlertRule();
                 sellRule.setCoinSymbol(symbol);
                 sellRule.setNotificationEmail(email);
@@ -158,14 +179,10 @@ public class MonitoringController {
                 alertService.createAlertRule(sellRule);
                 count++;
 
-                log.info("   ✅ Regra de VENDA criada:");
-                log.info("      - Símbolo: {}", symbol);
-                log.info("      - Email: {}", email);
-                log.info("      - Threshold: +{}%", sellThreshold);
+                log.info("   ✅ Regra de VENDA criada: {} (threshold: +{}%)", symbol, sellThreshold);
 
             } catch (Exception e) {
-                log.error("   ❌ ERRO ao criar regras para {}: {}", cryptoId, e.getMessage());
-                e.printStackTrace();
+                log.error("   ❌ Erro ao criar regras para {}: {}", cryptoId, e.getMessage());
             }
         }
 
@@ -174,7 +191,7 @@ public class MonitoringController {
     }
 
     /**
-     * Mapeia coinId para símbolo
+     * Mapeia coinId -> símbolo
      */
     private String mapCoinIdToSymbol(String coinId) {
         return switch (coinId.toLowerCase()) {
@@ -222,7 +239,7 @@ public class MonitoringController {
                         "active", false
                 ));
             } else {
-                log.warn("⚠️  NENHUM MONITORAMENTO ATIVO ENCONTRADO PARA PARAR");
+                log.warn("⚠️  NENHUM MONITORAMENTO ATIVO ENCONTRADO");
                 log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
                 return ResponseEntity.badRequest()
