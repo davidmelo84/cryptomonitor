@@ -2,9 +2,6 @@ package com.crypto.security;
 
 import com.crypto.util.InputSanitizer;
 import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -12,14 +9,20 @@ import static org.assertj.core.api.Assertions.*;
  * ✅ TESTES DE SEGURANÇA - InputSanitizer
  *
  * Localização: back/src/test/java/com/crypto/security/InputSanitizerTest.java
+ *
+ * MUDANÇA: Convertido para teste unitário simples (sem Spring)
+ * MOTIVO: Evita conflitos com PropertyPlaceholderHelper do Spring
  */
-@SpringBootTest
-@ActiveProfiles("test")
 @DisplayName("InputSanitizer Security Tests")
 class InputSanitizerTest {
 
-    @Autowired
     private InputSanitizer sanitizer;
+
+    @BeforeEach
+    void setUp() {
+        // Instanciação manual (sem Spring)
+        sanitizer = new InputSanitizer();
+    }
 
     @Nested
     @DisplayName("SQL Injection Detection")
