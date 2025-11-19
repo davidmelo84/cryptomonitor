@@ -31,6 +31,7 @@ public class User {
 
     // ✅ Campo para verificação
     @Column(nullable = false)
+    @Builder.Default
     private Boolean enabled = false;
 
     // ✅ NOVO: Timestamps para controle

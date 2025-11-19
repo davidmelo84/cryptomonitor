@@ -3,7 +3,7 @@ package com.crypto.service;
 
 import com.crypto.model.AlertRule;
 import com.crypto.model.AlertRule.AlertType; // ✅ Import do enum interno
-import com.crypto.dto.CryptoCurrency;
+import com.crypto.model.CryptoCurrency;
 import com.crypto.model.User;
 import com.crypto.model.dto.NotificationMessage;
 import com.crypto.repository.AlertRuleRepository;

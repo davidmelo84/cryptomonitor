@@ -23,15 +23,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * ✅ CORREÇÃO CRÍTICA: CORS COMPLETO
- *
- * MUDANÇAS:
- * 1. OPTIONS permitido GLOBALMENTE
- * 2. Origens Vercel corrigidas
- * 3. Headers expostos corretamente
- * 4. Max-age aumentado para 2 horas
- */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -47,25 +38,33 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // ✅ CRÍTICO: OPTIONS sempre permitido (preflight CORS)
+
+                        // 🔥 OBRIGATÓRIO: liberar OPTIONS para CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // ✅ Endpoints públicos
+                        // 🔥 Swagger liberado
                         .requestMatchers(
-                                "/api/auth/**",              // Login/Registro
-                                "/api/user/**",              // Verificação de email
-                                "/api/crypto/status",        // Status
-                                "/api/crypto/history/**",    // Histórico
-                                "/actuator/health",          // Health check
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
+                        // 🔓 Endpoints públicos existentes
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/user/**",
+                                "/api/crypto/status",
+                                "/api/crypto/history/**",
+                                "/actuator/health",
                                 "/actuator/info",
                                 "/actuator/prometheus",
-                                "/ws/**",                    // WebSocket
+                                "/ws/**",
                                 "/topic/**",
                                 "/app/**",
                                 "/sockjs-node/**"
                         ).permitAll()
 
-                        // 🔒 Todos os outros requerem autenticação
+                        // 🔒 Qualquer outra rota exige login
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -77,7 +76,6 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // ✅ ORIGENS PERMITIDAS (Vercel + localhost)
         configuration.setAllowedOriginPatterns(Arrays.asList(
                 "https://cryptomonitor-theta.vercel.app",
                 "https://www.cryptomonitor-theta.vercel.app",
@@ -87,18 +85,13 @@ public class SecurityConfig {
                 "http://127.0.0.1:*"
         ));
 
-        // ✅ MÉTODOS HTTP
         configuration.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
         ));
 
-        // ✅ HEADERS PERMITIDOS (todos)
         configuration.setAllowedHeaders(List.of("*"));
-
-        // ✅ CREDENCIAIS
         configuration.setAllowCredentials(true);
 
-        // ✅ HEADERS EXPOSTOS (incluindo Authorization)
         configuration.setExposedHeaders(Arrays.asList(
                 "Authorization",
                 "Content-Type",
@@ -107,10 +100,8 @@ public class SecurityConfig {
                 "X-Rate-Limit-Retry-After"
         ));
 
-        // ✅ MAX-AGE (2 horas = reduz preflight requests)
         configuration.setMaxAge(7200L);
 
-        // ✅ APLICAR GLOBALMENTE
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 

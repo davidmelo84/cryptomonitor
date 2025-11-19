@@ -1,9 +1,12 @@
-// Localização: back/src/main/java/com/crypto/controller/CryptoController.java
 package com.crypto.controller;
 
-import com.crypto.dto.CryptoCurrency;
+import com.crypto.model.CryptoCurrency;
 import com.crypto.service.CryptoService;
 import com.crypto.util.InputSanitizer;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.CacheControl;
@@ -18,30 +21,29 @@ import java.util.concurrent.TimeUnit;
 /**
  * ✅ CRYPTO CONTROLLER - PROTEGIDO CONTRA RATE LIMIT + SANITIZAÇÃO
  *
- * Recursos:
- * - Cache em todos endpoints
- * - Browser Cache-Control
- * - Sanitização de coinId
- * - Proteção contra inputs inválidos
+ * Agora com documentação Swagger
  */
 @Slf4j
 @RestController
 @RequestMapping("/api/crypto")
 @RequiredArgsConstructor
+@Tag(name = "Criptomoedas", description = "Endpoints para consulta de preços e dados de criptomoedas")
 public class CryptoController {
 
     private final CryptoService cryptoService;
 
-    // ✅ Sanitização adicionada
+    // Sanitização
     private final InputSanitizer sanitizer;
 
-    /**
-     * ✅ BUSCAR PREÇOS ATUAIS
-     *
-     * Cache:
-     * - Backend: 30min (via Service)
-     * - Browser: 5min
-     */
+    // ============================================================
+    // GET /current
+    // ============================================================
+
+    @Operation(
+            summary = "Buscar preços atuais",
+            description = "Retorna lista completa de criptomoedas com preços em tempo real"
+    )
+    @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso")
     @GetMapping("/current")
     public ResponseEntity<List<CryptoCurrency>> getCurrentPrices() {
         try {
@@ -59,15 +61,19 @@ public class CryptoController {
         }
     }
 
-    /**
-     * ✅ BUSCAR UMA MOEDA ESPECÍFICA
-     *
-     * Agora com sanitização da coinId
-     */
+    // ============================================================
+    // GET /current/{coinId}
+    // ============================================================
+
+    @Operation(
+            summary = "Buscar uma criptomoeda específica",
+            description = "Retorna dados de uma moeda específica"
+    )
+    @ApiResponse(responseCode = "200", description = "Moeda encontrada")
+    @ApiResponse(responseCode = "404", description = "Moeda não encontrada")
     @GetMapping("/current/{coinId}")
     public ResponseEntity<CryptoCurrency> getCryptoByCoinId(@PathVariable String coinId) {
         try {
-            // 🔒 Sanitização
             coinId = sanitizer.sanitizeCoinId(coinId);
 
             log.debug("🔍 Buscando: {}", coinId);
@@ -89,21 +95,24 @@ public class CryptoController {
         }
     }
 
-    /**
-     * ✅ BUSCAR HISTÓRICO DE PREÇOS (para gráficos)
-     *
-     * Cache backend: 2h
-     */
+    // ============================================================
+    // GET /history/{coinId}
+    // ============================================================
+
+    @Operation(
+            summary = "Buscar histórico de preços",
+            description = "Retorna dados históricos para gráficos"
+    )
+    @ApiResponse(responseCode = "200", description = "Histórico retornado com sucesso")
+    @ApiResponse(responseCode = "400", description = "Parâmetro inválido")
     @GetMapping("/history/{coinId}")
     public ResponseEntity<Map<String, Object>> getCryptoHistory(
             @PathVariable String coinId,
             @RequestParam(defaultValue = "7") int days
     ) {
         try {
-            // 🔒 Sanitização
             coinId = sanitizer.sanitizeCoinId(coinId);
 
-            // Validar dias
             if (days < 1 || days > 365) {
                 log.warn("⚠️ Valor inválido para days: {}", days);
                 return ResponseEntity.badRequest().build();
@@ -137,9 +146,16 @@ public class CryptoController {
         }
     }
 
-    /**
-     * ⚠️ FORÇAR ATUALIZAÇÃO (ADMIN SOMENTE)
-     */
+    // ============================================================
+    // POST /force-update
+    // ============================================================
+
+    @Operation(
+            summary = "Forçar atualização de preços",
+            description = "Limpa o cache e baixa os preços novamente",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponse(responseCode = "200", description = "Atualização forçada com sucesso")
     @PostMapping("/force-update")
     public ResponseEntity<Map<String, Object>> forceUpdate() {
         try {
@@ -162,9 +178,15 @@ public class CryptoController {
         }
     }
 
-    /**
-     * ✅ STATUS DA API
-     */
+    // ============================================================
+    // GET /status
+    // ============================================================
+
+    @Operation(
+            summary = "Status da API",
+            description = "Retorna status de disponibilidade, última atualização, uptime etc."
+    )
+    @ApiResponse(responseCode = "200", description = "Status retornado com sucesso")
     @GetMapping("/status")
     public ResponseEntity<Map<String, Object>> getApiStatus() {
         Map<String, Object> status = cryptoService.getApiStatus();

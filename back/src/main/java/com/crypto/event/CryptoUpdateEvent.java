@@ -1,7 +1,7 @@
 // back/src/main/java/com/crypto/event/CryptoUpdateEvent.java
 package com.crypto.event;
 
-import com.crypto.dto.CryptoCurrency;
+import com.crypto.model.CryptoCurrency;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

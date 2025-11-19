@@ -2,7 +2,7 @@
 
 package com.crypto.service;
 
-import com.crypto.dto.CryptoCurrency;
+import com.crypto.model.CryptoCurrency;
 import com.crypto.model.*;
 import com.crypto.repository.*;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 // back/src/main/java/com/crypto/service/BinanceApiService.java
 package com.crypto.service;
 
-import com.crypto.dto.CryptoCurrency;
+import com.crypto.model.CryptoCurrency;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;

@@ -2,7 +2,7 @@
 
 package com.crypto.service;
 
-import com.crypto.dto.CryptoCurrency;
+import com.crypto.model.CryptoCurrency;
 import com.crypto.model.Portfolio;
 import com.crypto.model.Transaction;
 import com.crypto.model.User;

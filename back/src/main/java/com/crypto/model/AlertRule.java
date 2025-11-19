@@ -49,6 +49,7 @@ public class AlertRule {
 
     // ✅ CORRIGIDO: Campo correto é "active", não "isActive"
     @Column(name = "is_active", nullable = false)
+    @Builder.Default
     private Boolean active = true;
 
     @Column(name = "created_at")

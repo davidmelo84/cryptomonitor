@@ -9,7 +9,7 @@ management:
       base-path: /actuator
   endpoint:
     health:
-      show-details: always     # ✅ Mostrar detalhes completos
+      show-details: always
       show-components: always
   health:
     defaults:
@@ -25,12 +25,17 @@ management:
 # ============================================
 server:
   port: ${PORT:8080}
+
+  # ✅ ADICIONADO: HTTP/2
+  http2:
+    enabled: true
+
   servlet:
     context-path: /crypto-monitor
     session:
       cookie:
         http-only: true
-        secure: ${COOKIE_SECURE:true} # HTTPS em prod
+        secure: ${COOKIE_SECURE:true}
         same-site: strict
 
   compression:
@@ -44,7 +49,15 @@ server:
       - application/javascript
     min-response-size: 1024
 
-  forward-headers-strategy: framework # ✅ necessário no Render para HTTPS
+  forward-headers-strategy: framework
+
+  # ✅ ADICIONADO: SSL/TLS
+  ssl:
+    enabled: ${SSL_ENABLED:false}
+    key-store: ${SSL_KEYSTORE:classpath:keystore.p12}
+    key-store-password: ${SSL_KEYSTORE_PASSWORD:changeit}
+    key-store-type: PKCS12
+    key-alias: tomcat
 
 # ============================================
 # SPRING / BANCO DE DADOS
@@ -52,6 +65,22 @@ server:
 spring:
   application:
     name: crypto-monitor
+
+# ============================================
+# 🔥 SWAGGER / OPENAPI (ADICIONADO AQUI)
+# ============================================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  paths-to-match:
+    - /api/**
+    - /actuator/**
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
@@ -143,7 +172,7 @@ jwt:
   refresh-token-expiration: 604800000
 
 # ============================================
-# ✅ COINGECKO API CONFIGURATION
+# COINGECKO
 # ============================================
 coingecko:
   api:
@@ -171,7 +200,7 @@ coingecko:
     broadcast-interval-seconds: 60
 
 # ============================================
-# ✅ RESILIENCE4J - CIRCUIT BREAKER CONFIG
+# RESILIENCE4J
 # ============================================
 resilience4j:
   circuitbreaker:
@@ -179,18 +208,14 @@ resilience4j:
       coingecko:
         register-health-indicator: true
         event-consumer-buffer-size: 10
-
         failure-rate-threshold: 50
         slow-call-rate-threshold: 50
         slow-call-duration-threshold: 10s
-
         sliding-window-type: COUNT_BASED
         sliding-window-size: 20
         minimum-number-of-calls: 10
-
         wait-duration-in-open-state: 60s
         permitted-number-of-calls-in-half-open-state: 5
-
         automatic-transition-from-open-to-half-open-enabled: true
         max-wait-duration-in-half-open-state: 10s
 
@@ -212,8 +237,9 @@ resilience4j:
       coingecko:
         timeout-duration: 30s
         cancel-running-future: true
+
 # ============================================
-# APLICAÇÃO / NEGÓCIO
+# NEGÓCIO
 # ============================================
 crypto:
   coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,matic-network,litecoin,bitcoin-cash,ripple,dogecoin,binancecoin
@@ -242,7 +268,7 @@ monitoring:
   shutdown-timeout: 60
 
 # ============================================
-# RATE LIMIT (BACKEND SIDE)
+# RATE LIMIT GLOBAL
 # ============================================
 rate-limit:
   coingecko:
@@ -257,7 +283,7 @@ rate-limit:
     requests-per-minute: 50
 
 # ============================================
-# WEBSOCKET (REAL-TIME)
+# WEBSOCKET
 # ============================================
 websocket:
   enabled: true
@@ -312,7 +338,7 @@ app:
     enabled: true
 
 # ============================================
-# API LIMITES / TAMANHO
+# API LIMITES
 # ============================================
 api:
   timeout: 30000
@@ -320,7 +346,7 @@ api:
   max-file-size: 5MB
 
 # ============================================
-# PERFIS - DESENVOLVIMENTO
+# PERFIL DEV
 # ============================================
 ---
 spring:
@@ -357,7 +383,7 @@ server:
         secure: false
 
 # ============================================
-# PERFIS - PRODUÇÃO
+# PERFIL PROD
 # ============================================
 ---
 spring:
@@ -394,3 +420,19 @@ server:
         secure: true
   security:
     require-ssl: true
+
+---
+# ============================================
+# PERFIS - HTTP/2 com SSL (PRODUÇÃO)
+# ============================================
+spring:
+  config:
+    activate:
+      on-profile: prod-ssl
+
+server:
+  http2:
+    enabled: true
+  ssl:
+    enabled: true
+    # Em produção, usar certificado real (Let's Encrypt, etc)
