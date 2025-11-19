@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  flyway:
+    enabled: false
+
+jwt:
+  secret: test-secret-key-for-unit-tests-only-32chars-minimum
+
+logging:
+  level:
+    com.crypto: WARN
+    org.springframework: WARN
+
+coingecko:
+  monitoring:
+    scheduler-interval-minutes: 999999
+
+rate-limit:
+  api:
+    requests-per-minute: 99999

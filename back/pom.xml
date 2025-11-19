@@ -25,9 +25,10 @@
     </properties>
 
     <dependencies>
-        <!-- ========================================= -->
-        <!-- SPRING BOOT STARTERS                      -->
-        <!-- ========================================= -->
+
+        <!-- ================================ -->
+        <!-- SPRING BOOT STARTERS             -->
+        <!-- ================================ -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -93,15 +94,9 @@
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- ========================================= -->
-        <!-- SPRING UTILITIES                          -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- SPRING UTILITIES                 -->
+        <!-- ================================ -->
         <dependency>
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
@@ -112,28 +107,36 @@
             <artifactId>spring-aspects</artifactId>
         </dependency>
 
-
-        <!-- SWAGGER/OPENAPI DOCUMENTATION             -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- SWAGGER / OPENAPI                -->
+        <!-- ================================ -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.2.0</version>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- DATABASE                                  -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- DATABASE                         -->
+        <!-- ================================ -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Runtime H2 -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <!-- Test H2 (adicionado) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -148,9 +151,9 @@
             <version>10.0.0</version>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- JWT AUTHENTICATION                        -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- JWT AUTH                          -->
+        <!-- ================================ -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -171,36 +174,36 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- CACHE (CAFFEINE)                          -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- CACHE (CAFFEINE)                 -->
+        <!-- ================================ -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- ⚡ ATUALIZADO: RATE LIMITING (BUCKET4J)   -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- RATE LIMITING BUCKET4J           -->
+        <!-- ================================ -->
         <dependency>
             <groupId>com.bucket4j</groupId>
             <artifactId>bucket4j-core</artifactId>
             <version>8.10.1</version>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- LOGS ESTRUTURADOS (LOGSTASH)              -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- LOGSTASH                         -->
+        <!-- ================================ -->
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
             <version>7.4</version>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- MÉTRICAS (MICROMETER/PROMETHEUS)          -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- MICROMETER / PROMETHEUS          -->
+        <!-- ================================ -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
@@ -211,9 +214,9 @@
             <artifactId>micrometer-core</artifactId>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- UTILITIES                                 -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- UTILITIES                        -->
+        <!-- ================================ -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -226,9 +229,9 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- ENVIRONMENT VARIABLES                     -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- DOTENV                           -->
+        <!-- ================================ -->
         <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
@@ -241,9 +244,9 @@
             <version>3.0.0</version>
         </dependency>
 
-        <!-- ========================================= -->
-        <!-- WEBSOCKET                                 -->
-        <!-- ========================================= -->
+        <!-- ================================ -->
+        <!-- WEBSOCKETS                       -->
+        <!-- ================================ -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
@@ -253,6 +256,38 @@
             <groupId>com.github.luben</groupId>
             <artifactId>zstd-jni</artifactId>
             <version>1.5.5-5</version>
+        </dependency>
+
+        <!-- ====================================== -->
+        <!-- 🔥 DEPENDÊNCIAS DE TESTES (NOVAS)       -->
+        <!-- ====================================== -->
+
+        <!-- Já existia -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Mockito (adicionado) -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- REST Assured (adicionado) -->
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>5.3.2</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -295,4 +330,5 @@
 
         <finalName>crypto-monitor</finalName>
     </build>
+
 </project>
