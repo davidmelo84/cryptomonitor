@@ -26,7 +26,6 @@ management:
 server:
   port: ${PORT:8080}
 
-  # ✅ ADICIONADO: HTTP/2
   http2:
     enabled: true
 
@@ -51,7 +50,6 @@ server:
 
   forward-headers-strategy: framework
 
-  # ✅ ADICIONADO: SSL/TLS
   ssl:
     enabled: ${SSL_ENABLED:false}
     key-store: ${SSL_KEYSTORE:classpath:keystore.p12}
@@ -65,22 +63,6 @@ server:
 spring:
   application:
     name: crypto-monitor
-
-# ============================================
-# 🔥 SWAGGER / OPENAPI (ADICIONADO AQUI)
-# ============================================
-springdoc:
-  api-docs:
-    enabled: true
-    path: /v3/api-docs
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-  paths-to-match:
-    - /api/**
-    - /actuator/**
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/crypto_monitor}
@@ -138,7 +120,23 @@ springdoc:
     enabled: true
 
 # ============================================
-# SENDGRID EMAIL CONFIGURATION
+# SWAGGER / OPENAPI
+# ============================================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+  paths-to-match:
+    - /api/**
+    - /actuator/**
+
+# ============================================
+# SENDGRID
 # ============================================
 sendgrid:
   api:
@@ -161,7 +159,7 @@ email:
   from: ${SENDGRID_FROM_EMAIL:ddevnordeste@gmail.com}
 
 # ============================================
-# JWT CONFIGURATION
+# JWT
 # ============================================
 jwt:
   secret: ${JWT_SECRET:default_secret}
@@ -421,10 +419,10 @@ server:
   security:
     require-ssl: true
 
+# ============================================
+# PERFIL PROD-SSL
+# ============================================
 ---
-# ============================================
-# PERFIS - HTTP/2 com SSL (PRODUÇÃO)
-# ============================================
 spring:
   config:
     activate:
@@ -435,4 +433,3 @@ server:
     enabled: true
   ssl:
     enabled: true
-    # Em produção, usar certificado real (Let's Encrypt, etc)
