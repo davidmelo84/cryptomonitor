@@ -52,7 +52,9 @@ public class VerificationService {
 
         tokenRepository.save(verificationToken);
         log.info("   ✅ Token salvo no banco");
-        log.info("   🔢 Código: {}", code);
+
+        // ❌ NÃO logar código real
+        log.info("   🔢 Código gerado: ******");
 
         // Enviar email
         try {
@@ -76,12 +78,11 @@ public class VerificationService {
     }
 
     /**
-     * ✅ SPRINT 2 - Agora assíncrono!
-     *
-     * Usa sendEmailAsync() para não bloquear thread
+     * Agora assíncrono!
      */
     public void sendVerificationEmail(User user, String code) {
         String subject = "🔐 Código de Verificação - Crypto Monitor";
+
         String body = String.format("""
             Olá %s!
             
@@ -100,7 +101,6 @@ public class VerificationService {
             https://cryptomonitor-theta.vercel.app
             """, user.getUsername(), code);
 
-        // ✅ MUDANÇA: Usar método assíncrono
         emailService.sendEmailAsync(user.getEmail(), subject, body)
                 .exceptionally(ex -> {
                     log.error("❌ Erro ao enviar email de verificação: {}", ex.getMessage());
@@ -112,7 +112,9 @@ public class VerificationService {
 
     @Transactional
     public boolean verifyCode(String code) {
-        log.info("🔍 Verificando código: {}", code);
+
+        // ❌ NÃO logar código real
+        log.info("🔍 Verificando código recebido: ******");
 
         return tokenRepository.findByCode(code)
                 .map(token -> {
@@ -154,33 +156,24 @@ public class VerificationService {
     }
 
     /**
-     * ✅ NOVO: Busca usuário pelo código de verificação
-     * Usado no AuthController após verificação bem-sucedida
+     * Busca usuário pelo código (não loga o código real)
      */
     public User getUserByCode(String code) {
-        log.debug("🔍 Buscando usuário pelo código: {}", code);
+        log.debug("🔍 Buscando usuário pelo código: ******");
 
         return tokenRepository.findByCode(code)
                 .map(VerificationToken::getUser)
-                .orElseThrow(() -> new RuntimeException("Código não encontrado: " + code));
+                .orElseThrow(() -> new RuntimeException("Código não encontrado"));
     }
 
-    /**
-     * ✅ OPCIONAL: Validar se código existe antes de usar
-     */
     public boolean isCodeValid(String code) {
         return tokenRepository.findByCode(code)
                 .map(token -> !token.isExpired() && !token.getVerified())
                 .orElse(false);
     }
 
-    /**
-     * ✅ OPCIONAL: Limpar tokens expirados (tarefa agendada)
-     */
     @Transactional
     public int cleanExpiredTokens() {
-        // Implementar limpeza de tokens expirados
-        // Pode ser chamado por um @Scheduled
         return 0;
     }
 }

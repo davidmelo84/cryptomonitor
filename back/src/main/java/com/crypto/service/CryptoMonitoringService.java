@@ -32,17 +32,16 @@ public class CryptoMonitoringService {
     private LocalDateTime lastSuccessfulRun = null;
 
     /**
-     * ❌ SCHEDULER GLOBAL - **PERMANENTEMENTE DESABILITADO**
+     * ❌ SCHEDULER GLOBAL - PERMANENTEMENTE DESABILITADO
      *
-     * ⚠️ MOTIVO: Causava múltiplos requests ao CoinGecko
-     *
-     * ✅ SOLUÇÃO: SmartCacheService.scheduledUpdate() (1x/hora)
+     * @deprecated Removido para evitar rate limit. Será excluído na v3.0.0.
+     * Use SmartCacheService.scheduledUpdate() para atualizações automáticas.
      */
-    // @Scheduled(...) // ❌ REMOVIDO PERMANENTEMENTE
+    @Deprecated(since = "2.0", forRemoval = true)
     public void scheduledUpdate() {
-        log.info("ℹ️ Scheduler Global: DESABILITADO");
-        log.info("   Update automático: SmartCacheService (1x/hora)");
-        log.info("   Monitoramento: User-specific via MonitoringControlService");
+        throw new UnsupportedOperationException(
+                "Scheduler global desabilitado. Use SmartCacheService.scheduledUpdate()."
+        );
     }
 
     /**
@@ -72,8 +71,7 @@ public class CryptoMonitoringService {
             log.info("✅ Alertas processados para: {}", userEmail);
 
         } catch (Exception e) {
-            log.error("❌ Erro ao processar alertas para {}: {}",
-                    userEmail, e.getMessage());
+            log.error("❌ Erro ao processar alertas para {}: {}", userEmail, e.getMessage());
         }
     }
 
@@ -126,7 +124,7 @@ public class CryptoMonitoringService {
 
             return MonitoringStats.builder()
                     .totalCryptocurrencies(savedCryptos.size())
-                    .isSchedulerRunning(false) // Sempre false agora
+                    .isSchedulerRunning(false)  // Sempre false agora
                     .lastSuccessfulRun(lastSuccessfulRun)
                     .lastUpdate(savedCryptos.isEmpty() ? null :
                             savedCryptos.get(0).getLastUpdated())

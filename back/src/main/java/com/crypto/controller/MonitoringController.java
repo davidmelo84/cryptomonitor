@@ -45,7 +45,7 @@ public class MonitoringController {
             }
             String email = sanitizer.sanitizeEmail(emailRaw);
 
-            // ✅ SANITIZAÇÃO DE CRYPTOS
+            // ✅ SANITIZAÇÃO DAS CRYPTOS
             @SuppressWarnings("unchecked")
             List<String> cryptocurrenciesRaw = (List<String>) request.get("cryptocurrencies");
 
@@ -66,13 +66,27 @@ public class MonitoringController {
 
             Integer checkIntervalMinutes = (Integer) request.get("checkIntervalMinutes");
 
+            // -------------------------------------------
+            // ✅ VALIDAÇÃO ROBUSTA DOS THRESHOLDS (NOVO)
+            // -------------------------------------------
             Double buyThreshold = request.get("buyThreshold") != null
                     ? ((Number) request.get("buyThreshold")).doubleValue()
                     : 5.0;
 
+            if (buyThreshold < 0.1 || buyThreshold > 100) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "buyThreshold deve estar entre 0.1% e 100%"));
+            }
+
             Double sellThreshold = request.get("sellThreshold") != null
                     ? ((Number) request.get("sellThreshold")).doubleValue()
                     : 10.0;
+
+            if (sellThreshold < 0.1 || sellThreshold > 100) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "sellThreshold deve estar entre 0.1% e 100%"));
+            }
+            // -------------------------------------------
 
             String username = authentication != null
                     ? authentication.getName()
@@ -155,7 +169,7 @@ public class MonitoringController {
 
                 log.info("   🔹 Criando alertas para: {} ({})", symbol, cryptoId);
 
-                // ✅ Regra de COMPRA (queda de preço)
+                // ✅ Regra de COMPRA (queda)
                 AlertRule buyRule = new AlertRule();
                 buyRule.setCoinSymbol(symbol);
                 buyRule.setNotificationEmail(email);
@@ -166,9 +180,7 @@ public class MonitoringController {
                 alertService.createAlertRule(buyRule);
                 count++;
 
-                log.info("   ✅ Regra de COMPRA criada: {} (threshold: -{}%)", symbol, buyThreshold);
-
-                // ✅ Regra de VENDA (alta de preço)
+                // ✅ Regra de VENDA (alta)
                 AlertRule sellRule = new AlertRule();
                 sellRule.setCoinSymbol(symbol);
                 sellRule.setNotificationEmail(email);
@@ -178,8 +190,6 @@ public class MonitoringController {
 
                 alertService.createAlertRule(sellRule);
                 count++;
-
-                log.info("   ✅ Regra de VENDA criada: {} (threshold: +{}%)", symbol, sellThreshold);
 
             } catch (Exception e) {
                 log.error("   ❌ Erro ao criar regras para {}: {}", cryptoId, e.getMessage());
@@ -201,7 +211,7 @@ public class MonitoringController {
             case "polkadot" -> "DOT";
             case "chainlink" -> "LINK";
             case "solana" -> "SOL";
-            case "avalanche-2" -> "AVAX";
+            case "avalanhe-2" -> "AVAX";
             case "polygon", "matic-network" -> "MATIC";
             case "litecoin" -> "LTC";
             case "bitcoin-cash" -> "BCH";
@@ -213,7 +223,7 @@ public class MonitoringController {
     }
 
     /**
-     * Para o monitoramento do usuário autenticado
+     * Para o monitoramento
      */
     @PostMapping("/stop")
     public ResponseEntity<?> stopMonitoring(Authentication authentication) {
@@ -222,26 +232,17 @@ public class MonitoringController {
                     ? authentication.getName()
                     : "guest";
 
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            log.info("🛑 REQUISIÇÃO PARA PARAR MONITORAMENTO");
-            log.info("   👤 Usuário: {}", username);
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            log.info("🛑 REQUISIÇÃO PARA PARAR MONITORAMENTO — Usuário: {}", username);
 
             boolean stopped = monitoringControlService.stopMonitoring(username);
 
             if (stopped) {
-                log.info("✅ MONITORAMENTO PARADO COM SUCESSO!");
-                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
                 return ResponseEntity.ok(Map.of(
                         "message", "Monitoramento parado com sucesso",
                         "username", username,
                         "active", false
                 ));
             } else {
-                log.warn("⚠️  NENHUM MONITORAMENTO ATIVO ENCONTRADO");
-                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
                 return ResponseEntity.badRequest()
                         .body(Map.of(
                                 "error", "Nenhum monitoramento ativo",
@@ -251,8 +252,6 @@ public class MonitoringController {
 
         } catch (Exception e) {
             log.error("❌ ERRO AO PARAR MONITORAMENTO: {}", e.getMessage(), e);
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
             return ResponseEntity.internalServerError()
                     .body(Map.of(
                             "error", "Erro ao parar monitoramento",
@@ -262,7 +261,7 @@ public class MonitoringController {
     }
 
     /**
-     * Verifica o status do monitoramento
+     * Status do monitoramento
      */
     @GetMapping("/status")
     public ResponseEntity<?> getStatus(Authentication authentication) {
@@ -286,7 +285,7 @@ public class MonitoringController {
     }
 
     /**
-     * Lista todos os monitoramentos ativos (útil para admin/debug)
+     * Lista monitoramentos ativos
      */
     @GetMapping("/active")
     public ResponseEntity<?> getActiveMonitorings() {

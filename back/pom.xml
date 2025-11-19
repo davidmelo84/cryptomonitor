@@ -172,16 +172,16 @@
         </dependency>
 
         <!-- ========================================= -->
-        <!-- ✅ NOVO: RATE LIMITING (BUCKET4J)         -->
+        <!-- ⚡ ATUALIZADO: RATE LIMITING (BUCKET4J)   -->
         <!-- ========================================= -->
         <dependency>
             <groupId>com.bucket4j</groupId>
             <artifactId>bucket4j-core</artifactId>
-            <version>8.7.0</version>
+            <version>8.10.1</version>
         </dependency>
 
         <!-- ========================================= -->
-        <!-- ✅ NOVO: LOGS ESTRUTURADOS (LOGSTASH)     -->
+        <!-- LOGS ESTRUTURADOS (LOGSTASH)              -->
         <!-- ========================================= -->
         <dependency>
             <groupId>net.logstash.logback</groupId>
@@ -190,14 +190,13 @@
         </dependency>
 
         <!-- ========================================= -->
-        <!-- ✅ NOVO: MÉTRICAS (MICROMETER/PROMETHEUS) -->
+        <!-- MÉTRICAS (MICROMETER/PROMETHEUS)          -->
         <!-- ========================================= -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
-        <!-- ✅ Base do Micrometer -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-core</artifactId>
@@ -234,22 +233,18 @@
         </dependency>
 
         <!-- ========================================= -->
-        <!-- ✅ SPRINT 2: WEBSOCKET                    -->
+        <!-- WEBSOCKET                                 -->
         <!-- ========================================= -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
-        <!-- ✅ SPRINT 2: COMPRESSION -->
         <dependency>
             <groupId>com.github.luben</groupId>
             <artifactId>zstd-jni</artifactId>
             <version>1.5.5-5</version>
         </dependency>
-
-
-
 
     </dependencies>
 
