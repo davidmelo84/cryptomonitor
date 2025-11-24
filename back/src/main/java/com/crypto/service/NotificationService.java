@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,6 +47,7 @@ public class NotificationService {
     private int notificationCooldownMinutes;
 
     private final Map<String, LocalDateTime> notificationCache = new ConcurrentHashMap<>();
+
 
     @Scheduled(fixedDelay = 3600000)
     public void cleanupNotificationCache() {
@@ -105,6 +107,7 @@ public class NotificationService {
         return CompletableFuture.completedFuture(null);
     }
 
+
     private boolean sendEmailNotification(NotificationMessage message) {
         try {
             log.info("📧 Preparando email...");
@@ -127,6 +130,7 @@ public class NotificationService {
             return false;
         }
     }
+
 
     private String buildEmailBody(NotificationMessage message) {
         return String.format("""
@@ -152,6 +156,7 @@ public class NotificationService {
         );
     }
 
+
     private boolean isInCooldown(NotificationMessage message) {
         String key = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
         LocalDateTime last = notificationCache.get(key);
@@ -169,6 +174,7 @@ public class NotificationService {
         return inCooldown;
     }
 
+
     private void updateNotificationCache(NotificationMessage message) {
         String key = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
         notificationCache.put(key, LocalDateTime.now());
@@ -176,25 +182,22 @@ public class NotificationService {
         log.debug("📝 Cooldown registrado: {}", key);
     }
 
-    // =====================================================================
-    // 🤖 TELEGRAM – CORRIGIDO
-    // =====================================================================
+
     private void sendTelegramNotification(NotificationMessage message) {
         try {
             String telegramMessage = buildTelegramMessage(message);
 
             String url = String.format(
                     "https://api.telegram.org/bot%s/sendMessage",
-                    telegramBotToken                               // REAL (não mascarar)
+                    telegramBotToken
             );
 
             Map<String, Object> requestBody = Map.of(
-                    "chat_id", telegramChatId,                      // REAL (não mascarar)
+                    "chat_id", telegramChatId,
                     "text", telegramMessage,
                     "parse_mode", "Markdown"
             );
 
-            // 🔒 LOG SEGURO
             log.debug("📤 Telegram: Bot={}..., Chat={}",
                     LogMasker.maskToken(telegramBotToken),
                     LogMasker.maskId(telegramChatId));
@@ -213,6 +216,7 @@ public class NotificationService {
             log.error("❌ Falha no Telegram: {}", e.getMessage());
         }
     }
+
 
     private String buildTelegramMessage(NotificationMessage message) {
         return String.format("""
@@ -233,6 +237,7 @@ public class NotificationService {
         );
     }
 
+
     private String getAlertTypeDescription(com.crypto.model.AlertRule.AlertType type) {
         return switch (type) {
             case PRICE_INCREASE -> "Alta de Preço";
@@ -243,6 +248,7 @@ public class NotificationService {
             default -> "Alerta Geral";
         };
     }
+
 
     private String getEmojiForAlertType(com.crypto.model.AlertRule.AlertType type) {
         return switch (type) {
@@ -255,7 +261,7 @@ public class NotificationService {
         };
     }
 
-    // TESTES
+
     public void sendTestNotification() {
         NotificationMessage msg = NotificationMessage.builder()
                 .coinSymbol("BTC")
@@ -271,6 +277,7 @@ public class NotificationService {
         sendNotification(msg);
     }
 
+
     public void sendEmailAlert(String to, String subject, String message) {
         try {
             log.info("📧 Enviando alerta genérico para: {}", LogMasker.maskEmail(to));
@@ -280,4 +287,37 @@ public class NotificationService {
             log.error("❌ Erro ao enviar email genérico: {}", e.getMessage());
         }
     }
+
+    // =============================================================
+    // ✅ NOVOS MÉTODOS (AGORA NO LUGAR CORRETO)
+    // =============================================================
+
+    public void clearCooldown(String coinSymbol, String alertType) {
+        String key = coinSymbol.toUpperCase() + "_" + alertType;
+
+        LocalDateTime removed = notificationCache.remove(key);
+
+        if (removed != null) {
+            log.info("🗑️ Cooldown removido: {}", key);
+        } else {
+            log.debug("ℹ️ Cooldown não existia: {}", key);
+        }
+    }
+
+    public void clearAllCooldowns() {
+        int sizeBefore = notificationCache.size();
+
+        notificationCache.clear();
+
+        log.info("🗑️ Todos os cooldowns removidos (total: {})", sizeBefore);
+    }
+
+    public Map<String, Object> getCooldownStats() {
+        return Map.of(
+                "totalCooldowns", notificationCache.size(),
+                "cooldownMinutes", notificationCooldownMinutes,
+                "activeCooldowns", new ArrayList<>(notificationCache.keySet())
+        );
+    }
+
 }
