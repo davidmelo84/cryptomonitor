@@ -6,6 +6,7 @@ import com.crypto.repository.UserRepository;
 import com.crypto.security.JwtUtil;
 import com.crypto.service.VerificationService;
 import com.crypto.util.InputSanitizer;
+import com.crypto.util.LogMasker; // ✅ ADICIONADO
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -27,44 +27,38 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final VerificationService verificationService;
-
-    // ✅ ADICIONADO
     private final InputSanitizer sanitizer;
 
     // ==========================================
-    // ✅ REGISTRO COM SANITIZAÇÃO
+    // REGISTRO COM SANITIZAÇÃO
     // ==========================================
     @PostMapping
     @Transactional
     public ResponseEntity<?> register(@RequestBody User newUser) {
+
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         log.info("📝 TENTATIVA DE REGISTRO");
-        log.info("   👤 Username: {}", newUser.getUsername());
-        log.info("   📧 Email: {}", newUser.getEmail());
+        log.info("   👤 Username: {}", LogMasker.maskUsername(newUser.getUsername()));
+        log.info("   📧 Email: {}", LogMasker.maskEmail(newUser.getEmail()));
 
-        // 🔒 SANITIZAÇÃO DE ENTRADA
         try {
             newUser.setUsername(sanitizer.sanitizeUsername(newUser.getUsername()));
             newUser.setEmail(sanitizer.sanitizeEmail(newUser.getEmail()));
+
         } catch (IllegalArgumentException e) {
             log.warn("⚠️ Input inválido: {}", e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
 
-        // 🔒 VALIDAÇÃO DE EMAIL (nova)
         if (!isValidEmail(newUser.getEmail())) {
-            log.warn("❌ Email inválido");
+            log.warn("❌ Email inválido: {}", LogMasker.maskEmail(newUser.getEmail()));
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Email inválido"));
         }
 
-        // ==========================================
-        // 2. VERIFICAR USUÁRIO EXISTENTE
-        // ==========================================
         Optional<User> existingByUsername = userRepository.findByUsername(newUser.getUsername());
         Optional<User> existingByEmail = userRepository.findByEmail(newUser.getEmail());
 
-        // Usuário já verificado
         if (existingByUsername.isPresent() && existingByUsername.get().getEnabled()) {
             return ResponseEntity.badRequest()
                     .body(Map.of("error", "Usuário já existe"));
@@ -78,7 +72,6 @@ public class UserController {
         User userToRegister;
         boolean isRetry = false;
 
-        // Retry para contas não verificadas
         if (existingByUsername.isPresent() && !existingByUsername.get().getEnabled()) {
             userToRegister = existingByUsername.get();
             isRetry = true;
@@ -92,7 +85,6 @@ public class UserController {
             userToRegister.setPassword(passwordEncoder.encode(newUser.getPassword()));
 
         } else {
-            // Criar nova conta
             userToRegister = new User();
             userToRegister.setUsername(newUser.getUsername());
             userToRegister.setEmail(newUser.getEmail());
@@ -103,9 +95,11 @@ public class UserController {
 
         try {
             User savedUser = userRepository.save(userToRegister);
-            log.info("✅ Usuário salvo no banco - ID: {}", savedUser.getId());
 
-            // Tentar enviar email c/ retry
+            log.info("✅ Usuário salvo no banco - ID: {}", savedUser.getId());
+            log.info("   👤 Username: {}", LogMasker.maskUsername(savedUser.getUsername()));
+            log.info("   📧 Email: {}", LogMasker.maskEmail(savedUser.getEmail()));
+
             String code = null;
             int maxRetries = 3;
             int retry = 0;
@@ -145,7 +139,7 @@ public class UserController {
     }
 
     // ==========================================
-    // ✅ VERIFICAR CÓDIGO
+    // VERIFICAR CÓDIGO
     // ==========================================
     @PostMapping("/verify")
     public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> request) {
@@ -155,28 +149,27 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("error", "Código inválido"));
         }
 
-        boolean verified = verificationService.verifyCode(code);
-
-        return verified
+        return verificationService.verifyCode(code)
                 ? ResponseEntity.ok(Map.of("success", true, "message", "Email verificado!"))
                 : ResponseEntity.badRequest().body(Map.of("error", "Código inválido ou expirado"));
     }
 
     // ==========================================
-    // ✅ REENVIAR CÓDIGO COM SANITIZAÇÃO
+    // REENVIAR CÓDIGO
     // ==========================================
     @PostMapping("/resend-code")
     @Transactional
     public ResponseEntity<?> resendCode(@RequestBody Map<String, String> request) {
         String email = request.get("email");
 
-        // 🔒 Sanitização
         try {
             email = sanitizer.sanitizeEmail(email);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Email inválido"));
+            log.warn("⚠️ Email inválido na requisição: {}", LogMasker.maskEmail(email));
+            return ResponseEntity.badRequest().body(Map.of("error", "Email inválido"));
         }
+
+        log.info("📨 Reenvio solicitado para {}", LogMasker.maskEmail(email));
 
         int maxRetries = 3;
         int retry = 0;
@@ -216,6 +209,8 @@ public class UserController {
         String token = authHeader.replace("Bearer ", "");
         String username = jwtUtil.extractUsername(token);
 
+        log.info("👤 Consulta de perfil para {}", LogMasker.maskUsername(username));
+
         return userRepository.findByUsername(username)
                 .map(u -> {
                     u.setPassword(null);
@@ -235,9 +230,14 @@ public class UserController {
         String token = authHeader.replace("Bearer ", "");
         String username = jwtUtil.extractUsername(token);
 
+        log.info("✏ Atualização de perfil para {}", LogMasker.maskUsername(username));
+
         return userRepository.findByUsername(username)
                 .map(user -> {
-                    if (updated.getEmail() != null) user.setEmail(updated.getEmail());
+                    if (updated.getEmail() != null) {
+                        log.info("📧 Novo email informado: {}", LogMasker.maskEmail(updated.getEmail()));
+                        user.setEmail(updated.getEmail());
+                    }
                     if (updated.getPassword() != null && !updated.getPassword().isBlank()) {
                         user.setPassword(passwordEncoder.encode(updated.getPassword()));
                     }
@@ -248,9 +248,6 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ==========================================
-    // VALIDAÇÃO DE EMAIL
-    // ==========================================
     private boolean isValidEmail(String email) {
         if (email == null || email.isEmpty()) return false;
         String emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";

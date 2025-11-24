@@ -1,6 +1,7 @@
 package com.crypto.service;
 
 import com.crypto.model.dto.NotificationMessage;
+import com.crypto.util.LogMasker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,40 +45,29 @@ public class NotificationService {
     @Value("${notification.email.cooldown-minutes:5}")
     private int notificationCooldownMinutes;
 
-    /** 🔥 Cache com cooldowns */
     private final Map<String, LocalDateTime> notificationCache = new ConcurrentHashMap<>();
 
-    /**
-     * 🧹 LIMPEZA AUTOMÁTICA DO CACHE A CADA 1 HORA
-     * Remove notificações com mais de 2 horas
-     */
     @Scheduled(fixedDelay = 3600000)
     public void cleanupNotificationCache() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(2);
-
         long before = notificationCache.size();
 
         notificationCache.entrySet().removeIf(
                 entry -> entry.getValue().isBefore(cutoff)
         );
 
-        long after = notificationCache.size();
-        long removed = before - after;
-
+        long removed = before - notificationCache.size();
         if (removed > 0) {
-            log.debug("🗑️ Cleanup executado: {} entradas removidas do cache de notificações", removed);
+            log.debug("🗑️ Cleanup executado: {} entradas removidas do cache", removed);
         }
     }
 
-    /**
-     * Envia notificação
-     */
     @Async
     public CompletableFuture<Void> sendNotification(NotificationMessage message) {
         try {
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.info("📬 ENVIANDO NOTIFICAÇÃO");
-            log.info("   📧 Para: {}", message.getRecipient());
+            log.info("   📧 Para: {}", LogMasker.maskEmail(message.getRecipient()));
             log.info("   🪙 Crypto: {} ({})", message.getCoinName(), message.getCoinSymbol());
             log.info("   🔔 Tipo: {}", message.getAlertType());
             log.info("   💰 Preço: {}", message.getCurrentPrice());
@@ -86,8 +76,6 @@ public class NotificationService {
             if (isInCooldown(message)) {
                 log.warn("⏰ Notificação em COOLDOWN para {} ({})",
                         message.getCoinSymbol(), message.getAlertType());
-                log.warn("   ⏱️ Cooldown configurado: {} minutos", notificationCooldownMinutes);
-                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
                 return CompletableFuture.completedFuture(null);
             }
 
@@ -124,20 +112,18 @@ public class NotificationService {
             String subject = String.format("🚨 Alerta Crypto: %s (%s)",
                     message.getCoinName(), message.getCoinSymbol());
 
-            String emailBody = buildEmailBody(message);
+            String body = buildEmailBody(message);
 
-            log.info("📤 Enviando email para: {}", message.getRecipient());
+            log.info("📤 Enviando email para: {}", LogMasker.maskEmail(message.getRecipient()));
 
-            emailService.sendEmail(message.getRecipient(), subject, emailBody);
+            emailService.sendEmail(message.getRecipient(), subject, body);
 
-            log.info("✅ Email ENVIADO com sucesso para {}", message.getRecipient());
+            log.info("✅ Email enviado para {}", LogMasker.maskEmail(message.getRecipient()));
             return true;
 
         } catch (Exception e) {
-            log.error("❌ ERRO ao enviar email:");
-            log.error("   📧 Destinatário: {}", message.getRecipient());
-            log.error("   🔗 Detalhes: {}", e.getMessage());
-            log.error("   Stack trace:", e);
+            log.error("❌ ERRO ao enviar email para: {}", LogMasker.maskEmail(message.getRecipient()));
+            log.error("   Detalhes: {}", e.getMessage());
             return false;
         }
     }
@@ -145,17 +131,16 @@ public class NotificationService {
     private String buildEmailBody(NotificationMessage message) {
         return String.format("""
                 %s
-                
+
                 📊 Detalhes:
                 • Moeda: %s (%s)
                 • Preço Atual: %s
                 • Variação 24h: %s
                 • Tipo de Alerta: %s
                 • Data/Hora: %s
-                
+
                 ---
                 Este é um alerta automático do sistema de monitoramento de criptomoedas.
-                Para mais informações, acesse o painel de controle.
                 """,
                 message.getMessage(),
                 message.getCoinName(),
@@ -168,57 +153,51 @@ public class NotificationService {
     }
 
     private boolean isInCooldown(NotificationMessage message) {
-        String cacheKey = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
-        LocalDateTime lastNotification = notificationCache.get(cacheKey);
+        String key = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
+        LocalDateTime last = notificationCache.get(key);
 
-        if (lastNotification == null) {
-            log.debug("✅ Nenhum cooldown ativo para {}", cacheKey);
-            return false;
-        }
+        if (last == null) return false;
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime cooldownEnd = lastNotification.plusMinutes(notificationCooldownMinutes);
-        boolean inCooldown = now.isBefore(cooldownEnd);
+        LocalDateTime cooldownEnd = last.plusMinutes(notificationCooldownMinutes);
+        boolean inCooldown = LocalDateTime.now().isBefore(cooldownEnd);
 
         if (inCooldown) {
-            long minutesRemaining = java.time.Duration.between(now, cooldownEnd).toMinutes();
-            log.warn("⏰ Cooldown ativo: {} (faltam {} minutos)", cacheKey, minutesRemaining);
+            long minutesLeft = java.time.Duration.between(LocalDateTime.now(), cooldownEnd).toMinutes();
+            log.warn("⏱️ Cooldown ativo para {} (faltam {} minutos)", key, minutesLeft);
         }
 
         return inCooldown;
     }
 
-    /** ⛔ AGORA sem limpeza aqui — limpeza é feita pelo Scheduler */
     private void updateNotificationCache(NotificationMessage message) {
-        String cacheKey = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
-        notificationCache.put(cacheKey, LocalDateTime.now());
+        String key = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
+        notificationCache.put(key, LocalDateTime.now());
 
-        log.debug("📝 Cooldown registrado: {} (próximo alerta em {} minutos)",
-                cacheKey, notificationCooldownMinutes);
+        log.debug("📝 Cooldown registrado: {}", key);
     }
 
-    public void clearCooldown(String coinSymbol, String alertType) {
-        String cacheKey = coinSymbol.toUpperCase() + "_" + alertType;
-        notificationCache.remove(cacheKey);
-        log.info("🗑️  Cooldown removido: {}", cacheKey);
-    }
-
-    public void clearAllCooldowns() {
-        int size = notificationCache.size();
-        notificationCache.clear();
-        log.info("🗑️  Todos os cooldowns removidos ({} entradas)", size);
-    }
-
+    // =====================================================================
+    // 🤖 TELEGRAM – CORRIGIDO
+    // =====================================================================
     private void sendTelegramNotification(NotificationMessage message) {
         try {
             String telegramMessage = buildTelegramMessage(message);
-            String url = String.format("https://api.telegram.org/bot%s/sendMessage", telegramBotToken);
+
+            String url = String.format(
+                    "https://api.telegram.org/bot%s/sendMessage",
+                    telegramBotToken                               // REAL (não mascarar)
+            );
 
             Map<String, Object> requestBody = Map.of(
-                    "chat_id", telegramChatId,
+                    "chat_id", telegramChatId,                      // REAL (não mascarar)
                     "text", telegramMessage,
                     "parse_mode", "Markdown"
             );
+
+            // 🔒 LOG SEGURO
+            log.debug("📤 Telegram: Bot={}..., Chat={}",
+                    LogMasker.maskToken(telegramBotToken),
+                    LogMasker.maskId(telegramChatId));
 
             webClient.post()
                     .uri(url)
@@ -226,27 +205,25 @@ public class NotificationService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(
-                            response -> log.info("✅ Mensagem Telegram enviada com sucesso"),
-                            error -> log.error("❌ Erro ao enviar mensagem Telegram: {}", error.getMessage())
+                            r -> log.info("🤖 Telegram enviado com sucesso"),
+                            e -> log.error("❌ Telegram erro: {}", e.getMessage())
                     );
 
         } catch (Exception e) {
-            log.error("❌ Erro ao enviar notificação Telegram: {}", e.getMessage());
+            log.error("❌ Falha no Telegram: {}", e.getMessage());
         }
     }
 
     private String buildTelegramMessage(NotificationMessage message) {
-        String emoji = getEmojiForAlertType(message.getAlertType());
-
         return String.format("""
                 %s *%s*
-                
+
                 💰 *%s (%s)*
                 💵 Preço: `%s`
                 📈 Variação: `%s`
                 🕐 %s
                 """,
-                emoji,
+                getEmojiForAlertType(message.getAlertType()),
                 getAlertTypeDescription(message.getAlertType()).toUpperCase(),
                 message.getCoinName(),
                 message.getCoinSymbol(),
@@ -256,64 +233,51 @@ public class NotificationService {
         );
     }
 
-    private String getAlertTypeDescription(com.crypto.model.AlertRule.AlertType alertType) {
-        switch (alertType) {
-            case PRICE_INCREASE:
-                return "Alta de Preço";
-            case PRICE_DECREASE:
-                return "Queda de Preço";
-            case VOLUME_SPIKE:
-                return "Aumento de Volume";
-            case PERCENT_CHANGE_24H:
-                return "Variação Percentual 24h";
-            case MARKET_CAP:
-                return "Market Cap";
-            default:
-                return "Alerta Geral";
-        }
+    private String getAlertTypeDescription(com.crypto.model.AlertRule.AlertType type) {
+        return switch (type) {
+            case PRICE_INCREASE -> "Alta de Preço";
+            case PRICE_DECREASE -> "Queda de Preço";
+            case VOLUME_SPIKE -> "Aumento de Volume";
+            case PERCENT_CHANGE_24H -> "Variação 24h";
+            case MARKET_CAP -> "Market Cap";
+            default -> "Alerta Geral";
+        };
     }
 
-    private String getEmojiForAlertType(com.crypto.model.AlertRule.AlertType alertType) {
-        switch (alertType) {
-            case PRICE_INCREASE:
-                return "📈";
-            case PRICE_DECREASE:
-                return "📉";
-            case VOLUME_SPIKE:
-                return "🔊";
-            case PERCENT_CHANGE_24H:
-                return "⚡";
-            case MARKET_CAP:
-                return "🏦";
-            default:
-                return "🔔";
-        }
+    private String getEmojiForAlertType(com.crypto.model.AlertRule.AlertType type) {
+        return switch (type) {
+            case PRICE_INCREASE -> "📈";
+            case PRICE_DECREASE -> "📉";
+            case VOLUME_SPIKE -> "🔊";
+            case PERCENT_CHANGE_24H -> "⚡";
+            case MARKET_CAP -> "🏦";
+            default -> "🔔";
+        };
     }
 
+    // TESTES
     public void sendTestNotification() {
-        NotificationMessage testMessage = NotificationMessage.builder()
+        NotificationMessage msg = NotificationMessage.builder()
                 .coinSymbol("BTC")
                 .coinName("Bitcoin")
-                .currentPrice("$45,000.00")
+                .currentPrice("$45.000")
                 .changePercentage("5.25%")
                 .alertType(com.crypto.model.AlertRule.AlertType.PRICE_INCREASE)
-                .message("🧪 Esta é uma notificação de teste do sistema de monitoramento de criptomoedas!")
-                .recipient("seu-email@gmail.com")
+                .message("🧪 Notificação de teste!")
+                .recipient("teste@email.com")
                 .build();
 
         log.info("🧪 Enviando notificação de TESTE...");
-        sendNotification(testMessage);
+        sendNotification(msg);
     }
 
     public void sendEmailAlert(String to, String subject, String message) {
         try {
-            log.info("📧 Enviando alerta genérico para: {}", to);
+            log.info("📧 Enviando alerta genérico para: {}", LogMasker.maskEmail(to));
             emailService.sendEmail(to, subject, message);
-            log.info("✅ Email de alerta enviado com sucesso para: {}", to);
-
+            log.info("✅ Email enviado para {}", LogMasker.maskEmail(to));
         } catch (Exception e) {
-            log.error("❌ Erro ao enviar email de alerta: {}", e.getMessage(), e);
-            throw new RuntimeException("Falha no envio de email", e);
+            log.error("❌ Erro ao enviar email genérico: {}", e.getMessage());
         }
     }
 }

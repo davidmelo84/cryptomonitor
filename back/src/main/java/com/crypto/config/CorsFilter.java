@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/config/CorsFilter.java
 package com.crypto.config;
 
 import jakarta.servlet.*;
@@ -31,13 +30,12 @@ public class CorsFilter implements Filter {
 
         String origin = request.getHeader("Origin");
 
-        // ✅ Permitir Vercel e localhost
-        if (origin != null && (
-                origin.contains("vercel.app") ||
-                        origin.contains("localhost") ||
-                        origin.contains("127.0.0.1")
-        )) {
+        // 🔥 VALIDAÇÃO ESTRITA DE ORIGEM
+        if (origin != null && isOriginAllowed(origin)) {
             response.setHeader("Access-Control-Allow-Origin", origin);
+            log.debug("✅ CORS permitido para: {}", origin);
+        } else if (origin != null) {
+            log.warn("⚠️ CORS BLOQUEADO para origem suspeita: {}", origin);
         }
 
         // ✅ Headers CORS
@@ -65,5 +63,20 @@ public class CorsFilter implements Filter {
     @Override
     public void destroy() {
         log.info("🔌 CORS Filter destruído");
+    }
+
+    /**
+     * 🔒 Valida se origem é permitida
+     */
+    private boolean isOriginAllowed(String origin) {
+        if (origin == null || origin.isEmpty()) {
+            return false;
+        }
+
+        // ✅ Lista de padrões permitidos
+        return origin.equals("https://cryptomonitor-theta.vercel.app") ||
+                origin.endsWith(".vercel.app") ||
+                origin.startsWith("http://localhost:") ||
+                origin.startsWith("http://127.0.0.1:");
     }
 }

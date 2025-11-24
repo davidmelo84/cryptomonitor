@@ -7,6 +7,7 @@ import com.crypto.util.InputSanitizer;
 import com.crypto.service.AlertService;
 import com.crypto.service.MonitoringControlService;
 
+import com.crypto.util.LogMasker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,8 +96,8 @@ public class MonitoringController {
             // ✅ LOG DETALHADO
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.info("📥 REQUISIÇÃO PARA INICIAR MONITORAMENTO");
-            log.info("   👤 Usuário: {}", username);
-            log.info("   📧 Email: {}", email);
+            log.info("   👤 Usuário: {}", LogMasker.maskUsername(username));
+            log.info("   📧 Email: {}", LogMasker.maskEmail(email));
             log.info("   📊 Cryptos (sanitizadas): {}", cryptocurrencies);
             log.info("   ⏱️  Intervalo: {} minutos", checkIntervalMinutes);
             log.info("   📉 Threshold compra: -{}%", buyThreshold);

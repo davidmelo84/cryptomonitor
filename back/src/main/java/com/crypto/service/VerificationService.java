@@ -4,6 +4,7 @@ import com.crypto.model.User;
 import com.crypto.model.VerificationToken;
 import com.crypto.repository.UserRepository;
 import com.crypto.repository.VerificationTokenRepository;
+import com.crypto.util.LogMasker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,12 +32,13 @@ public class VerificationService {
     public String createVerificationToken(User user) {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         log.info("🔐 CRIANDO TOKEN DE VERIFICAÇÃO");
-        log.info("   👤 Usuário: {}", user.getUsername());
-        log.info("   📧 Email: {}", user.getEmail());
+        log.info("   👤 Usuário: {}", LogMasker.maskUsername(user.getUsername()));
+        log.info("   📧 Email: {}", LogMasker.maskEmail(user.getEmail()));
 
         // Deletar tokens antigos
         tokenRepository.findByUser(user).ifPresent(token -> {
-            log.info("   🗑️ Deletando token antigo");
+            log.info("   🗑️ Deletando token antigo para usuário {}",
+                    LogMasker.maskUsername(user.getUsername()));
             tokenRepository.delete(token);
         });
 
@@ -51,23 +53,25 @@ public class VerificationService {
                 .build();
 
         tokenRepository.save(verificationToken);
-        log.info("   ✅ Token salvo no banco");
 
-        // ❌ NÃO logar código real
-        log.info("   🔢 Código gerado: ******");
+        log.info("   🔑 Token salvo no banco: {}", LogMasker.maskToken(token));
+        log.info("   🔢 Código gerado: ****** (oculto por segurança)");
 
         // Enviar email
         try {
-            log.info("   📧 Enviando email de verificação...");
+            log.info("   📧 Enviando email de verificação para {}...",
+                    LogMasker.maskEmail(user.getEmail()));
+
             sendVerificationEmail(user, code);
+
             log.info("   ✅ EMAIL ENVIADO COM SUCESSO!");
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
         } catch (Exception e) {
             log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.error("❌ ERRO CRÍTICO ao enviar email!");
-            log.error("   Usuário: {}", user.getUsername());
-            log.error("   Email: {}", user.getEmail());
+            log.error("   Usuário: {}", LogMasker.maskUsername(user.getUsername()));
+            log.error("   Email: {}", LogMasker.maskEmail(user.getEmail()));
             log.error("   Erro: {}", e.getMessage());
             log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", e);
 
@@ -103,28 +107,28 @@ public class VerificationService {
 
         emailService.sendEmailAsync(user.getEmail(), subject, body)
                 .exceptionally(ex -> {
-                    log.error("❌ Erro ao enviar email de verificação: {}", ex.getMessage());
+                    log.error("❌ Erro ao enviar email para {}: {}",
+                            LogMasker.maskEmail(user.getEmail()), ex.getMessage());
                     return null;
                 });
 
-        log.info("📧 Email de verificação agendado para: {}", user.getEmail());
+        log.info("📧 Email de verificação agendado para: {}", LogMasker.maskEmail(user.getEmail()));
     }
 
     @Transactional
     public boolean verifyCode(String code) {
 
-        // ❌ NÃO logar código real
         log.info("🔍 Verificando código recebido: ******");
 
         return tokenRepository.findByCode(code)
                 .map(token -> {
                     if (token.isExpired()) {
-                        log.warn("⏰ Código expirado");
+                        log.warn("⏰ Código expirado (oculto)");
                         return false;
                     }
 
                     if (token.getVerified()) {
-                        log.warn("⚠️ Código já usado");
+                        log.warn("⚠️ Código já usado (oculto)");
                         return false;
                     }
 
@@ -135,19 +139,22 @@ public class VerificationService {
                     user.setEnabled(true);
                     userRepository.save(user);
 
-                    log.info("✅ Código verificado! Usuário {} ativado", user.getUsername());
+                    log.info("✅ Código verificado! Usuário {} ativado",
+                            LogMasker.maskUsername(user.getUsername()));
+
                     return true;
                 }).orElse(false);
     }
 
     @Transactional
     public boolean resendCode(String email) {
-        log.info("🔄 Reenviando código para: {}", email);
+        log.info("🔄 Reenviando código para: {}", LogMasker.maskEmail(email));
 
         return userRepository.findByEmail(email)
                 .map(user -> {
                     if (user.getEnabled()) {
-                        log.warn("⚠️ Usuário já está ativado");
+                        log.warn("⚠️ Usuário {} já está ativado",
+                                LogMasker.maskUsername(user.getUsername()));
                         return false;
                     }
                     createVerificationToken(user);
@@ -155,9 +162,6 @@ public class VerificationService {
                 }).orElse(false);
     }
 
-    /**
-     * Busca usuário pelo código (não loga o código real)
-     */
     public User getUserByCode(String code) {
         log.debug("🔍 Buscando usuário pelo código: ******");
 

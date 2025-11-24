@@ -25,7 +25,7 @@ public class SendGridEmailService {
     private String fromName;
 
     /**
-     * ✅ NOVO: Validar configuração ao iniciar
+     * 🔧 Validação completa da configuração
      */
     @PostConstruct
     public void validateConfiguration() {
@@ -33,30 +33,65 @@ public class SendGridEmailService {
         log.info("🔧 VALIDANDO CONFIGURAÇÃO DO SENDGRID");
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
+        // 🔥 NOVO: Validar chave obrigatória
         if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
-            log.error("❌ SENDGRID_API_KEY NÃO CONFIGURADA!");
-            log.error("   Adicione no Render: Environment → Add Variable");
-            log.error("   Nome: SENDGRID_API_KEY");
-            log.error("   Valor: SG.xxxxxxxxxxxx");
-        } else {
-            String maskedKey = sendGridApiKey.length() > 10
-                    ? sendGridApiKey.substring(0, 10) + "..."
-                    : "***";
-            log.info("✅ SENDGRID_API_KEY: {}", maskedKey);
+            throw new IllegalStateException(
+                    "❌ SENDGRID_API_KEY NÃO CONFIGURADA!\n" +
+                            "Configure no Render:\n" +
+                            "1. Dashboard → Environment\n" +
+                            "2. Nome: SENDGRID_API_KEY\n" +
+                            "3. Valor: SG.xxxxxxxxxx\n" +
+                            "4. Restart Service"
+            );
         }
 
+        // 🔥 NOVO: Validar formato correto
+        if (!sendGridApiKey.startsWith("SG.")) {
+            throw new IllegalStateException(
+                    "❌ SENDGRID_API_KEY com formato inválido!\n" +
+                            "Chaves SendGrid devem começar com 'SG.'\n" +
+                            "Crie uma nova em: https://app.sendgrid.com/settings/api_keys"
+            );
+        }
+
+        // 🔥 NOVO: Validar tamanho
+        if (sendGridApiKey.length() < 50) {
+            throw new IllegalStateException(
+                    "❌ SENDGRID_API_KEY muito curta!\n" +
+                            "Chaves válidas geralmente têm 69 caracteres.\n" +
+                            "Verifique se copiou a chave inteira."
+            );
+        }
+
+        // 🔒 LOG SEGURO (mascarado)
+        log.info("✅ SENDGRID_API_KEY: {}", maskApiKey(sendGridApiKey));
+
+        // Validar email remetente
         if (fromEmail == null || fromEmail.isEmpty()) {
-            log.error("❌ SENDGRID_FROM_EMAIL NÃO CONFIGURADO!");
-        } else {
-            log.info("✅ SENDGRID_FROM_EMAIL: {}", fromEmail);
+            throw new IllegalStateException(
+                    "❌ SENDGRID_FROM_EMAIL NÃO CONFIGURADO!"
+            );
         }
 
+        log.info("✅ SENDGRID_FROM_EMAIL: {}", fromEmail);
         log.info("✅ SENDGRID_FROM_NAME: {}", fromName);
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 
     /**
-     * Envia email via SendGrid (SÍNCRONO)
+     * 🔒 Mascara API Key antes de logar
+     */
+    private String maskApiKey(String apiKey) {
+        if (apiKey == null || apiKey.length() < 15) {
+            return "***";
+        }
+
+        return apiKey.substring(0, 10) + "..." +
+                apiKey.substring(apiKey.length() - 4);
+    }
+
+    /**
+     * 📧 Envia email via SendGrid
      */
     public void sendEmail(String to, String subject, String body) {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -65,32 +100,25 @@ public class SendGridEmailService {
         log.info("   Para: {}", to);
         log.info("   Assunto: {}", subject);
 
-        // ✅ VALIDAÇÃO CRÍTICA
+        // ✔ Validar antes de enviar
         if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            log.error("❌ ERRO: SENDGRID_API_KEY não está configurada!");
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             throw new IllegalStateException(
-                    "SendGrid API Key não configurada. " +
-                            "Configure SENDGRID_API_KEY no Render."
+                    "SENDGRID_API_KEY não configurada. Configure no Render."
             );
         }
 
         if (fromEmail == null || fromEmail.isEmpty()) {
             throw new IllegalStateException(
-                    "SENDGRID_FROM_EMAIL não configurado. " +
-                            "Configure no Render."
+                    "SENDGRID_FROM_EMAIL não configurado. Configure no Render."
             );
         }
 
         try {
-            // Criar objetos SendGrid
             Email from = new Email(fromEmail, fromName);
             Email toEmail = new Email(to);
             Content content = new Content("text/plain", body);
             Mail mail = new Mail(from, subject, toEmail, content);
 
-            // Enviar via API
             SendGrid sg = new SendGrid(sendGridApiKey);
             Request request = new Request();
 
@@ -110,13 +138,11 @@ public class SendGridEmailService {
 
             if (statusCode >= 200 && statusCode < 300) {
                 log.info("✅ EMAIL ENVIADO COM SUCESSO!");
-                log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             } else {
                 log.error("❌ FALHA AO ENVIAR EMAIL!");
                 log.error("   Status: {}", statusCode);
                 log.error("   Body: {}", response.getBody());
                 log.error("   Headers: {}", response.getHeaders());
-                log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
                 throw new RuntimeException(
                         "SendGrid retornou status " + statusCode + ": " + response.getBody()
@@ -124,26 +150,18 @@ public class SendGridEmailService {
             }
 
         } catch (IOException e) {
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.error("❌ ERRO DE I/O ao chamar SendGrid API");
             log.error("   Mensagem: {}", e.getMessage());
             log.error("   Classe: {}", e.getClass().getName());
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
             throw new RuntimeException(
                     "Erro de comunicação com SendGrid: " + e.getMessage(), e
             );
 
-        } catch (IllegalStateException e) {
-            // Re-lançar erros de configuração
-            throw e;
-
         } catch (Exception e) {
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.error("❌ ERRO INESPERADO ao enviar email");
             log.error("   Tipo: {}", e.getClass().getSimpleName());
-            log.error("   Mensagem: {}", e.getMessage());
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", e);
+            log.error("   Mensagem: {}", e.getMessage(), e);
 
             throw new RuntimeException(
                     "Erro ao enviar email via SendGrid: " + e.getMessage(), e
@@ -152,11 +170,11 @@ public class SendGridEmailService {
     }
 
     /**
-     * Testa a configuração do SendGrid
+     * 🧪 Testa a configuração enviando email para o próprio remetente
      */
     public boolean testConnection() {
         try {
-            log.info("🧪 Testando configuração do SendGrid...");
+            log.info("🧪 Testando envio de email (self-test)...");
 
             sendEmail(
                     fromEmail,
@@ -168,7 +186,7 @@ public class SendGridEmailService {
             return true;
 
         } catch (Exception e) {
-            log.error("❌ Teste de conexão FALHOU: {}", e.getMessage());
+            log.error("❌ Teste de conexão falhou: {}", e.getMessage());
             return false;
         }
     }

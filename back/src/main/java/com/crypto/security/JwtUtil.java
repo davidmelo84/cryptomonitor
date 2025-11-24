@@ -19,6 +19,7 @@ import java.util.Map;
  *
  * Melhorias:
  * - Secret obrigatório via env var
+ * - Validação de valor default perigoso
  * - Validação de tamanho mínimo
  * - Tratamento de exceções específico
  * - Logs sanitizados (sem tokens)
@@ -40,24 +41,35 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
-        // ✅ VALIDAÇÃO: Secret DEVE vir de variável de ambiente
+        // ✅ VALIDAÇÃO: Secret deve existir
         if (secret == null || secret.isEmpty()) {
             throw new IllegalStateException(
                     "❌ JWT Secret não configurado! Configure JWT_SECRET no .env"
             );
         }
 
-        // ✅ VALIDAÇÃO: Secret precisa ter no mínimo 256 bits (32 caracteres)
+        // 🔥 NOVO: Impedir uso de valor default inseguro
+        if ("default_secret".equals(secret)) {
+            throw new IllegalStateException(
+                    "❌ JWT_SECRET está usando valor padrão INSEGURO!\n" +
+                            "Configure uma chave forte no Render:\n" +
+                            "1. Acesse Render Dashboard\n" +
+                            "2. Vá em Environment\n" +
+                            "3. Adicione: JWT_SECRET=<64_caracteres_aleatorios>"
+            );
+        }
+
+        // 🔥 NOVO: Validar tamanho mínimo seguro (256 bits = 32 chars)
         if (secret.length() < 32) {
             log.warn("⚠️ JWT Secret tem menos de 32 caracteres! Gerando padding...");
             secret = String.format("%-64s", secret).replace(' ', '0');
         }
 
-        // ✅ Gerar chave HMAC-SHA256
+        // ✅ Gerar chave segura HMAC-SHA256
         key = Keys.hmacShaKeyFor(secret.getBytes());
 
         log.info("✅ JWT configurado: Expiração={}ms, Issuer={}", expiration, issuer);
-        // ❌ NUNCA logar o secret!
+        // ❌ Nunca logar o secret!
     }
 
     /**
@@ -85,7 +97,7 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ Extrai username do token (com tratamento de erro específico)
+     * ✅ Extrai username com tratamento robusto
      */
     public String extractUsername(String token) {
         try {
@@ -113,7 +125,7 @@ public class JwtUtil {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
-                    .requireIssuer(issuer) // ✅ Valida issuer
+                    .requireIssuer(issuer)
                     .build()
                     .parseClaimsJws(token);
             return true;
@@ -133,22 +145,22 @@ public class JwtUtil {
     }
 
     /**
-     * ✅ Verifica se token está expirado
+     * ✅ Verifica se um token está expirado
      */
     public boolean isTokenExpired(String token) {
         try {
             Date expiration = extractAllClaims(token).getExpiration();
             return expiration.before(new Date());
         } catch (ExpiredJwtException e) {
-            return true; // Já expirou
+            return true;
         } catch (Exception e) {
             log.error("Erro ao verificar expiração: {}", e.getMessage());
-            return true; // Considera inválido em caso de erro
+            return true;
         }
     }
 
     /**
-     * ✅ Extrai tempo de expiração em milissegundos
+     * ✅ Tempo restante antes do token expirar
      */
     public long getExpirationTime(String token) {
         try {

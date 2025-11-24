@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/service/UserCleanupService.java
 package com.crypto.service;
 
 import com.crypto.model.User;
@@ -64,6 +63,45 @@ public class UserCleanupService {
         }
 
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    }
+
+    /**
+     * 📊 LOG DE ESTATÍSTICAS DIÁRIAS
+     */
+    @Scheduled(fixedDelay = 86400000, initialDelay = 3600000)  // 1x/dia
+    public void logDailyStats() {
+        try {
+            Map<String, Object> stats = getUnverifiedStats();
+
+            long total = (Long) stats.get("totalUsers");
+            long verified = (Long) stats.get("verifiedUsers");
+            long unverified = (Long) stats.get("unverifiedUsers");
+            long oldUnverified = (Long) stats.get("oldUnverified");
+
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            log.info("📊 ESTATÍSTICAS DIÁRIAS DE USUÁRIOS");
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            log.info("   Total: {}", total);
+            log.info("   Verificados: {} ({}%)", verified,
+                    total > 0 ? (verified * 100 / total) : 0);
+            log.info("   Não verificados: {}", unverified);
+            log.info("   Não verificados antigos (>7d): {}", oldUnverified);
+            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+            // ⚠️ Alertar se muitas contas não verificadas
+            if (unverified > 100) {
+                log.warn("⚠️ ATENÇÃO: {} contas não verificadas!", unverified);
+                log.warn("   Considere revisar o processo de verificação de email.");
+            }
+
+            if (oldUnverified > 50) {
+                log.warn("⚠️ ATENÇÃO: {} contas antigas não verificadas!", oldUnverified);
+                log.warn("   Limpeza automática removerá em breve.");
+            }
+
+        } catch (Exception e) {
+            log.error("❌ Erro ao gerar estatísticas: {}", e.getMessage());
+        }
     }
 
     /**

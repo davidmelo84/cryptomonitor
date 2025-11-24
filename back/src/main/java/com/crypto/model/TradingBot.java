@@ -31,7 +31,6 @@ public class TradingBot {
     @Column(name = "coin_symbol", nullable = false)
     private String coinSymbol;
 
-    // Estratégia padrão: GRID_TRADING
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "strategy", nullable = false)
@@ -46,7 +45,7 @@ public class TradingBot {
     @Column(name = "is_simulation", nullable = false)
     private Boolean isSimulation = true;
 
-    // Grid Trading Parameters
+    // Grid Trading
     @Column(name = "grid_lower_price", precision = 19, scale = 8)
     private BigDecimal gridLowerPrice;
 
@@ -59,7 +58,7 @@ public class TradingBot {
     @Column(name = "amount_per_grid", precision = 19, scale = 8)
     private BigDecimal amountPerGrid;
 
-    // DCA Parameters
+    // DCA
     @Column(name = "dca_amount", precision = 19, scale = 2)
     private BigDecimal dcaAmount;
 
@@ -69,7 +68,7 @@ public class TradingBot {
     @Column(name = "last_dca_execution")
     private LocalDateTime lastDcaExecution;
 
-    // Stop Loss / Take Profit
+    // SL / TP
     @Column(name = "stop_loss_percent", precision = 5, scale = 2)
     private BigDecimal stopLossPercent;
 
@@ -79,7 +78,7 @@ public class TradingBot {
     @Column(name = "entry_price", precision = 19, scale = 8)
     private BigDecimal entryPrice;
 
-    // Statistics
+    // Stats
     @Builder.Default
     @Column(name = "total_profit_loss", precision = 19, scale = 2)
     private BigDecimal totalProfitLoss = BigDecimal.ZERO;
@@ -96,7 +95,7 @@ public class TradingBot {
     @Column(name = "losing_trades")
     private Integer losingTrades = 0;
 
-    // Timestamps
+    // Time
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -111,11 +110,35 @@ public class TradingBot {
         createdAt = LocalDateTime.now();
     }
 
+    /**
+     * 🔒 Validação: NUNCA permitir trading real
+     */
+    @PrePersist
+    @PreUpdate
+    protected void validateSimulation() {
+        if (isSimulation == null) {
+            isSimulation = true;
+        }
+
+        if (!isSimulation) {
+            throw new UnsupportedOperationException(
+                    "🚨 TRADING REAL DESABILITADO POR SEGURANÇA!\n\n" +
+                            "Este sistema NÃO está conectado a exchanges reais.\n" +
+                            "Apenas simulações são permitidas.\n\n" +
+                            "Para trading real, use plataformas oficiais:\n" +
+                            "- Binance API\n" +
+                            "- Coinbase Pro\n" +
+                            "- FTX\n" +
+                            "- Kraken"
+            );
+        }
+    }
+
     public enum TradingStrategy {
-        GRID_TRADING,    // Grid Trading
-        DCA,             // Dollar Cost Averaging
-        STOP_LOSS,       // Stop Loss / Take Profit
-        CUSTOM           // Estratégia customizada
+        GRID_TRADING,
+        DCA,
+        STOP_LOSS,
+        CUSTOM
     }
 
     public enum BotStatus {
