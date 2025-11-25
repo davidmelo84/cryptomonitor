@@ -40,6 +40,12 @@ public class BotTrade {
     @Column(name = "quantity", nullable = false, precision = 19, scale = 8)
     private BigDecimal quantity;
 
+    // ============================================
+    // ✅ NOVO CAMPO — Controle FIFO para vendas
+    // ============================================
+    @Column(name = "sold_quantity", precision = 19, scale = 8)
+    private BigDecimal soldQuantity;
+
     @Column(name = "total_value", nullable = false, precision = 19, scale = 2)
     private BigDecimal totalValue;
 

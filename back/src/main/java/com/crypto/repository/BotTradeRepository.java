@@ -11,6 +11,16 @@ import java.util.List;
 
 @Repository
 public interface BotTradeRepository extends JpaRepository<BotTrade, Long> {
+
     List<BotTrade> findByBotOrderByExecutedAtDesc(TradingBot bot);
+
+    // ============================================
+    // ✅ NOVO MÉTODO — FIFO (ordenação crescente)
+    // ============================================
+    List<BotTrade> findByBotAndSideOrderByExecutedAtAsc(
+            TradingBot bot,
+            BotTrade.TradeSide side
+    );
+
     List<BotTrade> findByBotAndIsSimulation(TradingBot bot, Boolean isSimulation);
 }

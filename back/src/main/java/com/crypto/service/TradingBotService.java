@@ -1,4 +1,6 @@
-// back/src/main/java/com/crypto/service/TradingBotService.java
+// ===========================================================
+// TradingBotService.java COMPLETO E ATUALIZADO
+// ===========================================================
 
 package com.crypto.service;
 
@@ -28,9 +30,9 @@ public class TradingBotService {
     private final CryptoService cryptoService;
     private final NotificationService notificationService;
 
-    /**
-     * Mapeia símbolo da moeda para o ID usado pela CoinGecko API
-     */
+    // ---------------------------------------------------------
+    // MAPEAR SÍMBOLOS
+    // ---------------------------------------------------------
     private String mapSymbolToCoinId(String symbol) {
         Map<String, String> symbolMap = Map.ofEntries(
                 Map.entry("BTC", "bitcoin"),
@@ -49,16 +51,12 @@ public class TradingBotService {
         );
 
         String upperSymbol = symbol.toUpperCase();
-        String coinId = symbolMap.getOrDefault(upperSymbol, symbol.toLowerCase());
-
-        log.debug("🔄 Mapeando símbolo {} → coinId {}", symbol, coinId);
-
-        return coinId;
+        return symbolMap.getOrDefault(upperSymbol, symbol.toLowerCase());
     }
 
-    /**
-     * Cria um novo bot de trading
-     */
+    // ---------------------------------------------------------
+    // CRIAR BOT
+    // ---------------------------------------------------------
     @Transactional
     public TradingBot createBot(String username, TradingBot bot) {
         User user = userRepository.findByUsername(username)
@@ -68,119 +66,83 @@ public class TradingBotService {
         bot.setStatus(TradingBot.BotStatus.STOPPED);
         bot.setCreatedAt(LocalDateTime.now());
 
-        TradingBot savedBot = botRepository.save(bot);
-        log.info("Bot criado: {} - {} - {}", savedBot.getName(), savedBot.getStrategy(), savedBot.getCoinSymbol());
-
-        return savedBot;
+        return botRepository.save(bot);
     }
 
-    /**
-     * Inicia um bot
-     */
+    // ---------------------------------------------------------
+    // START BOT
+    // ---------------------------------------------------------
     @Transactional
     public void startBot(String username, Long botId) {
         TradingBot bot = getBotByIdAndUser(botId, username);
 
-        if (bot.getStatus() == TradingBot.BotStatus.RUNNING) {
+        if (bot.getStatus() == TradingBot.BotStatus.RUNNING)
             throw new RuntimeException("Bot já está rodando");
-        }
 
         bot.setStatus(TradingBot.BotStatus.RUNNING);
         bot.setStartedAt(LocalDateTime.now());
 
-        // Buscar preço atual como entry price
         String coinId = mapSymbolToCoinId(bot.getCoinSymbol());
-        Optional<CryptoCurrency> crypto = cryptoService.getCryptoByCoinId(coinId);
-        crypto.ifPresent(c -> bot.setEntryPrice(c.getCurrentPrice()));
+        cryptoService.getCryptoByCoinId(coinId)
+                .ifPresent(c -> bot.setEntryPrice(c.getCurrentPrice()));
 
         botRepository.save(bot);
-        log.info("Bot {} iniciado", bot.getName());
     }
 
-    /**
-     * Para um bot
-     */
+    // ---------------------------------------------------------
+    // STOP BOT
+    // ---------------------------------------------------------
     @Transactional
     public void stopBot(String username, Long botId) {
         TradingBot bot = getBotByIdAndUser(botId, username);
+
         bot.setStatus(TradingBot.BotStatus.STOPPED);
         bot.setStoppedAt(LocalDateTime.now());
+
         botRepository.save(bot);
-        log.info("Bot {} parado", bot.getName());
     }
 
-    /**
-     * Scheduler que executa bots ativos
-     */
-    @Scheduled(fixedDelay = 60000) // A cada 1 minuto
+    // ---------------------------------------------------------
+    // SCHEDULER EXECUTA OS BOTS
+    // ---------------------------------------------------------
+    @Scheduled(fixedDelay = 60000)
     public void executeBots() {
-        log.info("⏰ Scheduler executando... Procurando bots ativos");
         List<TradingBot> runningBots = botRepository.findByStatus(TradingBot.BotStatus.RUNNING);
-        log.info("📊 Encontrados {} bots rodando", runningBots.size());
 
         for (TradingBot bot : runningBots) {
             try {
-                log.info("🤖 Executando bot: {} | Estratégia: {} | Moeda: {}",
-                        bot.getName(), bot.getStrategy(), bot.getCoinSymbol());
                 executeBot(bot);
             } catch (Exception e) {
-                log.error("Erro ao executar bot {}: {}", bot.getId(), e.getMessage());
                 bot.setStatus(TradingBot.BotStatus.ERROR);
                 botRepository.save(bot);
             }
         }
     }
 
-    /**
-     * Executa a lógica do bot baseado na estratégia
-     */
+    // ---------------------------------------------------------
     private void executeBot(TradingBot bot) {
         switch (bot.getStrategy()) {
-            case GRID_TRADING:
-                executeGridTrading(bot);
-                break;
-            case DCA:
-                executeDCA(bot);
-                break;
-            case STOP_LOSS:
-                executeStopLossTakeProfit(bot);
-                break;
-            default:
-                log.warn("Estratégia {} não implementada", bot.getStrategy());
+            case GRID_TRADING -> executeGridTrading(bot);
+            case DCA -> executeDCA(bot);
+            case STOP_LOSS -> executeStopLossTakeProfit(bot);
+            default -> log.warn("Estratégia {} não implementada", bot.getStrategy());
         }
     }
 
-    /**
-     * ================================================
-     * GRID TRADING STRATEGY - VERSÃO CORRIGIDA
-     * ================================================
-     */
+    // ---------------------------------------------------------
+    // GRID TRADING
+    // ---------------------------------------------------------
     private void executeGridTrading(TradingBot bot) {
-        log.info("📈 Executando Grid Trading para {}", bot.getCoinSymbol());
-
         String coinId = mapSymbolToCoinId(bot.getCoinSymbol());
         Optional<CryptoCurrency> cryptoOpt = cryptoService.getCryptoByCoinId(coinId);
 
-        if (cryptoOpt.isEmpty()) {
-            log.warn("⚠️ Crypto {} não encontrada", bot.getCoinSymbol());
-            return;
-        }
+        if (cryptoOpt.isEmpty()) return;
 
         CryptoCurrency crypto = cryptoOpt.get();
         BigDecimal currentPrice = crypto.getCurrentPrice();
 
-        log.info("💰 Preço atual de {}: ${}", bot.getCoinSymbol(), currentPrice);
-        log.info("📊 Range do Grid: ${} - ${}", bot.getGridLowerPrice(), bot.getGridUpperPrice());
-
-        if (currentPrice.compareTo(bot.getGridLowerPrice()) < 0) {
-            log.warn("⚠️ Preço ${} está ABAIXO do range mínimo ${}", currentPrice, bot.getGridLowerPrice());
-            return;
-        }
-
-        if (currentPrice.compareTo(bot.getGridUpperPrice()) > 0) {
-            log.warn("⚠️ Preço ${} está ACIMA do range máximo ${}", currentPrice, bot.getGridUpperPrice());
-            return;
-        }
+        if (currentPrice.compareTo(bot.getGridLowerPrice()) < 0) return;
+        if (currentPrice.compareTo(bot.getGridUpperPrice()) > 0) return;
 
         BigDecimal gridSize = bot.getGridUpperPrice()
                 .subtract(bot.getGridLowerPrice())
@@ -189,46 +151,28 @@ public class TradingBotService {
         BigDecimal priceFromLower = currentPrice.subtract(bot.getGridLowerPrice());
         int currentGridLevel = priceFromLower.divide(gridSize, 0, RoundingMode.DOWN).intValue();
 
-        log.info("🎯 Nível do Grid atual: {} de {}", currentGridLevel, bot.getGridLevels());
-
         if (currentGridLevel < bot.getGridLevels() / 3) {
-            log.info("🟢 Zona de COMPRA detectada!");
             executeTrade(bot, crypto, BotTrade.TradeSide.BUY, "Grid Trading - Zona de compra");
         } else if (currentGridLevel > (bot.getGridLevels() * 2 / 3)) {
-            log.info("🔴 Zona de VENDA detectada!");
             executeTrade(bot, crypto, BotTrade.TradeSide.SELL, "Grid Trading - Zona de venda");
-        } else {
-            log.info("⚪ Preço no meio do grid - aguardando");
         }
     }
 
-    /**
-     * ================================================
-     * DCA STRATEGY - VERSÃO CORRIGIDA
-     * ================================================
-     */
+    // ---------------------------------------------------------
+    // DCA
+    // ---------------------------------------------------------
     private void executeDCA(TradingBot bot) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime lastExecution = bot.getLastDcaExecution();
 
-        if (lastExecution != null) {
-            long minutesSinceLastExecution = Duration.between(lastExecution, now).toMinutes();
-            if (minutesSinceLastExecution < bot.getDcaIntervalMinutes()) {
-                log.debug("⏳ DCA: Ainda faltam {} minutos para próxima execução",
-                        bot.getDcaIntervalMinutes() - minutesSinceLastExecution);
-                return;
-            }
+        if (bot.getLastDcaExecution() != null) {
+            long minutes = Duration.between(bot.getLastDcaExecution(), now).toMinutes();
+            if (minutes < bot.getDcaIntervalMinutes()) return;
         }
-
-        log.info("💰 Executando DCA para {}", bot.getCoinSymbol());
 
         String coinId = mapSymbolToCoinId(bot.getCoinSymbol());
         Optional<CryptoCurrency> cryptoOpt = cryptoService.getCryptoByCoinId(coinId);
 
-        if (cryptoOpt.isEmpty()) {
-            log.warn("⚠️ Crypto {} não encontrada", bot.getCoinSymbol());
-            return;
-        }
+        if (cryptoOpt.isEmpty()) return;
 
         CryptoCurrency crypto = cryptoOpt.get();
         BigDecimal quantity = bot.getDcaAmount().divide(crypto.getCurrentPrice(), 8, RoundingMode.HALF_UP);
@@ -241,7 +185,7 @@ public class TradingBotService {
                 .quantity(quantity)
                 .totalValue(bot.getDcaAmount())
                 .isSimulation(bot.getIsSimulation())
-                .reason("DCA: Compra periódica de $" + bot.getDcaAmount())
+                .reason("DCA - Compra automática")
                 .build();
 
         tradeRepository.save(trade);
@@ -249,75 +193,63 @@ public class TradingBotService {
         bot.setTotalTrades(bot.getTotalTrades() + 1);
         bot.setLastDcaExecution(now);
         botRepository.save(bot);
-
-        log.info("✅ DCA executado com sucesso!");
     }
 
-    /**
-     * ================================================
-     * STOP LOSS / TAKE PROFIT - VERSÃO CORRIGIDA
-     * ================================================
-     */
+    // ---------------------------------------------------------
+    // STOP LOSS / TAKE PROFIT
+    // ---------------------------------------------------------
     private void executeStopLossTakeProfit(TradingBot bot) {
-        if (bot.getEntryPrice() == null) {
-            log.warn("⚠️ Preço de entrada não definido para bot: {}", bot.getName());
-            return;
-        }
+        if (bot.getEntryPrice() == null) return;
 
         String coinId = mapSymbolToCoinId(bot.getCoinSymbol());
         Optional<CryptoCurrency> cryptoOpt = cryptoService.getCryptoByCoinId(coinId);
 
-        if (cryptoOpt.isEmpty()) {
-            log.warn("⚠️ Crypto {} não encontrada", bot.getCoinSymbol());
-            return;
-        }
+        if (cryptoOpt.isEmpty()) return;
 
         CryptoCurrency crypto = cryptoOpt.get();
         BigDecimal currentPrice = crypto.getCurrentPrice();
-        BigDecimal entryPrice = bot.getEntryPrice();
 
-        BigDecimal priceChange = currentPrice.subtract(entryPrice)
-                .divide(entryPrice, 4, RoundingMode.HALF_UP)
-                .multiply(BigDecimal.valueOf(100));
+        BigDecimal pct =
+                currentPrice.subtract(bot.getEntryPrice())
+                        .divide(bot.getEntryPrice(), 4, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100));
 
-        log.info("📊 Preço de entrada: ${} | Atual: ${} | Variação: {}%", entryPrice, currentPrice, priceChange);
+        if (bot.getStopLossPercent() != null &&
+                pct.compareTo(bot.getStopLossPercent().negate()) <= 0) {
 
-        if (bot.getStopLossPercent() != null) {
-            BigDecimal stopLossThreshold = bot.getStopLossPercent().negate();
-            if (priceChange.compareTo(stopLossThreshold) <= 0) {
-                log.warn("🔴 STOP LOSS ACIONADO! Queda de {}%", priceChange.abs());
-                executeTrade(bot, crypto, BotTrade.TradeSide.SELL,
-                        String.format("Stop Loss acionado: %.2f%% de queda", priceChange.abs()));
-                bot.setStatus(TradingBot.BotStatus.STOPPED);
-                botRepository.save(bot);
-                return;
-            }
+            executeTrade(bot, crypto, BotTrade.TradeSide.SELL,
+                    "Stop Loss acionado");
+            bot.setStatus(TradingBot.BotStatus.STOPPED);
+            botRepository.save(bot);
+            return;
         }
 
-        if (bot.getTakeProfitPercent() != null && priceChange.compareTo(bot.getTakeProfitPercent()) >= 0) {
-            log.info("🟢 TAKE PROFIT ACIONADO! Lucro de {}%", priceChange);
+        if (bot.getTakeProfitPercent() != null &&
+                pct.compareTo(bot.getTakeProfitPercent()) >= 0) {
+
             executeTrade(bot, crypto, BotTrade.TradeSide.SELL,
-                    String.format("Take Profit acionado: %.2f%% de lucro", priceChange));
+                    "Take Profit acionado");
             bot.setStatus(TradingBot.BotStatus.STOPPED);
             botRepository.save(bot);
         }
     }
 
-    /**
-     * Executa compra/venda genérica
-     */
+    // ---------------------------------------------------------
+    // EXECUTAR TRADE
+    // ---------------------------------------------------------
     private void executeTrade(TradingBot bot, CryptoCurrency crypto, BotTrade.TradeSide side, String reason) {
         BigDecimal price = crypto.getCurrentPrice();
         BigDecimal quantity = bot.getAmountPerGrid();
 
-        if (side == BotTrade.TradeSide.BUY) {
+        if (side == BotTrade.TradeSide.BUY)
             executeBuy(bot, price, quantity, reason);
-        } else {
+        else
             executeSell(bot, price, quantity, reason);
-        }
     }
 
-    /** Executa compra */
+    // ---------------------------------------------------------
+    // EXECUTAR COMPRA
+    // ---------------------------------------------------------
     private void executeBuy(TradingBot bot, BigDecimal price, BigDecimal quantity, String reason) {
         BotTrade trade = BotTrade.builder()
                 .bot(bot)
@@ -330,142 +262,143 @@ public class TradingBotService {
                 .build();
 
         tradeRepository.save(trade);
+
         bot.setTotalTrades(bot.getTotalTrades() + 1);
         botRepository.save(bot);
-        log.info("🟢 Bot {} COMPROU {} {} @ {} ({})", bot.getName(), quantity, bot.getCoinSymbol(), price, reason);
     }
 
-    /** Executa venda */
-    /** Executa venda (corrigido FIFO + lucro real + validações) */
+    // ---------------------------------------------------------
+    // NOVO MÉTODO (OBRIGATÓRIO)
+    // ---------------------------------------------------------
+    private BigDecimal getAvailableBalance(TradingBot bot) {
+
+        List<BotTrade> buys = tradeRepository.findByBotAndSideOrderByExecutedAtAsc(
+                bot, BotTrade.TradeSide.BUY);
+
+        List<BotTrade> sells = tradeRepository.findByBotAndSideOrderByExecutedAtAsc(
+                bot, BotTrade.TradeSide.SELL);
+
+        BigDecimal totalBuy = buys.stream()
+                .map(BotTrade::getQuantity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal totalSell = sells.stream()
+                .map(BotTrade::getQuantity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return totalBuy.subtract(totalSell);
+    }
+
+    // ---------------------------------------------------------
+    // EXECUTAR VENDA — VERSÃO FINAL
+    // ---------------------------------------------------------
     private void executeSell(TradingBot bot, BigDecimal price, BigDecimal quantity, String reason) {
 
-        // Buscar compras anteriores (FIFO)
-        List<BotTrade> buys = tradeRepository.findByBotAndSideOrderByExecutedAtAsc(
-                bot, BotTrade.TradeSide.BUY
-        );
+        // 1️⃣ Validação de saldo
+        BigDecimal available = getAvailableBalance(bot);
 
-        if (buys.isEmpty()) {
-            log.warn("⚠️ Bot {} tentou vender, mas NÃO há compras registradas!", bot.getName());
+        if (available.compareTo(quantity) < 0) {
+            log.warn("VENDA BLOQUEADA — saldo insuficiente. Disp: {} | Req: {}", available, quantity);
             return;
         }
 
-        BigDecimal remainingToSell = quantity;
-        BigDecimal totalProfitLoss = BigDecimal.ZERO;
+        // 2️⃣ Buscar compras (FIFO)
+        List<BotTrade> buys = tradeRepository.findByBotAndSideOrderByExecutedAtAsc(
+                bot, BotTrade.TradeSide.BUY);
+
+        BigDecimal remaining = quantity;
+        BigDecimal totalProfit = BigDecimal.ZERO;
 
         for (BotTrade buy : buys) {
 
-            if (remainingToSell.compareTo(BigDecimal.ZERO) <= 0) break;
+            if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
 
-            BigDecimal availableFromBuy = buy.getQuantity().subtract(
-                    buy.getSoldQuantity() == null ? BigDecimal.ZERO : buy.getSoldQuantity()
-            );
+            BigDecimal soldQty = buy.getSoldQuantity() == null ? BigDecimal.ZERO : buy.getSoldQuantity();
+            BigDecimal availableFromBuy = buy.getQuantity().subtract(soldQty);
 
-            if (availableFromBuy.compareTo(BigDecimal.ZERO) <= 0) continue;
+            if (availableFromBuy.compareTo(BigDecimal.ZERO) <= 0)
+                continue;
 
-            BigDecimal sellQty = availableFromBuy.min(remainingToSell);
+            BigDecimal sellQty = availableFromBuy.min(remaining);
 
-            // Cálculo do lucro real desse pedaço
-            BigDecimal profit = price.subtract(buy.getPrice()).multiply(sellQty);
+            BigDecimal profit = price.subtract(buy.getPrice())
+                    .multiply(sellQty);
 
-            // Atualizar quantidade vendida dessa compra (FIFO)
-            buy.setSoldQuantity(
-                    (buy.getSoldQuantity() == null ? BigDecimal.ZERO : buy.getSoldQuantity())
-                            .add(sellQty)
-            );
+            buy.setSoldQuantity(soldQty.add(sellQty));
             tradeRepository.save(buy);
 
-            // Acumular lucro total
-            totalProfitLoss = totalProfitLoss.add(profit);
-
-            remainingToSell = remainingToSell.subtract(sellQty);
+            totalProfit = totalProfit.add(profit);
+            remaining = remaining.subtract(sellQty);
         }
 
-        if (remainingToSell.compareTo(BigDecimal.ZERO) > 0) {
-            log.warn("⚠️ Bot {} tentou vender mais do que comprou! Venda parcial executada.", bot.getName());
-        }
+        BigDecimal executedQty = quantity.subtract(remaining);
 
-        // Registrar trade de venda
+        // 3️⃣ Registrar a venda
         BotTrade trade = BotTrade.builder()
                 .bot(bot)
                 .coinSymbol(bot.getCoinSymbol())
                 .side(BotTrade.TradeSide.SELL)
                 .price(price)
-                .quantity(quantity.subtract(remainingToSell)) // somente quantidade realmente vendida
-                .profitLoss(totalProfitLoss)
+                .quantity(executedQty)
+                .profitLoss(totalProfit)
                 .isSimulation(bot.getIsSimulation())
                 .reason(reason)
                 .build();
 
         tradeRepository.save(trade);
 
-        // Atualizar métricas do bot
+        // 4️⃣ Atualizar métricas
         bot.setTotalTrades(bot.getTotalTrades() + 1);
-        bot.setTotalProfitLoss(bot.getTotalProfitLoss().add(totalProfitLoss));
+        bot.setTotalProfitLoss(bot.getTotalProfitLoss().add(totalProfit));
 
-        if (totalProfitLoss.compareTo(BigDecimal.ZERO) > 0)
+        if (totalProfit.compareTo(BigDecimal.ZERO) > 0)
             bot.setWinningTrades(bot.getWinningTrades() + 1);
-        else if (totalProfitLoss.compareTo(BigDecimal.ZERO) < 0)
+        else if (totalProfit.compareTo(BigDecimal.ZERO) < 0)
             bot.setLosingTrades(bot.getLosingTrades() + 1);
 
         botRepository.save(bot);
-
-        log.info("🔴 Bot {} VENDEU {} {} @ {} (P/L total: {}) ({})",
-                bot.getName(),
-                quantity.subtract(remainingToSell),
-                bot.getCoinSymbol(),
-                price,
-                totalProfitLoss,
-                reason
-        );
     }
 
-
-    /** Buscar bot por ID e validar usuário */
+    // ---------------------------------------------------------
+    // BUSCAR BOT
+    // ---------------------------------------------------------
     private TradingBot getBotByIdAndUser(Long botId, String username) {
         TradingBot bot = botRepository.findById(botId)
                 .orElseThrow(() -> new RuntimeException("Bot não encontrado"));
 
-        if (!bot.getUser().getUsername().equals(username)) {
-            throw new RuntimeException("Você não tem permissão para acessar este bot");
-        }
+        if (!bot.getUser().getUsername().equals(username))
+            throw new RuntimeException("Acesso negado");
+
         return bot;
     }
 
-    /** Buscar bots do usuário */
+    // ---------------------------------------------------------
     public List<TradingBot> getUserBots(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         return botRepository.findByUser(user);
     }
 
-    /** Buscar trades de um bot */
     public List<BotTrade> getBotTrades(String username, Long botId) {
         TradingBot bot = getBotByIdAndUser(botId, username);
         return tradeRepository.findByBotOrderByExecutedAtDesc(bot);
     }
 
-    /** Deletar bot */
     @Transactional
     public void deleteBot(String username, Long botId) {
         TradingBot bot = getBotByIdAndUser(botId, username);
 
-        if (bot.getStatus() == TradingBot.BotStatus.RUNNING) {
+        if (bot.getStatus() == TradingBot.BotStatus.RUNNING)
             throw new RuntimeException("Pare o bot antes de deletá-lo");
-        }
 
         botRepository.delete(bot);
-        log.info("Bot {} deletado", bot.getName());
     }
 
-    /** Enviar alerta de bot */
     private void sendAlert(TradingBot bot, String subject, String message) {
         try {
-            String email = bot.getUser().getEmail();
-            if (email != null && !email.isEmpty()) {
-                notificationService.sendEmailAlert(email, subject, message);
+            if (bot.getUser().getEmail() != null) {
+                notificationService.sendEmailAlert(bot.getUser().getEmail(), subject, message);
             }
-        } catch (Exception e) {
-            log.error("Erro ao enviar alerta: {}", e.getMessage());
-        }
+        } catch (Exception ignored) {}
     }
 }
