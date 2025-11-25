@@ -29,6 +29,38 @@ public class PortfolioService {
     private final UserRepository userRepository;
     private final CryptoService cryptoService;
 
+    // =========================================================
+    // ✅ MAPEAMENTO DE SÍMBOLOS (MÉTODO ADICIONADO)
+    // =========================================================
+
+    /**
+     * Mapeia símbolo da moeda para coinId da CoinGecko
+     */
+    private String mapSymbolToCoinId(String symbol) {
+        Map<String, String> symbolMap = Map.ofEntries(
+                Map.entry("BTC", "bitcoin"),
+                Map.entry("ETH", "ethereum"),
+                Map.entry("ADA", "cardano"),
+                Map.entry("DOT", "polkadot"),
+                Map.entry("LINK", "chainlink"),
+                Map.entry("SOL", "solana"),
+                Map.entry("AVAX", "avalanche-2"),
+                Map.entry("MATIC", "matic-network"),
+                Map.entry("LTC", "litecoin"),
+                Map.entry("BCH", "bitcoin-cash"),
+                Map.entry("XRP", "ripple"),
+                Map.entry("DOGE", "dogecoin"),
+                Map.entry("BNB", "binancecoin")
+        );
+
+        String upperSymbol = symbol.toUpperCase();
+        return symbolMap.getOrDefault(upperSymbol, symbol.toLowerCase());
+    }
+
+    // =========================================================
+    // TRANSAÇÕES
+    // =========================================================
+
     /**
      * Adiciona uma transação e atualiza o portfolio
      */
@@ -135,19 +167,19 @@ public class PortfolioService {
         }
     }
 
+    // =========================================================
+    // CONSULTA DE PORTFOLIO
+    // =========================================================
+
     /**
-     * ✅ SPRINT 2 - Otimizado com Projeção
-     *
-     * Usa PortfolioProjection para evitar carregar User completo
+     * ✅ OTIMIZADO - Usa Projeção + Lazy Loading
      */
     public Map<String, Object> getPortfolio(String username) {
 
         List<PortfolioRepository.PortfolioProjection> portfolios =
                 portfolioRepository.findByUserUsernameOptimized(username);
 
-        // ===========================================
         // ✅ OTIMIZAÇÃO: buscar APENAS preços necessários
-        // ===========================================
         List<String> coinIds = portfolios.stream()
                 .map(p -> mapSymbolToCoinId(p.getCoinSymbol()))
                 .filter(Objects::nonNull)
@@ -162,7 +194,6 @@ public class PortfolioService {
                         CryptoCurrency::getCurrentPrice,
                         (a, b) -> a
                 ));
-        // ===========================================
 
         List<Map<String, Object>> enrichedPortfolio = new ArrayList<>();
         BigDecimal totalInvested = BigDecimal.ZERO;
@@ -220,6 +251,9 @@ public class PortfolioService {
         return result;
     }
 
+    // =========================================================
+    // OUTRAS OPERAÇÕES
+    // =========================================================
 
     /**
      * Busca histórico de transações
@@ -248,7 +282,6 @@ public class PortfolioService {
 
         transactionRepository.delete(transaction);
 
-        // Recalcular portfolio (simplificado - em produção, seria mais complexo)
         log.warn("Transação deletada. Portfolio pode precisar de recálculo manual.");
     }
 }
