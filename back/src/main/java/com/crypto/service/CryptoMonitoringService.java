@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * ✅ VERSÃO OTIMIZADA - SCHEDULER GLOBAL DESABILITADO
+ * ✅ VERSÃO OTIMIZADA - SCHEDULER GLOBAL REMOVIDO
  *
  * MUDANÇAS:
- * - Scheduler automático REMOVIDO (causava rate limit)
- * - Apenas SmartCacheService faz updates (1x/hora)
- * - Monitoramento só acontece quando usuário ativa
+ * - Scheduler automático foi completamente removido
+ * - SmartCacheService controla updates a cada hora
+ * - Monitoramento ocorre apenas quando um usuário ativa
  */
 @Slf4j
 @Service
@@ -32,19 +32,6 @@ public class CryptoMonitoringService {
     private LocalDateTime lastSuccessfulRun = null;
 
     /**
-     * ❌ SCHEDULER GLOBAL - PERMANENTEMENTE DESABILITADO
-     *
-     * @deprecated Removido para evitar rate limit. Será excluído na v3.0.0.
-     * Use SmartCacheService.scheduledUpdate() para atualizações automáticas.
-     */
-    @Deprecated(since = "2.0", forRemoval = true)
-    public void scheduledUpdate() {
-        throw new UnsupportedOperationException(
-                "Scheduler global desabilitado. Use SmartCacheService.scheduledUpdate()."
-        );
-    }
-
-    /**
      * ✅ ATUALIZAÇÃO MANUAL (para usuário específico)
      *
      * Usado pelo MonitoringControlService quando usuário ativa monitoramento
@@ -53,7 +40,7 @@ public class CryptoMonitoringService {
         try {
             log.info("🔄 Processando alertas para: {}", userEmail);
 
-            // Buscar preços (já cacheados pelo SmartCache)
+            // Buscar preços (cacheados pelo SmartCache)
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             if (currentCryptos.isEmpty()) {
@@ -61,7 +48,6 @@ public class CryptoMonitoringService {
                 return;
             }
 
-            // Publicar evento (processamento de alertas)
             publishCryptoUpdateEvent(
                     currentCryptos,
                     userEmail,
@@ -76,7 +62,7 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * ✅ BROADCAST VIA WEBSOCKET (manual)
+     * 📡 Envia preços via WebSocket
      */
     public void broadcastPrices() {
         try {
@@ -93,7 +79,7 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * ✅ Publicar evento (desacoplado)
+     * 📤 Publica evento para processamento de alertas
      */
     private void publishCryptoUpdateEvent(
             List<CryptoCurrency> cryptos,
@@ -101,7 +87,7 @@ public class CryptoMonitoringService {
             CryptoUpdateEvent.UpdateType type) {
 
         try {
-            CryptoUpdateEvent event = userEmail == null
+            CryptoUpdateEvent event = (userEmail == null)
                     ? new CryptoUpdateEvent(this, cryptos, type)
                     : new CryptoUpdateEvent(this, cryptos, userEmail, type);
 
@@ -116,7 +102,7 @@ public class CryptoMonitoringService {
     }
 
     /**
-     * ✅ Estatísticas
+     * 📊 Estatísticas do monitoramento
      */
     public MonitoringStats getMonitoringStats() {
         try {
@@ -124,7 +110,7 @@ public class CryptoMonitoringService {
 
             return MonitoringStats.builder()
                     .totalCryptocurrencies(savedCryptos.size())
-                    .isSchedulerRunning(false)  // Sempre false agora
+                    .isSchedulerRunning(false)  // Agora sempre false
                     .lastSuccessfulRun(lastSuccessfulRun)
                     .lastUpdate(savedCryptos.isEmpty() ? null :
                             savedCryptos.get(0).getLastUpdated())

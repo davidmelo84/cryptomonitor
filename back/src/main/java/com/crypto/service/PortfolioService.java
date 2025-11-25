@@ -141,25 +141,35 @@ public class PortfolioService {
      * Usa PortfolioProjection para evitar carregar User completo
      */
     public Map<String, Object> getPortfolio(String username) {
-        // ✅ USA PROJEÇÃO ao invés de carregar entidade completa
+
         List<PortfolioRepository.PortfolioProjection> portfolios =
                 portfolioRepository.findByUserUsernameOptimized(username);
 
-        // Buscar preços atuais
-        List<CryptoCurrency> currentPrices = cryptoService.getCurrentPrices();
+        // ===========================================
+        // ✅ OTIMIZAÇÃO: buscar APENAS preços necessários
+        // ===========================================
+        List<String> coinIds = portfolios.stream()
+                .map(p -> mapSymbolToCoinId(p.getCoinSymbol()))
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+
+        List<CryptoCurrency> currentPrices = cryptoService.getPricesByIds(coinIds);
+
         Map<String, BigDecimal> priceMap = currentPrices.stream()
                 .collect(Collectors.toMap(
                         c -> c.getSymbol().toUpperCase(),
                         CryptoCurrency::getCurrentPrice,
                         (a, b) -> a
                 ));
+        // ===========================================
 
-        // Calcular valores atuais e lucro/prejuízo
         List<Map<String, Object>> enrichedPortfolio = new ArrayList<>();
         BigDecimal totalInvested = BigDecimal.ZERO;
         BigDecimal totalCurrentValue = BigDecimal.ZERO;
 
         for (PortfolioRepository.PortfolioProjection p : portfolios) {
+
             BigDecimal currentPrice = priceMap.getOrDefault(
                     p.getCoinSymbol().toUpperCase(),
                     p.getAverageBuyPrice()
@@ -167,6 +177,7 @@ public class PortfolioService {
 
             BigDecimal currentValue = p.getQuantity().multiply(currentPrice);
             BigDecimal profitLoss = currentValue.subtract(p.getTotalInvested());
+
             BigDecimal profitLossPercent = p.getTotalInvested().compareTo(BigDecimal.ZERO) > 0
                     ? profitLoss.divide(p.getTotalInvested(), 4, RoundingMode.HALF_UP)
                     .multiply(BigDecimal.valueOf(100))
@@ -208,6 +219,7 @@ public class PortfolioService {
 
         return result;
     }
+
 
     /**
      * Busca histórico de transações

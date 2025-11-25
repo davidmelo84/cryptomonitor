@@ -38,7 +38,9 @@ public class MonitoringController {
             Authentication authentication
     ) {
         try {
-            // ✅ SANITIZAÇÃO DE EMAIL
+            // ------------------------------
+            // ✅ EMAIL
+            // ------------------------------
             String emailRaw = (String) request.get("email");
             if (emailRaw == null || emailRaw.trim().isEmpty()) {
                 return ResponseEntity.badRequest()
@@ -46,7 +48,9 @@ public class MonitoringController {
             }
             String email = sanitizer.sanitizeEmail(emailRaw);
 
-            // ✅ SANITIZAÇÃO DAS CRYPTOS
+            // ------------------------------
+            // ✅ CRYPTOS
+            // ------------------------------
             @SuppressWarnings("unchecked")
             List<String> cryptocurrenciesRaw = (List<String>) request.get("cryptocurrencies");
 
@@ -67,9 +71,11 @@ public class MonitoringController {
 
             Integer checkIntervalMinutes = (Integer) request.get("checkIntervalMinutes");
 
-            // -------------------------------------------
-            // ✅ VALIDAÇÃO ROBUSTA DOS THRESHOLDS (NOVO)
-            // -------------------------------------------
+            // ------------------------------
+            // ✅ VALIDAÇÃO DOS THRESHOLDS (CORRIGIDA)
+            // ------------------------------
+
+            // 🔹 valor informado pelo usuário (positivo)
             Double buyThreshold = request.get("buyThreshold") != null
                     ? ((Number) request.get("buyThreshold")).doubleValue()
                     : 5.0;
@@ -79,6 +85,8 @@ public class MonitoringController {
                         .body(Map.of("error", "buyThreshold deve estar entre 0.1% e 100%"));
             }
 
+            // 💡 Será transformado em negativo na criação das regras
+
             Double sellThreshold = request.get("sellThreshold") != null
                     ? ((Number) request.get("sellThreshold")).doubleValue()
                     : 10.0;
@@ -87,24 +95,27 @@ public class MonitoringController {
                 return ResponseEntity.badRequest()
                         .body(Map.of("error", "sellThreshold deve estar entre 0.1% e 100%"));
             }
-            // -------------------------------------------
 
             String username = authentication != null
                     ? authentication.getName()
                     : "guest";
 
-            // ✅ LOG DETALHADO
+            // ------------------------------
+            // LOG
+            // ------------------------------
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.info("📥 REQUISIÇÃO PARA INICIAR MONITORAMENTO");
             log.info("   👤 Usuário: {}", LogMasker.maskUsername(username));
             log.info("   📧 Email: {}", LogMasker.maskEmail(email));
             log.info("   📊 Cryptos (sanitizadas): {}", cryptocurrencies);
             log.info("   ⏱️  Intervalo: {} minutos", checkIntervalMinutes);
-            log.info("   📉 Threshold compra: -{}%", buyThreshold);
-            log.info("   📈 Threshold venda: +{}%", sellThreshold);
+            log.info("   📉 Threshold compra (positivo): {}%", buyThreshold);
+            log.info("   📈 Threshold venda: {}%", sellThreshold);
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-            // ✅ Deletar alertas antigos
+            // ------------------------------
+            // 🔄 Limpar alertas antigos
+            // ------------------------------
             try {
                 log.info("🗑️  Apagando alertas antigos de {}", email);
                 alertService.deactivateAllAlertsForUser(email);
@@ -112,10 +123,19 @@ public class MonitoringController {
                 log.warn("⚠️  Erro ao deletar alertas antigos: {}", e.getMessage());
             }
 
-            // ✅ Criar novas regras
-            int rulesCreated = createAlertRulesForUser(email, cryptocurrencies, buyThreshold, sellThreshold);
+            // ------------------------------
+            // Criação das regras
+            // ------------------------------
+            int rulesCreated = createAlertRulesForUser(
+                    email,
+                    cryptocurrencies,
+                    buyThreshold,   // positivo aqui
+                    sellThreshold
+            );
 
-            // ✅ Iniciar monitoramento
+            // ------------------------------
+            // Inicia monitoramento
+            // ------------------------------
             boolean started = monitoringControlService.startMonitoring(username, email);
 
             if (started) {
@@ -157,7 +177,7 @@ public class MonitoringController {
     private int createAlertRulesForUser(
             String email,
             List<String> cryptos,
-            Double buyThreshold,
+            Double buyThreshold,      // positivo
             Double sellThreshold
     ) {
         int count = 0;
@@ -170,23 +190,28 @@ public class MonitoringController {
 
                 log.info("   🔹 Criando alertas para: {} ({})", symbol, cryptoId);
 
-                // ✅ Regra de COMPRA (queda)
+                // ------------------------------
+                // 📉 ALERTA DE COMPRA (queda)
+                // buyThreshold -> negativo aqui
+                // ------------------------------
                 AlertRule buyRule = new AlertRule();
                 buyRule.setCoinSymbol(symbol);
                 buyRule.setNotificationEmail(email);
                 buyRule.setAlertType(AlertRule.AlertType.PERCENT_CHANGE_24H);
-                buyRule.setThresholdValue(BigDecimal.valueOf(-buyThreshold));
+                buyRule.setThresholdValue(BigDecimal.valueOf(-buyThreshold)); // NEGATIVO CORRETAMENTE
                 buyRule.setActive(true);
 
                 alertService.createAlertRule(buyRule);
                 count++;
 
-                // ✅ Regra de VENDA (alta)
+                // ------------------------------
+                // 📈 ALERTA DE VENDA (alta)
+                // ------------------------------
                 AlertRule sellRule = new AlertRule();
                 sellRule.setCoinSymbol(symbol);
                 sellRule.setNotificationEmail(email);
                 sellRule.setAlertType(AlertRule.AlertType.PERCENT_CHANGE_24H);
-                sellRule.setThresholdValue(BigDecimal.valueOf(sellThreshold));
+                sellRule.setThresholdValue(BigDecimal.valueOf(sellThreshold)); // POSITIVO
                 sellRule.setActive(true);
 
                 alertService.createAlertRule(sellRule);

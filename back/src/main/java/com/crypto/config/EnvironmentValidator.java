@@ -33,6 +33,16 @@ public class EnvironmentValidator {
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
+    // ✅ Telegram
+    @Value("${telegram.enabled:false}")
+    private boolean telegramEnabled;
+
+    @Value("${telegram.bot.token:}")
+    private String telegramBotToken;
+
+    @Value("${telegram.chat.id:}")
+    private String telegramChatId;
+
     @PostConstruct
     public void validateEnvironment() {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -75,7 +85,26 @@ public class EnvironmentValidator {
             log.info("✅ DATABASE: PostgreSQL configurado");
         }
 
-        // ✅ Profile ativo
+        // =====================================================
+        // ✅ VALIDAÇÃO TELEGRAM
+        // =====================================================
+        if ("prod".equals(activeProfile) && telegramEnabled) {
+
+            // Token formato: 1234567890:abcdefghijklmnopqrstuvwxyzABCDE_
+            if (telegramBotToken == null ||
+                    !telegramBotToken.matches("^\\d+:[A-Za-z0-9_-]{35}$")) {
+                warnings.add("TELEGRAM_BOT_TOKEN com formato inválido (deve ser NNNNNNNNNN:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)");
+            }
+
+            // Chat ID pode ser número positivo ou negativo
+            if (telegramChatId == null || !telegramChatId.matches("^-?\\d+$")) {
+                warnings.add("TELEGRAM_CHAT_ID com formato inválido (deve ser um número)");
+            }
+        }
+
+        // =====================================================
+
+        // PROFILE ativo
         log.info("✅ PROFILE: {}", activeProfile);
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

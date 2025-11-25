@@ -336,44 +336,89 @@ public class TradingBotService {
     }
 
     /** Executa venda */
+    /** Executa venda (corrigido FIFO + lucro real + validações) */
     private void executeSell(TradingBot bot, BigDecimal price, BigDecimal quantity, String reason) {
-        List<BotTrade> trades = tradeRepository.findByBotOrderByExecutedAtDesc(bot);
-        BigDecimal profitLoss = BigDecimal.ZERO;
 
-        Optional<BotTrade> lastBuy = trades.stream()
-                .filter(t -> t.getSide() == BotTrade.TradeSide.BUY)
-                .findFirst();
+        // Buscar compras anteriores (FIFO)
+        List<BotTrade> buys = tradeRepository.findByBotAndSideOrderByExecutedAtAsc(
+                bot, BotTrade.TradeSide.BUY
+        );
 
-        if (lastBuy.isPresent()) {
-            BigDecimal buyPrice = lastBuy.get().getPrice();
-            profitLoss = price.subtract(buyPrice).multiply(quantity);
+        if (buys.isEmpty()) {
+            log.warn("⚠️ Bot {} tentou vender, mas NÃO há compras registradas!", bot.getName());
+            return;
         }
 
+        BigDecimal remainingToSell = quantity;
+        BigDecimal totalProfitLoss = BigDecimal.ZERO;
+
+        for (BotTrade buy : buys) {
+
+            if (remainingToSell.compareTo(BigDecimal.ZERO) <= 0) break;
+
+            BigDecimal availableFromBuy = buy.getQuantity().subtract(
+                    buy.getSoldQuantity() == null ? BigDecimal.ZERO : buy.getSoldQuantity()
+            );
+
+            if (availableFromBuy.compareTo(BigDecimal.ZERO) <= 0) continue;
+
+            BigDecimal sellQty = availableFromBuy.min(remainingToSell);
+
+            // Cálculo do lucro real desse pedaço
+            BigDecimal profit = price.subtract(buy.getPrice()).multiply(sellQty);
+
+            // Atualizar quantidade vendida dessa compra (FIFO)
+            buy.setSoldQuantity(
+                    (buy.getSoldQuantity() == null ? BigDecimal.ZERO : buy.getSoldQuantity())
+                            .add(sellQty)
+            );
+            tradeRepository.save(buy);
+
+            // Acumular lucro total
+            totalProfitLoss = totalProfitLoss.add(profit);
+
+            remainingToSell = remainingToSell.subtract(sellQty);
+        }
+
+        if (remainingToSell.compareTo(BigDecimal.ZERO) > 0) {
+            log.warn("⚠️ Bot {} tentou vender mais do que comprou! Venda parcial executada.", bot.getName());
+        }
+
+        // Registrar trade de venda
         BotTrade trade = BotTrade.builder()
                 .bot(bot)
                 .coinSymbol(bot.getCoinSymbol())
                 .side(BotTrade.TradeSide.SELL)
                 .price(price)
-                .quantity(quantity)
-                .profitLoss(profitLoss)
+                .quantity(quantity.subtract(remainingToSell)) // somente quantidade realmente vendida
+                .profitLoss(totalProfitLoss)
                 .isSimulation(bot.getIsSimulation())
                 .reason(reason)
                 .build();
 
         tradeRepository.save(trade);
-        bot.setTotalTrades(bot.getTotalTrades() + 1);
-        bot.setTotalProfitLoss(bot.getTotalProfitLoss().add(profitLoss));
 
-        if (profitLoss.compareTo(BigDecimal.ZERO) > 0)
+        // Atualizar métricas do bot
+        bot.setTotalTrades(bot.getTotalTrades() + 1);
+        bot.setTotalProfitLoss(bot.getTotalProfitLoss().add(totalProfitLoss));
+
+        if (totalProfitLoss.compareTo(BigDecimal.ZERO) > 0)
             bot.setWinningTrades(bot.getWinningTrades() + 1);
-        else
+        else if (totalProfitLoss.compareTo(BigDecimal.ZERO) < 0)
             bot.setLosingTrades(bot.getLosingTrades() + 1);
 
         botRepository.save(bot);
 
-        log.info("🔴 Bot {} VENDEU {} {} @ {} (P/L: {}) ({})",
-                bot.getName(), quantity, bot.getCoinSymbol(), price, profitLoss, reason);
+        log.info("🔴 Bot {} VENDEU {} {} @ {} (P/L total: {}) ({})",
+                bot.getName(),
+                quantity.subtract(remainingToSell),
+                bot.getCoinSymbol(),
+                price,
+                totalProfitLoss,
+                reason
+        );
     }
+
 
     /** Buscar bot por ID e validar usuário */
     private TradingBot getBotByIdAndUser(Long botId, String username) {

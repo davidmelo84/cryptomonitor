@@ -52,6 +52,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         log.info("✅ WebSocket endpoint registrado: /ws/crypto");
     }
 
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration
+                .setMessageSizeLimit(64 * 1024)          // 64 KB por mensagem
+                .setSendBufferSizeLimit(512 * 1024)      // 512 KB de buffer
+                .setSendTimeLimit(20 * 1000)             // 20 segundos para enviar dados
+                .setTimeToFirstMessage(30 * 1000);       // 30 segundos para enviar primeiro heartbeat
+        log.info("⏳ WebSocket transport configurado com timeouts");
+    }
+
     /**
      * 🔐 RATE-LIMIT contra flood de WebSocket
      * Limite: 100 mensagens por minuto por sessão

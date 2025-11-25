@@ -21,6 +21,7 @@ public class VerificationService {
     private final VerificationTokenRepository tokenRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private String generateCode() {
@@ -57,62 +58,69 @@ public class VerificationService {
         log.info("   🔑 Token salvo no banco: {}", LogMasker.maskToken(token));
         log.info("   🔢 Código gerado: ****** (oculto por segurança)");
 
-        // Enviar email
-        try {
-            log.info("   📧 Enviando email de verificação para {}...",
-                    LogMasker.maskEmail(user.getEmail()));
+        // --------------------------------------
+        // ✅ ENVIO DE EMAIL SÍNCRONO + RETRY
+        // --------------------------------------
+        String subject = "🔐 Código de Verificação - Crypto Monitor";
 
-            sendVerificationEmail(user, code);
+        String body = String.format("""
+                Olá %s!
 
-            log.info("   ✅ EMAIL ENVIADO COM SUCESSO!");
-            log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                Para ativar sua conta no Crypto Monitor, use o código abaixo:
 
-        } catch (Exception e) {
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            log.error("❌ ERRO CRÍTICO ao enviar email!");
-            log.error("   Usuário: {}", LogMasker.maskUsername(user.getUsername()));
-            log.error("   Email: {}", LogMasker.maskEmail(user.getEmail()));
-            log.error("   Erro: {}", e.getMessage());
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", e);
+                ╔══════════════════╗
+                ║   CÓDIGO: %s   ║
+                ╚══════════════════╝
 
-            throw new RuntimeException("Falha ao enviar email: " + e.getMessage(), e);
+                ⏰ Este código é válido por 24 horas.
+
+                Se você não criou esta conta, ignore este email.
+
+                ---
+                Crypto Monitor - Sistema de Monitoramento de Criptomoedas
+                https://cryptomonitor-theta.vercel.app
+                """, user.getUsername(), code);
+
+        int maxRetries = 3;
+        boolean sent = false;
+        Exception lastError = null;
+
+        for (int i = 0; i < maxRetries && !sent; i++) {
+            try {
+                log.info("📧 Tentando enviar e-mail ({}/{}) para {}",
+                        i + 1, maxRetries, LogMasker.maskEmail(user.getEmail()));
+
+                emailService.sendEmail(user.getEmail(), subject, body);
+
+                sent = true;
+                log.info("   ✅ EMAIL ENVIADO COM SUCESSO!");
+            } catch (Exception e) {
+                lastError = e;
+                log.warn("⚠️ Falha na tentativa {}/{}: {}", i + 1, maxRetries, e.getMessage());
+
+                if (i < maxRetries - 1) {
+                    try {
+                        Thread.sleep(2000); // aguardar 2s antes do retry
+                    } catch (InterruptedException ignored) {}
+                }
+            }
         }
+
+        if (!sent) {
+            log.error("❌ ERRO FATAL: Não foi possível enviar o e-mail após {} tentativas!", maxRetries);
+            throw new RuntimeException("Falha ao enviar email: " + lastError.getMessage(), lastError);
+        }
+
+        log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
         return code;
     }
 
     /**
-     * Agora assíncrono!
+     * Mantido para compatibilidade — agora apenas faz log e delega ao método síncrono.
      */
     public void sendVerificationEmail(User user, String code) {
-        String subject = "🔐 Código de Verificação - Crypto Monitor";
-
-        String body = String.format("""
-            Olá %s!
-            
-            Para ativar sua conta no Crypto Monitor, use o código abaixo:
-            
-            ╔══════════════════╗
-            ║   CÓDIGO: %s   ║
-            ╚══════════════════╝
-            
-            ⏰ Este código é válido por 24 horas.
-            
-            Se você não criou esta conta, ignore este email.
-            
-            ---
-            Crypto Monitor - Sistema de Monitoramento de Criptomoedas
-            https://cryptomonitor-theta.vercel.app
-            """, user.getUsername(), code);
-
-        emailService.sendEmailAsync(user.getEmail(), subject, body)
-                .exceptionally(ex -> {
-                    log.error("❌ Erro ao enviar email para {}: {}",
-                            LogMasker.maskEmail(user.getEmail()), ex.getMessage());
-                    return null;
-                });
-
-        log.info("📧 Email de verificação agendado para: {}", LogMasker.maskEmail(user.getEmail()));
+        log.warn("⚠️ sendVerificationEmail() foi chamado, mas o envio síncrono já é feito em createVerificationToken.");
     }
 
     @Transactional
@@ -123,12 +131,12 @@ public class VerificationService {
         return tokenRepository.findByCode(code)
                 .map(token -> {
                     if (token.isExpired()) {
-                        log.warn("⏰ Código expirado (oculto)");
+                        log.warn("⏰ Código expirado");
                         return false;
                     }
 
                     if (token.getVerified()) {
-                        log.warn("⚠️ Código já usado (oculto)");
+                        log.warn("⚠️ Código já foi utilizado");
                         return false;
                     }
 
