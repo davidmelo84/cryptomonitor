@@ -45,13 +45,14 @@ public class CacheConfig {
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(2000)
                 .expireAfterWrite(30, TimeUnit.MINUTES)
+                .expireAfterAccess(15, TimeUnit.MINUTES)  // ⭐ NOVO — Evict por inatividade
                 .recordStats()
         );
 
-        // ✅ CRÍTICO: Permitir criação dinâmica de caches
+        // Permitir criação dinâmica
         cacheManager.setAllowNullValues(false);
 
-        log.info("✅ Caffeine Cache configurado com TTL=30min (2000 entradas)");
+        log.info("✅ Caffeine Cache configurado com TTL=30min + expireAfterAccess=15min (2000 entradas)");
         return cacheManager;
     }
 
@@ -66,6 +67,7 @@ public class CacheConfig {
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(500)
                 .expireAfterWrite(120, TimeUnit.MINUTES)
+                .expireAfterAccess(60, TimeUnit.MINUTES) // ⭐ NOVO
                 .recordStats()
         );
 
@@ -88,6 +90,7 @@ public class CacheConfig {
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(1000)
                 .expireAfterWrite(5, TimeUnit.MINUTES)
+                .expireAfterAccess(2, TimeUnit.MINUTES) // ⭐ NOVO
                 .recordStats()
         );
 

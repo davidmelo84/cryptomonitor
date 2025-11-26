@@ -83,7 +83,7 @@ public class AuthController {
             return ResponseEntity.ok(resp);
 
         } catch (Exception e) {
-            log.error("❌ Erro ao registrar:", e);
+            log.error("❌ Erro ao registrar usuário", e);
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", "Erro ao criar conta: " + e.getMessage()));
         }
@@ -113,7 +113,7 @@ public class AuthController {
                 return ResponseEntity.status(403).body(Map.of(
                         "success", false,
                         "error", "Conta não verificada",
-                        "email", dbUser.getEmail()
+                        "email", LogMasker.maskEmail(dbUser.getEmail())
                 ));
             }
 
@@ -125,7 +125,8 @@ public class AuthController {
 
             String token = jwtUtil.generateToken(user.getUsername());
 
-            log.info("🔑 Token JWT gerado: {}", LogMasker.maskToken(token));
+            // 🔥 CORREÇÃO RECOMENDADA — nunca logar token completo
+            log.info("🔑 Token JWT gerado (mascarado): {}", LogMasker.maskToken(token));
 
             return ResponseEntity.ok(Map.of("token", token));
 
@@ -136,7 +137,7 @@ public class AuthController {
             return ResponseEntity.status(403)
                     .body(Map.of("success", false, "error", "Conta desabilitada"));
         } catch (Exception e) {
-            log.error("❌ Erro no login:", e);
+            log.error("❌ Erro no login", e);
             return ResponseEntity.status(500)
                     .body(Map.of("success", false, "error", "Erro ao processar login"));
         }
@@ -238,6 +239,7 @@ public class AuthController {
     public ResponseEntity<?> debugEnv() {
         String apiKey = System.getenv("SENDGRID_API_KEY");
 
+        // ⚠️ Nunca mostrar valores reais
         log.info("🐞 DEBUG ENV - API Key presente: {}", apiKey != null);
         log.info("🐞 DEBUG ENV - Tamanho da API Key: {}", apiKey != null ? apiKey.length() : 0);
 

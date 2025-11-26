@@ -7,6 +7,9 @@ import com.crypto.repository.VerificationTokenRepository;
 import com.crypto.util.LogMasker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,36 @@ public class VerificationService {
         return String.valueOf(code);
     }
 
+    // ============================================================
+    //  MÉTODO COM RETRY AUTOMÁTICO + EXPONENTIAL BACKOFF
+    // ============================================================
+    @Retryable(
+            value = { Exception.class },
+            maxAttempts = 3,
+            backoff = @Backoff(delay = 2000, multiplier = 2) // 2s → 4s → 8s
+    )
+    public void sendEmailWithRetry(String to, String subject, String body) {
+        log.info("📧 Tentando enviar e-mail para {} ...",
+                LogMasker.maskEmail(to));
+
+        emailService.sendEmail(to, subject, body);
+
+        log.info("   ✅ EMAIL ENVIADO COM SUCESSO!");
+    }
+
+    // ============================================================
+    //  RECUPERAÇÃO QUANDO TODAS AS TENTATIVAS FALHAM
+    // ============================================================
+    @Recover
+    public void recoverEmailSend(Exception e, String to, String subject, String body) {
+        log.error("❌ ERRO FATAL: Não foi possível enviar o e-mail para {} mesmo após múltiplas tentativas!",
+                LogMasker.maskEmail(to));
+        throw new RuntimeException("Falha ao enviar email: " + e.getMessage(), e);
+    }
+
+    // ============================================================
+    //  CRIAÇÃO DO TOKEN + ENVIO DO EMAIL
+    // ============================================================
     @Transactional
     public String createVerificationToken(User user) {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -36,7 +69,7 @@ public class VerificationService {
         log.info("   👤 Usuário: {}", LogMasker.maskUsername(user.getUsername()));
         log.info("   📧 Email: {}", LogMasker.maskEmail(user.getEmail()));
 
-        // Deletar tokens antigos
+        // Remover tokens antigos
         tokenRepository.findByUser(user).ifPresent(token -> {
             log.info("   🗑️ Deletando token antigo para usuário {}",
                     LogMasker.maskUsername(user.getUsername()));
@@ -59,7 +92,7 @@ public class VerificationService {
         log.info("   🔢 Código gerado: ****** (oculto por segurança)");
 
         // --------------------------------------
-        // ✅ ENVIO DE EMAIL SÍNCRONO + RETRY
+        // ENVIO DE EMAIL COM SPRING RETRY
         // --------------------------------------
         String subject = "🔐 Código de Verificação - Crypto Monitor";
 
@@ -81,35 +114,8 @@ public class VerificationService {
                 https://cryptomonitor-theta.vercel.app
                 """, user.getUsername(), code);
 
-        int maxRetries = 3;
-        boolean sent = false;
-        Exception lastError = null;
-
-        for (int i = 0; i < maxRetries && !sent; i++) {
-            try {
-                log.info("📧 Tentando enviar e-mail ({}/{}) para {}",
-                        i + 1, maxRetries, LogMasker.maskEmail(user.getEmail()));
-
-                emailService.sendEmail(user.getEmail(), subject, body);
-
-                sent = true;
-                log.info("   ✅ EMAIL ENVIADO COM SUCESSO!");
-            } catch (Exception e) {
-                lastError = e;
-                log.warn("⚠️ Falha na tentativa {}/{}: {}", i + 1, maxRetries, e.getMessage());
-
-                if (i < maxRetries - 1) {
-                    try {
-                        Thread.sleep(2000); // aguardar 2s antes do retry
-                    } catch (InterruptedException ignored) {}
-                }
-            }
-        }
-
-        if (!sent) {
-            log.error("❌ ERRO FATAL: Não foi possível enviar o e-mail após {} tentativas!", maxRetries);
-            throw new RuntimeException("Falha ao enviar email: " + lastError.getMessage(), lastError);
-        }
+        // Agora o retry é automático
+        sendEmailWithRetry(user.getEmail(), subject, body);
 
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
@@ -117,15 +123,17 @@ public class VerificationService {
     }
 
     /**
-     * Mantido para compatibilidade — agora apenas faz log e delega ao método síncrono.
+     * Mantido apenas para compatibilidade; não envia mais email diretamente.
      */
     public void sendVerificationEmail(User user, String code) {
-        log.warn("⚠️ sendVerificationEmail() foi chamado, mas o envio síncrono já é feito em createVerificationToken.");
+        log.warn("⚠️ sendVerificationEmail() foi chamado, mas o envio síncrono já ocorre em createVerificationToken.");
     }
 
+    // ============================================================
+    //  VERIFICAR CÓDIGO
+    // ============================================================
     @Transactional
     public boolean verifyCode(String code) {
-
         log.info("🔍 Verificando código recebido: ******");
 
         return tokenRepository.findByCode(code)
@@ -154,6 +162,9 @@ public class VerificationService {
                 }).orElse(false);
     }
 
+    // ============================================================
+    //  REENVIAR CÓDIGO
+    // ============================================================
     @Transactional
     public boolean resendCode(String email) {
         log.info("🔄 Reenviando código para: {}", LogMasker.maskEmail(email));

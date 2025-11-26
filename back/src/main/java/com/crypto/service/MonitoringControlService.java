@@ -6,6 +6,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.PreDestroy;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
@@ -14,16 +15,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * ✅ Atualizado - Adicionado UserActivityTracker e registro de atividade
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MonitoringControlService {
 
     private final CryptoMonitoringService cryptoMonitoringService;
-    private final UserActivityTracker activityTracker; // ✅ NOVO: Rastreador de atividade
+    private final UserActivityTracker activityTracker;
 
     private final Map<String, ScheduledFuture<?>> activeMonitors = new ConcurrentHashMap<>();
     private final Map<String, Lock> userLocks = new ConcurrentHashMap<>();
@@ -31,142 +29,114 @@ public class MonitoringControlService {
 
     private final TaskScheduler taskScheduler = createTaskScheduler();
 
-    /**
-     * ✅ CORRIGIDO - Auto-stop e registro de atividade
-     */
+    // =========================================================
+    //   API PRINCIPAL EXTERNA → Com Lock
+    // =========================================================
     public boolean startMonitoring(String username, String userEmail) {
-        if (username == null || username.trim().isEmpty()) {
-            log.error("❌ Username não pode ser nulo ou vazio");
-            return false;
-        }
+        if (username == null || username.isBlank()) return false;
+        if (userEmail == null || userEmail.isBlank()) return false;
 
-        if (userEmail == null || userEmail.trim().isEmpty()) {
-            log.error("❌ Email não pode ser nulo ou vazio");
-            return false;
-        }
-
-        Lock userLock = userLocks.computeIfAbsent(username, k -> new ReentrantLock());
-        userLock.lock();
+        Lock lock = userLocks.computeIfAbsent(username, k -> new ReentrantLock());
+        lock.lock();
 
         try {
-            // ✅ Parar monitoramento anterior, se existir
-            if (isMonitoringActiveInternal(username)) {
-                log.info("♻️ Monitoramento já ativo para {}, reiniciando...", username);
-                stopMonitoring(username);
-            }
-
-            log.info("🚀 Iniciando monitoramento para: {} (email: {})", username, userEmail);
-
-            ScheduledFuture<?> scheduledTask = taskScheduler.scheduleAtFixedRate(
-                    () -> runMonitoringCycle(username, userEmail),
-                    Duration.ofMinutes(5)
-            );
-
-            ScheduledFuture<?> existing = activeMonitors.putIfAbsent(username, scheduledTask);
-
-            if (existing != null) {
-                scheduledTask.cancel(false);
-                log.warn("⚠️ Scheduler já existia para {}, cancelando duplicado", username);
-                return false;
-            }
-
-            monitoringMetadata.put(username, new MonitoringMetadata(userEmail, Instant.now()));
-
-            log.info("✅ Monitoramento INICIADO para: {} (email: {})", username, userEmail);
-
-            // ✅ NOVO: registrar atividade do usuário
-            activityTracker.recordActivity(username);
-
-            runFirstCheckAsync(username, userEmail);
-            return true;
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao iniciar monitoramento para {}: {}", username, e.getMessage(), e);
-            return false;
+            return startMonitoring_INTERNAL(username, userEmail);
         } finally {
-            userLock.unlock();
+            lock.unlock();
         }
     }
 
     public boolean stopMonitoring(String username) {
-        if (username == null || username.trim().isEmpty()) {
-            log.error("❌ Username não pode ser nulo ou vazio");
-            return false;
-        }
+        if (username == null || username.isBlank()) return false;
 
-        Lock userLock = userLocks.computeIfAbsent(username, k -> new ReentrantLock());
-        userLock.lock();
+        Lock lock = userLocks.computeIfAbsent(username, k -> new ReentrantLock());
+        lock.lock();
 
         try {
-            ScheduledFuture<?> scheduledTask = activeMonitors.get(username);
-
-            if (scheduledTask == null) {
-                log.warn("⚠️ Nenhum monitoramento ativo para: {}", username);
-                return false;
-            }
-
-            if (scheduledTask.isCancelled() || scheduledTask.isDone()) {
-                log.warn("⚠️ Scheduler já estava cancelado/finalizado para: {}", username);
-                activeMonitors.remove(username);
-                monitoringMetadata.remove(username);
-                return false;
-            }
-
-            boolean cancelled = scheduledTask.cancel(false);
-
-            if (cancelled) {
-                activeMonitors.remove(username);
-                monitoringMetadata.remove(username);
-                log.info("🛑 Monitoramento PARADO para: {}", username);
-                return true;
-            } else {
-                log.warn("⚠️ Falha ao cancelar scheduler para: {}", username);
-                return false;
-            }
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao parar monitoramento para {}: {}", username, e.getMessage(), e);
-            return false;
+            return stopMonitoring_INTERNAL(username);
         } finally {
-            userLock.unlock();
+            lock.unlock();
         }
     }
 
-    public boolean isMonitoringActive(String username) {
-        if (username == null || username.trim().isEmpty()) {
+    // =========================================================
+    //   MÉTODOS INTERNOS (NÃO PEGAM LOCK)
+    // =========================================================
+    private boolean startMonitoring_INTERNAL(String username, String userEmail) {
+
+        // se já existe → parar de forma segura SEM pegar lock
+        if (isMonitoringActiveInternal(username)) {
+            stopMonitoring_INTERNAL(username);
+        }
+
+        log.info("🚀 Iniciando monitoramento para {}...", username);
+
+        ScheduledFuture<?> scheduledTask = taskScheduler.scheduleAtFixedRate(
+                () -> runMonitoringCycle(username, userEmail),
+                Duration.ofMinutes(5)
+        );
+
+        activeMonitors.put(username, scheduledTask);
+        monitoringMetadata.put(username, new MonitoringMetadata(userEmail, Instant.now()));
+
+        // registrar atividade
+        activityTracker.recordActivity(username);
+
+        runFirstCheckAsync(username, userEmail);
+
+        return true;
+    }
+
+    private boolean stopMonitoring_INTERNAL(String username) {
+        ScheduledFuture<?> scheduledTask = activeMonitors.get(username);
+
+        if (scheduledTask == null) {
+            log.warn("⚠️ Nenhum monitoramento ativo para {}", username);
             return false;
         }
+
+        boolean cancelled = scheduledTask.cancel(false);
+
+        activeMonitors.remove(username);
+        monitoringMetadata.remove(username);
+
+        log.info("🛑 Monitoramento PARADO para {}", username);
+
+        return cancelled;
+    }
+
+    // =========================================================
+    //   CONSULTAS
+    // =========================================================
+    public boolean isMonitoringActive(String username) {
+        if (username == null || username.isBlank()) return false;
         return isMonitoringActiveInternal(username);
     }
 
     private boolean isMonitoringActiveInternal(String username) {
         ScheduledFuture<?> task = activeMonitors.get(username);
 
-        if (task == null) {
-            return false;
-        }
+        if (task == null) return false;
 
-        boolean isActive = !task.isCancelled() && !task.isDone();
+        boolean active = !task.isCancelled() && !task.isDone();
 
-        if (!isActive) {
+        if (!active) {
             activeMonitors.remove(username);
             monitoringMetadata.remove(username);
         }
 
-        return isActive;
+        return active;
     }
 
     public Map<String, Object> getMonitoringStatus(String username) {
-        boolean isActive = isMonitoringActive(username);
-        MonitoringMetadata metadata = monitoringMetadata.get(username);
+        MonitoringMetadata meta = monitoringMetadata.get(username);
 
         return Map.of(
                 "username", username,
-                "active", isActive,
-                "email", metadata != null ? metadata.getEmail() : "N/A",
-                "startedAt", metadata != null ? metadata.getStartedAt().toEpochMilli() : 0,
-                "totalActiveMonitors", activeMonitors.size(),
-                "timestamp", System.currentTimeMillis()
+                "active", isMonitoringActive(username),
+                "email", meta != null ? meta.getEmail() : "N/A",
+                "startedAt", meta != null ? meta.getStartedAt().toEpochMilli() : 0,
+                "totalActiveMonitors", activeMonitors.size()
         );
     }
 
@@ -174,69 +144,56 @@ public class MonitoringControlService {
         return Map.of(
                 "totalActiveMonitors", activeMonitors.size(),
                 "activeUsers", activeMonitors.keySet(),
-                "timestamp", System.currentTimeMillis(),
                 "systemHealthy", true
         );
     }
 
-    private void runMonitoringCycle(String username, String userEmail) {
+    // =========================================================
+    //   CICLOS DO MONITORAMENTO
+    // =========================================================
+    private void runMonitoringCycle(String username, String email) {
         try {
-            log.debug("🔄 Executando ciclo de monitoramento para: {}", username);
+            if (!isMonitoringActiveInternal(username)) return;
 
-            if (!isMonitoringActiveInternal(username)) {
-                log.warn("⚠️ Monitoramento não está mais ativo para: {}", username);
-                return;
-            }
-
-            cryptoMonitoringService.updateAndProcessAlertsForUser(userEmail);
-            log.debug("✅ Ciclo concluído para: {}", username);
+            cryptoMonitoringService.updateAndProcessAlertsForUser(email);
 
         } catch (Exception e) {
-            log.error("❌ Erro no ciclo de monitoramento para {}: {}", username, e.getMessage(), e);
+            log.error("Erro no ciclo para {}: {}", username, e.getMessage(), e);
         }
     }
 
-    private void runFirstCheckAsync(String username, String userEmail) {
+    private void runFirstCheckAsync(String username, String email) {
         new Thread(() -> {
             try {
                 Thread.sleep(2000);
-                runMonitoringCycle(username, userEmail);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                log.warn("⚠️ Primeira verificação interrompida para: {}", username);
-            }
+                runMonitoringCycle(username, email);
+            } catch (Exception ignored) {}
         }, "FirstCheck-" + username).start();
     }
 
+    // =========================================================
+    //   SHUTDOWN
+    // =========================================================
     public void stopAllMonitoring() {
-        log.info("🛑 Parando todos os monitoramentos ativos ({} usuários)...", activeMonitors.size());
-
-        activeMonitors.keySet().stream()
-                .toList()
-                .forEach(this::stopMonitoring);
-
-        log.info("✅ Todos os monitoramentos parados");
+        activeMonitors.keySet().forEach(this::stopMonitoring);
     }
 
     @PreDestroy
     public void shutdown() {
-        log.info("🔌 Encerrando MonitoringControlService...");
         stopAllMonitoring();
 
         if (taskScheduler instanceof ThreadPoolTaskScheduler scheduler) {
             scheduler.shutdown();
         }
-
-        log.info("✅ MonitoringControlService encerrado");
     }
 
+    // =========================================================
+    //   UTILS
+    // =========================================================
     private TaskScheduler createTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(10);
         scheduler.setThreadNamePrefix("crypto-monitor-");
-        scheduler.setWaitForTasksToCompleteOnShutdown(true);
-        scheduler.setAwaitTerminationSeconds(60);
-        scheduler.setRejectedExecutionHandler(new java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy());
         scheduler.initialize();
         return scheduler;
     }
@@ -250,12 +207,7 @@ public class MonitoringControlService {
             this.startedAt = startedAt;
         }
 
-        public String getEmail() {
-            return email;
-        }
-
-        public Instant getStartedAt() {
-            return startedAt;
-        }
+        public String getEmail() { return email; }
+        public Instant getStartedAt() { return startedAt; }
     }
 }

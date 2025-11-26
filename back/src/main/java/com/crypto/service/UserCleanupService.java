@@ -4,6 +4,7 @@ import com.crypto.model.User;
 import com.crypto.model.VerificationToken;
 import com.crypto.repository.UserRepository;
 import com.crypto.repository.VerificationTokenRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,33 +15,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * ✅ SERVIÇO DE LIMPEZA DE CONTAS NÃO VERIFICADAS
- *
- * Remove automaticamente:
- * - Contas criadas há mais de 7 dias e não verificadas
+ * Serviço responsável por limpar:
+ * - Contas não verificadas criadas há mais de 7 dias
  * - Tokens de verificação expirados (> 24h)
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class UserCleanupService {
 
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
 
     /**
-     * ✅ CORREÇÃO: Removido @RequiredArgsConstructor (causava ciclo)
-     * Criado construtor manual seguro.
-     */
-    public UserCleanupService(
-            VerificationTokenRepository tokenRepository,
-            UserRepository userRepository
-    ) {
-        this.tokenRepository = tokenRepository;
-        this.userRepository = userRepository;
-    }
-
-    /**
-     * ✅ LIMPEZA AUTOMÁTICA - Executa diariamente às 3h da manhã
+     * Executado diariamente às 3h da manhã
      */
     @Scheduled(cron = "0 0 3 * * *")
     @Transactional
@@ -51,13 +39,14 @@ public class UserCleanupService {
 
         try {
             int tokensRemoved = cleanupExpiredTokens();
-            log.info("   🗑️  Tokens expirados removidos: {}", tokensRemoved);
+            log.info("   🗑️ Tokens expirados removidos: {}", tokensRemoved);
 
             int accountsRemoved = cleanupOldUnverifiedUsers();
-            log.info("   🗑️  Contas não verificadas removidas: {}", accountsRemoved);
+            log.info("   🗑️ Contas não verificadas removidas: {}", accountsRemoved);
 
             log.info("✅ LIMPEZA CONCLUÍDA!");
             log.info("📊 Total: {} tokens + {} contas", tokensRemoved, accountsRemoved);
+
         } catch (Exception e) {
             log.error("❌ ERRO na limpeza automática: {}", e.getMessage(), e);
         }
@@ -66,9 +55,9 @@ public class UserCleanupService {
     }
 
     /**
-     * 📊 LOG DE ESTATÍSTICAS DIÁRIAS
+     * Estatísticas diárias
      */
-    @Scheduled(fixedDelay = 86400000, initialDelay = 3600000)  // 1x/dia
+    @Scheduled(fixedDelay = 86400000, initialDelay = 3600000)
     public void logDailyStats() {
         try {
             Map<String, Object> stats = getUnverifiedStats();
@@ -88,107 +77,64 @@ public class UserCleanupService {
             log.info("   Não verificados antigos (>7d): {}", oldUnverified);
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-            // ⚠️ Alertar se muitas contas não verificadas
-            if (unverified > 100) {
-                log.warn("⚠️ ATENÇÃO: {} contas não verificadas!", unverified);
-                log.warn("   Considere revisar o processo de verificação de email.");
-            }
-
-            if (oldUnverified > 50) {
-                log.warn("⚠️ ATENÇÃO: {} contas antigas não verificadas!", oldUnverified);
-                log.warn("   Limpeza automática removerá em breve.");
-            }
-
         } catch (Exception e) {
             log.error("❌ Erro ao gerar estatísticas: {}", e.getMessage());
         }
     }
 
     /**
-     * ✅ Remover tokens expirados (> 24h)
+     * Remove tokens expirados (> 24 horas)
      */
     @Transactional
     public int cleanupExpiredTokens() {
-        try {
-            LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
+        LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
 
-            List<VerificationToken> expiredTokens = tokenRepository.findAll().stream()
-                    .filter(t -> t.getExpiryDate().isBefore(cutoff))
-                    .toList();
+        List<VerificationToken> expiredTokens =
+                tokenRepository.findAll().stream()
+                        .filter(t -> t.getExpiryDate().isBefore(cutoff))
+                        .toList();
 
-            if (expiredTokens.isEmpty()) {
-                log.debug("ℹ️ Nenhum token expirado encontrado");
-                return 0;
-            }
+        expiredTokens.forEach(tokenRepository::delete);
 
-            expiredTokens.forEach(token -> {
-                log.debug("🗑️ Removendo token: {} (expirado em: {})",
-                        token.getCode(), token.getExpiryDate());
-                tokenRepository.delete(token);
-            });
-
-            return expiredTokens.size();
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao limpar tokens: {}", e.getMessage());
-            return 0;
-        }
+        return expiredTokens.size();
     }
 
     /**
-     * ✅ Remover contas não verificadas antigas (> 7 dias)
+     * Remove usuários não verificados com > 7 dias
      */
     @Transactional
     public int cleanupOldUnverifiedUsers() {
-        try {
-            LocalDateTime cutoff = LocalDateTime.now().minusDays(7);
+        LocalDateTime cutoff = LocalDateTime.now().minusDays(7);
 
-            List<User> usersToDelete = userRepository.findAll().stream()
-                    .filter(u -> !u.getEnabled())
-                    .filter(u -> {
-                        if (u.getCreatedAt() != null)
-                            return u.getCreatedAt().isBefore(cutoff);
+        List<User> usersToDelete = userRepository.findAll().stream()
+                .filter(u -> !u.getEnabled())
+                .filter(u -> {
+                    if (u.getCreatedAt() != null)
+                        return u.getCreatedAt().isBefore(cutoff);
 
-                        return tokenRepository.findByUser(u)
-                                .map(t -> t.getExpiryDate().isBefore(cutoff))
-                                .orElse(true);
-                    })
-                    .toList();
+                    return tokenRepository.findByUser(u)
+                            .map(t -> t.getExpiryDate().isBefore(cutoff))
+                            .orElse(true);
+                })
+                .toList();
 
-            if (usersToDelete.isEmpty()) {
-                log.debug("ℹ️ Nenhuma conta não verificada antiga encontrada");
-                return 0;
-            }
+        usersToDelete.forEach(user -> {
+            tokenRepository.findByUser(user)
+                    .ifPresent(tokenRepository::delete);
 
-            for (User user : usersToDelete) {
-                log.info("🗑️ Removendo conta não verificada: {} ({})",
-                        user.getUsername(), user.getEmail());
+            userRepository.delete(user);
+        });
 
-                tokenRepository.findByUser(user)
-                        .ifPresent(tokenRepository::delete);
-
-                userRepository.delete(user);
-            }
-
-            return usersToDelete.size();
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao limpar contas: {}", e.getMessage());
-            return 0;
-        }
+        return usersToDelete.size();
     }
 
     /**
-     * ✅ LIMPEZA MANUAL - endpoint admin
+     * Limpeza manual via endpoint admin
      */
     @Transactional
     public Map<String, Object> performManualCleanup() {
-        log.info("🧹 LIMPEZA MANUAL INICIADA");
-
         int tokens = cleanupExpiredTokens();
         int accounts = cleanupOldUnverifiedUsers();
-
-        log.info("✅ Limpeza manual concluída: {} tokens, {} contas", tokens, accounts);
 
         return Map.of(
                 "success", true,
@@ -199,45 +145,39 @@ public class UserCleanupService {
     }
 
     /**
-     * 📊 Estatísticas
+     * Estatísticas gerais de verificação
      */
     public Map<String, Object> getUnverifiedStats() {
-        try {
-            List<User> all = userRepository.findAll();
+        List<User> all = userRepository.findAll();
 
-            long total = all.size();
-            long verified = all.stream().filter(User::getEnabled).count();
-            long unverified = total - verified;
+        long total = all.size();
+        long verified = all.stream().filter(User::getEnabled).count();
+        long unverified = total - verified;
 
-            LocalDateTime d1 = LocalDateTime.now().minusDays(1);
-            LocalDateTime d7 = LocalDateTime.now().minusDays(7);
+        LocalDateTime d1 = LocalDateTime.now().minusDays(1);
+        LocalDateTime d7 = LocalDateTime.now().minusDays(7);
 
-            long recent = all.stream()
-                    .filter(u -> !u.getEnabled())
-                    .filter(u -> tokenRepository.findByUser(u)
-                            .map(t -> t.getExpiryDate().isAfter(d1))
-                            .orElse(false))
-                    .count();
+        long recent = all.stream()
+                .filter(u -> !u.getEnabled())
+                .filter(u -> tokenRepository.findByUser(u)
+                        .map(t -> t.getExpiryDate().isAfter(d1))
+                        .orElse(false))
+                .count();
 
-            long old = all.stream()
-                    .filter(u -> !u.getEnabled())
-                    .filter(u -> tokenRepository.findByUser(u)
-                            .map(t -> t.getExpiryDate().isBefore(d7))
-                            .orElse(true))
-                    .count();
+        long old = all.stream()
+                .filter(u -> !u.getEnabled())
+                .filter(u -> tokenRepository.findByUser(u)
+                        .map(t -> t.getExpiryDate().isBefore(d7))
+                        .orElse(true))
+                .count();
 
-            return Map.of(
-                    "totalUsers", total,
-                    "verifiedUsers", verified,
-                    "unverifiedUsers", unverified,
-                    "recentUnverified", recent,
-                    "oldUnverified", old,
-                    "timestamp", LocalDateTime.now()
-            );
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao obter estatísticas: {}", e.getMessage());
-            return Map.of("error", e.getMessage());
-        }
+        return Map.of(
+                "totalUsers", total,
+                "verifiedUsers", verified,
+                "unverifiedUsers", unverified,
+                "recentUnverified", recent,
+                "oldUnverified", old,
+                "timestamp", LocalDateTime.now()
+        );
     }
 }

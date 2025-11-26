@@ -1,6 +1,8 @@
 package com.crypto.config;
 
 import com.crypto.exception.RateLimitExceededException;
+import com.crypto.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -14,6 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.socket.config.annotation.*;
 
+import java.security.Principal;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,23 +25,31 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Configuration
 @EnableWebSocketMessageBroker
 @EnableScheduling
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    /** 🔐 Rate-limit por sessão WebSocket */
-    private final Map<String, AtomicInteger> messageCount = new ConcurrentHashMap<>();
+    private final JwtUtil jwtUtil;
 
+    /**
+     * 🛡 Estrutura com contador + último uso
+     * Evita memory leak e mantém controle preciso por sessão
+     */
+    private final Map<String, SessionRateLimit> sessionLimits = new ConcurrentHashMap<>();
+
+    private static class SessionRateLimit {
+        AtomicInteger counter = new AtomicInteger(0);
+        long lastActivity = System.currentTimeMillis();
+    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
-
         log.info("✅ WebSocket Message Broker configurado");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-
         registry.addEndpoint("/ws/crypto")
                 .setAllowedOriginPatterns(
                         "https://cryptomonitor-theta.vercel.app",
@@ -47,6 +58,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "http://localhost:8080",
                         "http://127.0.0.1:*"
                 )
+                .setHandshakeHandler(new UserHandshakeHandler()) // 🔥 obrigatório p/ autenticação
                 .withSockJS();
 
         log.info("✅ WebSocket endpoint registrado: /ws/crypto");
@@ -55,31 +67,75 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
         registration
-                .setMessageSizeLimit(64 * 1024)          // 64 KB por mensagem
-                .setSendBufferSizeLimit(512 * 1024)      // 512 KB de buffer
-                .setSendTimeLimit(20 * 1000)             // 20 segundos para enviar dados
-                .setTimeToFirstMessage(30 * 1000);       // 30 segundos para enviar primeiro heartbeat
+                .setMessageSizeLimit(64 * 1024)
+                .setSendBufferSizeLimit(512 * 1024)
+                .setSendTimeLimit(20_000)
+                .setTimeToFirstMessage(30_000);
+
         log.info("⏳ WebSocket transport configurado com timeouts");
     }
 
     /**
-     * 🔐 RATE-LIMIT contra flood de WebSocket
-     * Limite: 100 mensagens por minuto por sessão
+     * 🔐 AUTENTICAÇÃO + RATE LIMIT por sessão
      */
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
+
         registration.interceptors(new ChannelInterceptor() {
 
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
+
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
+                // =======================================================
+                // 🔐 1. AUTENTICAÇÃO NA CONEXÃO (CONNECT FRAME)
+                // =======================================================
+                if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+
+                    String tokenHeader = accessor.getFirstNativeHeader("Authorization");
+
+                    if (tokenHeader == null || !tokenHeader.startsWith("Bearer ")) {
+                        log.warn("❌ WebSocket rejeitado: ausência de Authorization Bearer");
+                        throw new IllegalArgumentException("Missing Authorization header");
+                    }
+
+                    String token = tokenHeader.substring(7);
+
+                    try {
+                        String username = jwtUtil.extractUsername(token);
+
+                        if (!jwtUtil.validateToken(token)) {
+                            throw new IllegalArgumentException("Invalid JWT");
+                        }
+
+                        // Define usuário autenticado na sessão WebSocket
+                        accessor.setUser(new Principal() {
+                            @Override
+                            public String getName() {
+                                return username;
+                            }
+                        });
+
+                        log.info("🔐 WebSocket conectado: usuário {}", username);
+
+                    } catch (Exception e) {
+                        log.warn("❌ WebSocket rejeitado: JWT inválido ({})", e.getMessage());
+                        throw new IllegalArgumentException("JWT validation failed");
+                    }
+                }
+
+                // =======================================================
+                // ⚡ 2. RATE LIMIT POR SESSÃO (SEND FRAME)
+                // =======================================================
                 if (StompCommand.SEND.equals(accessor.getCommand())) {
 
                     String sessionId = accessor.getSessionId();
-                    int count = messageCount
-                            .computeIfAbsent(sessionId, k -> new AtomicInteger(0))
-                            .incrementAndGet();
+
+                    SessionRateLimit rl = sessionLimits.computeIfAbsent(sessionId, s -> new SessionRateLimit());
+
+                    int count = rl.counter.incrementAndGet();
+                    rl.lastActivity = System.currentTimeMillis();
 
                     if (count > 100) {
                         log.warn("⚠️ Rate limit WebSocket atingido - Sessão {}", sessionId);
@@ -93,13 +149,27 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     /**
-     * 🔁 Limpa contador a cada minuto
+     * 🧹 LIMPEZA INTELIGENTE — evita memory leak
      */
-    @Scheduled(fixedDelay = 60000)
-    public void resetWebSocketRateLimits() {
-        if (!messageCount.isEmpty()) {
-            log.debug("🧹 Reset WebSocket rate limits ({} sessões)", messageCount.size());
-            messageCount.clear();
-        }
+    @Scheduled(fixedDelay = 60_000)
+    public void cleanupOldSessions() {
+
+        long now = System.currentTimeMillis();
+        long inactivityLimit = 2 * 60_000; // 2 minutos
+
+        sessionLimits.entrySet().removeIf(entry -> {
+            boolean expired = now - entry.getValue().lastActivity > inactivityLimit;
+            if (expired) {
+                log.info("🗑 Removendo sessão WebSocket inativa: {}", entry.getKey());
+            }
+            return expired;
+        });
+
+        // Reset contador das sessões ainda ativas
+        sessionLimits.values().forEach(v -> {
+            v.counter.set(0);
+        });
+
+        log.debug("♻ Sessões ativas após limpeza: {}", sessionLimits.size());
     }
 }
