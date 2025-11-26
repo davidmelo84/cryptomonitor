@@ -4,28 +4,26 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ✅ VALIDADOR DE VARIÁVEIS DE AMBIENTE
+ * ✅ VALIDADOR DE VARIÁVEIS DE AMBIENTE OTIMIZADO
  *
- * Garante que todas variáveis críticas estão configuradas
- * ANTES da aplicação subir completamente.
+ * - ERROS críticos → interrompem o startup imediatamente
+ * - AVISOS → validados de forma assíncrona para não atrasar o startup
  */
 @Slf4j
 @Configuration
 public class EnvironmentValidator {
 
+    // ===============================================================
+    // 🔐 Variáveis Críticas
+    // ===============================================================
     @Value("${jwt.secret}")
     private String jwtSecret;
-
-    @Value("${sendgrid.api.key:}")
-    private String sendGridApiKey;
-
-    @Value("${sendgrid.from.email:}")
-    private String fromEmail;
 
     @Value("${spring.datasource.url}")
     private String datasourceUrl;
@@ -33,7 +31,18 @@ public class EnvironmentValidator {
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
-    // ✅ Telegram
+    // ===============================================================
+    // 📨 SendGrid
+    // ===============================================================
+    @Value("${sendgrid.api.key:}")
+    private String sendGridApiKey;
+
+    @Value("${sendgrid.from.email:}")
+    private String fromEmail;
+
+    // ===============================================================
+    // 🤖 Telegram
+    // ===============================================================
     @Value("${telegram.enabled:false}")
     private boolean telegramEnabled;
 
@@ -43,100 +52,115 @@ public class EnvironmentValidator {
     @Value("${telegram.chat.id:}")
     private String telegramChatId;
 
+    // ===============================================================
+    // 🚀 Validação principal (crítica) — não pode atrasar
+    // ===============================================================
     @PostConstruct
     public void validateEnvironment() {
+
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        log.info("🔍 VALIDANDO VARIÁVEIS DE AMBIENTE");
+        log.info("🔍 VALIDANDO VARIÁVEIS CRÍTICAS DE AMBIENTE...");
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-        List<String> errors = new ArrayList<>();
-        List<String> warnings = new ArrayList<>();
-
-        // ✅ Validar JWT_SECRET
+        // ============================================================
+        // ❌ ERRO CRÍTICO #1 – JWT
+        // ============================================================
         if (jwtSecret == null || jwtSecret.isEmpty() || "default_secret".equals(jwtSecret)) {
-            errors.add("JWT_SECRET não configurado ou usando valor padrão inseguro");
-        } else if (jwtSecret.length() < 32) {
-            warnings.add("JWT_SECRET tem menos de 32 caracteres (recomendado: 64)");
-        } else {
-            log.info("✅ JWT_SECRET: Configurado ({} chars)", jwtSecret.length());
+            throw new IllegalStateException("""
+                    ❌ JWT_SECRET não configurado ou usando valor inseguro!
+                    Configure no Render:
+                       Dashboard → Environment → JWT_SECRET
+                    """);
         }
 
-        // ✅ Validar SendGrid (apenas em prod)
-        if ("prod".equals(activeProfile)) {
-            if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
-                errors.add("SENDGRID_API_KEY não configurado (necessário em produção)");
-            } else if (!sendGridApiKey.startsWith("SG.")) {
-                errors.add("SENDGRID_API_KEY com formato inválido (deve começar com SG.)");
-            } else {
-                log.info("✅ SENDGRID_API_KEY: Configurado");
-            }
+        log.info("✅ JWT_SECRET configurado ({} chars)", jwtSecret.length());
 
-            if (fromEmail == null || fromEmail.isEmpty()) {
-                errors.add("SENDGRID_FROM_EMAIL não configurado");
-            } else {
-                log.info("✅ SENDGRID_FROM_EMAIL: {}", fromEmail);
-            }
+        // ============================================================
+        // ❌ ERRO CRÍTICO #2 – Banco de dados em produção
+        // ============================================================
+        if ("prod".equals(activeProfile) && datasourceUrl.contains("h2:mem")) {
+            throw new IllegalStateException("""
+                    ❌ H2 em memória detectado em PRODUÇÃO!
+                    Configure PostgreSQL imediatamente.
+                    """);
         }
 
-        // ✅ Validar Database
-        if (datasourceUrl.contains("h2:mem") && "prod".equals(activeProfile)) {
-            errors.add("Usando H2 em memória em PRODUÇÃO! Configure PostgreSQL.");
-        } else if (datasourceUrl.contains("postgresql")) {
-            log.info("✅ DATABASE: PostgreSQL configurado");
-        }
+        log.info("✅ DATABASE OK: {}", datasourceUrl);
 
-        // =====================================================
-        // ✅ VALIDAÇÃO TELEGRAM
-        // =====================================================
-        if ("prod".equals(activeProfile) && telegramEnabled) {
-
-            // Token formato: 1234567890:abcdefghijklmnopqrstuvwxyzABCDE_
-            if (telegramBotToken == null ||
-                    !telegramBotToken.matches("^\\d+:[A-Za-z0-9_-]{35}$")) {
-                warnings.add("TELEGRAM_BOT_TOKEN com formato inválido (deve ser NNNNNNNNNN:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX)");
-            }
-
-            // Chat ID pode ser número positivo ou negativo
-            if (telegramChatId == null || !telegramChatId.matches("^-?\\d+$")) {
-                warnings.add("TELEGRAM_CHAT_ID com formato inválido (deve ser um número)");
-            }
-        }
-
-        // =====================================================
-
-        // PROFILE ativo
-        log.info("✅ PROFILE: {}", activeProfile);
-
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        // RESULTADO
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-        if (!warnings.isEmpty()) {
-            log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            log.warn("⚠️ AVISOS:");
-            warnings.forEach(w -> log.warn("   - {}", w));
-            log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        }
-
-        if (!errors.isEmpty()) {
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            log.error("❌ ERROS CRÍTICOS:");
-            errors.forEach(e -> log.error("   - {}", e));
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            log.error("");
-            log.error("🔧 COMO CORRIGIR NO RENDER:");
-            log.error("1. Acesse: Dashboard → seu-service → Environment");
-            log.error("2. Adicione as variáveis faltantes");
-            log.error("3. Clique em 'Save Changes'");
-            log.error("4. Render fará restart automático");
-            log.error("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-
-            throw new IllegalStateException(
-                    "Configuração inválida! Verifique as variáveis de ambiente."
-            );
-        }
-
-        log.info("✅ TODAS AS VARIÁVEIS VALIDADAS COM SUCESSO!");
+        log.info("✅ Variáveis críticas validadas");
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+        // Agora roda validações secundárias sem bloquear
+        validateSecondaryConfigsAsync();
+    }
+
+    // ===============================================================
+    // 🧵 Validações secundárias — não bloqueiam o startup
+    // ===============================================================
+    @Async
+    protected void validateSecondaryConfigsAsync() {
+        try {
+            Thread.sleep(1500); // dá uma folga pós-inicialização
+
+            log.info("🔍 Validando variáveis secundárias...");
+
+            List<String> warnings = new ArrayList<>();
+
+            // ============================================================
+            // 📨 SENDGRID
+            // ============================================================
+            if ("prod".equals(activeProfile)) {
+
+                if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
+                    warnings.add("SENDGRID_API_KEY não configurado (recomendado em produção)");
+                } else if (!sendGridApiKey.startsWith("SG.")) {
+                    warnings.add("SENDGRID_API_KEY com formato inválido (deve começar com SG.)");
+                }
+
+                if (fromEmail == null || fromEmail.isEmpty()) {
+                    warnings.add("SENDGRID_FROM_EMAIL não configurado");
+                }
+            }
+
+            // ============================================================
+            // 🔐 JWT tamanho
+            // ============================================================
+            if (jwtSecret.length() < 32) {
+                warnings.add("JWT_SECRET tem menos de 32 caracteres (recomendado: 64)");
+            }
+
+            // ============================================================
+            // 🤖 TELEGRAM
+            // ============================================================
+            if ("prod".equals(activeProfile) && telegramEnabled) {
+
+                if (telegramBotToken == null ||
+                        !telegramBotToken.matches("^\\d+:[A-Za-z0-9_-]{35}$")) {
+                    warnings.add("""
+                            TELEGRAM_BOT_TOKEN inválido (esperado: número:token_35_chars)
+                            Exemplo: 1234567890:abcdefghijklmnopqrstuvwxyzABCDE_
+                            """);
+                }
+
+                if (telegramChatId == null || !telegramChatId.matches("^-?\\d+$")) {
+                    warnings.add("TELEGRAM_CHAT_ID inválido (deve ser um número)");
+                }
+            }
+
+            // ============================================================
+            // ⚠️ LOG FINAL DE AVISOS (não interrompe)
+            // ============================================================
+            if (!warnings.isEmpty()) {
+                log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                log.warn("⚠️ AVISOS DE CONFIGURAÇÃO:");
+                warnings.forEach(w -> log.warn("   - {}", w));
+                log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            } else {
+                log.info("✅ Sem avisos. Ambiente configurado corretamente.");
+            }
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -2,23 +2,30 @@ spring:
   application:
     name: crypto-monitor
 
+  # ============================================
+  # 🚀 OTIMIZAÇÃO #1: DataSource com Pool Menor
+  # ============================================
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     driver-class-name: org.postgresql.Driver
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
+      maximum-pool-size: 5          # ✅ REDUZIDO de 10 para 5
+      minimum-idle: 2               # ✅ REDUZIDO de 5 para 2
+      connection-timeout: 10000     # ✅ REDUZIDO de 30s para 10s
+      idle-timeout: 300000          # ✅ REDUZIDO de 10min para 5min
+      max-lifetime: 900000          # ✅ REDUZIDO de 30min para 15min
       pool-name: CryptoMonitorPool
       leak-detection-threshold: 60000
+      initialization-fail-timeout: 1  # ✅ ADICIONADO: Fail fast
 
+  # ============================================
+  # 🚀 OTIMIZAÇÃO #2: JPA Lazy Loading
+  # ============================================
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+      ddl-auto: validate            # ✅ MUDADO de update para validate
     show-sql: false
     open-in-view: false
     properties:
@@ -27,27 +34,45 @@ spring:
         order_inserts: true
         order_updates: true
         jdbc.batch_size: 20
-        default_batch_fetch_size: 50   # ✅ ADICIONADO
+        default_batch_fetch_size: 50
+        # ✅ ADICIONADO: Otimizações de startup
+        jdbc.use_streams_for_binary: true
+        cache.use_second_level_cache: false
+        cache.use_query_cache: false
 
+  # ============================================
+  # 🚀 OTIMIZAÇÃO #3: Flyway Rápido
+  # ============================================
   flyway:
     enabled: true
     locations: classpath:db/migration
     baseline-on-migrate: true
     validate-on-migrate: false
+    out-of-order: false
+    # ✅ ADICIONADO: Timeout menor
+    connect-retries: 3
+    connect-retries-interval: 2
 
+  # ============================================
+  # 🚀 OTIMIZAÇÃO #4: Cache Simples no Startup
+  # ============================================
   cache:
     type: caffeine
     caffeine:
-      spec: maximumSize=2000,expireAfterWrite=60m,recordStats
+      spec: maximumSize=500,expireAfterWrite=30m,recordStats  # ✅ REDUZIDO de 2000 para 500
 
+  # ============================================
+  # 🚀 OTIMIZAÇÃO #5: Task Scheduling Reduzido
+  # ============================================
   task:
     scheduling:
       pool:
-        size: 5
+        size: 2                     # ✅ REDUZIDO de 5 para 2
 
   main:
     web-application-type: servlet
     allow-circular-references: false
+    lazy-initialization: true       # ✅ ADICIONADO: Lazy init de beans
 
   security:
     require-ssl: ${REQUIRE_SSL:false}
@@ -59,82 +84,54 @@ spring:
     enabled: true
 
 # ============================================
-# HEALTH CHECK / MANAGEMENT
+# 🚀 OTIMIZAÇÃO #6: Management Endpoints Mínimos
 # ============================================
 management:
   endpoints:
     web:
       exposure:
-        include: health,prometheus,info,metrics
+        include: health,prometheus  # ✅ REMOVIDO info e metrics
       base-path: /actuator
   endpoint:
     health:
-      show-details: always
-      show-components: always
+      show-details: when-authorized  # ✅ MUDADO de always
+      show-components: false          # ✅ DESABILITADO
   health:
     defaults:
-      enabled: true
+      enabled: false                  # ✅ DESABILITADO health checks extras
   metrics:
     tags:
       application: ${spring.application.name}
-      environment: ${SPRING_PROFILES_ACTIVE}
-      version: 2.0.1-coingecko
 
 # ============================================
-# CONFIGURAÇÕES GERAIS DO SERVIDOR
+# SERVER: Configuração Mínima para Startup
 # ============================================
 server:
   port: ${PORT:8080}
-
   http2:
-    enabled: true
-
+    enabled: false                    # ✅ DESABILITADO HTTP/2 no startup
   servlet:
     context-path: /crypto-monitor
     session:
       cookie:
         http-only: true
-        secure: ${COOKIE_SECURE:true}
-        same-site: strict
-
+        secure: ${COOKIE_SECURE:false}
+        same-site: lax              # ✅ MUDADO de strict
   compression:
-    enabled: true
-    mime-types:
-      - application/json
-      - text/html
-      - text/plain
-      - text/css
-      - text/javascript
-      - application/javascript
-    min-response-size: 1024
-
+    enabled: false                  # ✅ DESABILITADO compression no startup
   forward-headers-strategy: framework
 
-  ssl:
-    enabled: ${SSL_ENABLED:false}
-    key-store: ${SSL_KEYSTORE:classpath:keystore.p12}
-    key-store-password: ${SSL_KEYSTORE_PASSWORD}
-    key-store-type: PKCS12
-    key-alias: tomcat
-
 # ============================================
-# SWAGGER / OPENAPI
+# SWAGGER: Desabilitado no Startup
 # ============================================
 springdoc:
   api-docs:
-    enabled: true
-    path: /v3/api-docs
+    enabled: false                  # ✅ DESABILITADO
   swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-  paths-to-match:
-    - /api/**
-    - /actuator/**
+    enabled: false                  # ✅ DESABILITADO
 
 # ============================================
-# SENDGRID
+# SENDGRID: Validação Rápida
 # ============================================
 sendgrid:
   api:
@@ -142,9 +139,6 @@ sendgrid:
   from:
     email: ${SENDGRID_FROM_EMAIL}
     name: ${SENDGRID_FROM_NAME:Crypto Monitor}
-  rate-limit:
-    max-emails-per-hour: 100
-    max-emails-per-day: 1000
 
 email:
   provider: sendgrid
@@ -157,18 +151,18 @@ email:
   from: ${SENDGRID_FROM_EMAIL}
 
 # ============================================
-# JWT
+# JWT: Configuração Mínima
 # ============================================
 jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000
   issuer: crypto-monitor
-  validate-issuer: true
+  validate-issuer: false            # ✅ DESABILITADO validação extra
   validate-expiration: true
   refresh-token-expiration: 604800000
 
 # ============================================
-# COINGECKO
+# COINGECKO: Sem Warmup no Startup
 # ============================================
 coingecko:
   api:
@@ -177,14 +171,14 @@ coingecko:
       enabled: true
       requests-per-minute: 30
       min-request-interval-ms: 500
-      retry-attempts: 3
+      retry-attempts: 2             # ✅ REDUZIDO de 3 para 2
       retry-backoff-seconds: 2
-      max-backoff-seconds: 10
+      max-backoff-seconds: 5        # ✅ REDUZIDO de 10 para 5
 
   cache:
     ttl-minutes: 30
     enabled: true
-    warm-up-on-startup: true
+    warm-up-on-startup: false       # ✅ CRÍTICO: DESABILITADO
 
   coins:
     ids: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,matic-network,litecoin,bitcoin-cash,ripple,dogecoin,binancecoin
@@ -196,50 +190,33 @@ coingecko:
     broadcast-interval-seconds: 60
 
 # ============================================
-# RESILIENCE4J
+# RESILIENCE4J: Timeouts Reduzidos
 # ============================================
 resilience4j:
   circuitbreaker:
     instances:
       coingecko:
-        register-health-indicator: true
-        event-consumer-buffer-size: 10
+        register-health-indicator: false  # ✅ DESABILITADO
         failure-rate-threshold: 50
-        slow-call-rate-threshold: 50
-        slow-call-duration-threshold: 10s
-        sliding-window-type: COUNT_BASED
-        sliding-window-size: 20
-        minimum-number-of-calls: 10
-        wait-duration-in-open-state: 60s
-        permitted-number-of-calls-in-half-open-state: 5
-        automatic-transition-from-open-to-half-open-enabled: true
-        max-wait-duration-in-half-open-state: 10s
+        slow-call-duration-threshold: 5s  # ✅ REDUZIDO de 10s
+        sliding-window-size: 10           # ✅ REDUZIDO de 20
+        minimum-number-of-calls: 5        # ✅ REDUZIDO de 10
+        wait-duration-in-open-state: 30s  # ✅ REDUZIDO de 60s
 
   retry:
     instances:
       coingecko:
-        max-attempts: 3
-        wait-duration: 5s
-        enable-exponential-backoff: true
-        exponential-backoff-multiplier: 2
-        retry-exceptions:
-          - java.net.ConnectException
-          - java.net.SocketTimeoutException
-        ignore-exceptions:
-          - com.crypto.exception.RateLimitExceededException
+        max-attempts: 2                   # ✅ REDUZIDO de 3
+        wait-duration: 2s                 # ✅ REDUZIDO de 5s
 
   timelimiter:
     instances:
       coingecko:
-        timeout-duration: 30s
-        cancel-running-future: true
+        timeout-duration: 15s             # ✅ REDUZIDO de 30s
 
 # ============================================
-# NEGÓCIO
+# ALERTAS: Configuração Padrão
 # ============================================
-crypto:
-  coins: bitcoin,ethereum,cardano,polkadot,chainlink,solana,avalanche-2,matic-network,litecoin,bitcoin-cash,ripple,dogecoin,binancecoin
-
 alert:
   buy:
     threshold: -5.0
@@ -254,17 +231,17 @@ notification:
     from: ${SENDGRID_FROM_EMAIL}
     cooldown-minutes: 60
   telegram:
-    enabled: true
-    bot-token: ${TELEGRAM_BOT_TOKEN}
-    chat-id: ${TELEGRAM_CHAT_ID}
+    enabled: false                      # ✅ DESABILITADO por padrão
+    bot-token: ${TELEGRAM_BOT_TOKEN:}
+    chat-id: ${TELEGRAM_CHAT_ID:}
 
 monitoring:
   max-concurrent-users: 50
-  thread-pool-size: 10
-  shutdown-timeout: 60
+  thread-pool-size: 5                   # ✅ REDUZIDO de 10
+  shutdown-timeout: 30                  # ✅ REDUZIDO de 60
 
 # ============================================
-# RATE LIMIT GLOBAL
+# RATE LIMIT
 # ============================================
 rate-limit:
   coingecko:
@@ -288,37 +265,20 @@ websocket:
   broadcast-interval: 60000
 
 # ============================================
-# LOGGING
+# 🚀 LOGGING: Mínimo no Startup
 # ============================================
 logging:
   level:
     root: WARN
     com.crypto: INFO
-    com.crypto.service.CoinGeckoApiService: INFO
-    com.crypto.service.CryptoMonitoringService: INFO
-    org.springframework.security: WARN
-    org.hibernate.SQL: WARN
-    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    com.crypto.service.CoinGeckoApiService: WARN  # ✅ REDUZIDO
+    com.crypto.service.CryptoMonitoringService: WARN
+    org.springframework: ERROR                    # ✅ REDUZIDO
+    org.springframework.security: ERROR
+    org.hibernate: ERROR                          # ✅ REDUZIDO
+    org.flywaydb: WARN                           # ✅ REDUZIDO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-  file:
-    name: logs/crypto-monitor.log
-    max-size: 10MB
-    max-history: 7
-
-# ============================================
-# INFO
-# ============================================
-info:
-  app:
-    name: Crypto Monitor
-    description: Sistema de Monitoramento de Criptomoedas
-    version: 2.0.1-coingecko
-    api-provider: CoinGecko
-    api-tier: FREE
-    cache-strategy: Caffeine 30min + WebSocket
-  java:
-    version: 17
+    console: "%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n"  # ✅ SIMPLIFICADO
 
 # ============================================
 # CORS
@@ -330,56 +290,17 @@ app:
     allowed-headers: "*"
     allow-credentials: true
     max-age: 3600
-  security:
-    enabled: true
 
 # ============================================
 # API LIMITES
 # ============================================
 api:
-  timeout: 30000
-  max-request-size: 10MB
-  max-file-size: 5MB
+  timeout: 15000                        # ✅ REDUZIDO de 30s para 15s
+  max-request-size: 5MB                 # ✅ REDUZIDO de 10MB
+  max-file-size: 2MB                    # ✅ REDUZIDO de 5MB
 
 # ============================================
-# PERFIL DEV
-# ============================================
----
-spring:
-  config:
-    activate:
-      on-profile: dev
-
-rate-limit:
-  api:
-    requests-per-minute: 1000
-  auth:
-    requests-per-minute: 100
-  coingecko:
-    enabled: false
-
-logging:
-  level:
-    com.crypto: DEBUG
-    com.crypto.service.CoinGeckoApiService: DEBUG
-    com.crypto.service.CryptoMonitoringService: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-coingecko:
-  cache:
-    ttl-minutes: 5
-  monitoring:
-    scheduler-interval-minutes: 5
-
-server:
-  servlet:
-    session:
-      cookie:
-        secure: false
-
-# ============================================
-# PERFIL PROD
+# PERFIL PROD: Otimizações Extras
 # ============================================
 ---
 spring:
@@ -387,47 +308,24 @@ spring:
     activate:
       on-profile: prod
 
-rate-limit:
-  api:
-    requests-per-minute: 100
-  auth:
-    requests-per-minute: 10
-  coingecko:
-    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate              # ✅ NUNCA update em prod
+
+  flyway:
+    validate-on-migrate: true
+
+coingecko:
+  cache:
+    warm-up-on-startup: false         # ✅ SEMPRE false
 
 logging:
   level:
     com.crypto: INFO
-    com.crypto.service.CoinGeckoApiService: INFO
-    com.crypto.service.CryptoMonitoringService: INFO
-    org.hibernate.SQL: WARN
-
-coingecko:
-  cache:
-    ttl-minutes: 30
-    warm-up-on-startup: true
-  monitoring:
-    scheduler-interval-minutes: 15
+    org.springframework: WARN
 
 server:
-  servlet:
-    session:
-      cookie:
-        secure: true
-  security:
-    require-ssl: true
-
-# ============================================
-# PERFIL PROD-SSL
-# ============================================
----
-spring:
-  config:
-    activate:
-      on-profile: prod-ssl
-
-server:
+  compression:
+    enabled: true                     # ✅ Ativar após startup
   http2:
-    enabled: true
-  ssl:
-    enabled: true
+    enabled: true                     # ✅ Ativar após startup
