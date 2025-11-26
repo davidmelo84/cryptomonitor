@@ -407,7 +407,7 @@ coingecko:
     ttl-minutes: 30
     warm-up-on-startup: true
   monitoring:
-    scheduler-interval-minutes: 60
+    scheduler-interval-minutes: 15
 
 server:
   servlet:

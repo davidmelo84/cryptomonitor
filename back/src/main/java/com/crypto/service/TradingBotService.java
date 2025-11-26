@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Isolation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -152,7 +153,7 @@ public class TradingBotService {
         int currentGridLevel = priceFromLower.divide(gridSize, 0, RoundingMode.DOWN).intValue();
 
         if (currentGridLevel < bot.getGridLevels() / 3) {
-            executeTrade(bot, crypto, BotTrade.TradeSide.BUY, "Grid Trading - Zona de compra");
+            executeTrade(bot, crypto, BotTrade.TradeSide.BBUY, "Grid Trading - Zona de compra");
         } else if (currentGridLevel > (bot.getGridLevels() * 2 / 3)) {
             executeTrade(bot, crypto, BotTrade.TradeSide.SELL, "Grid Trading - Zona de venda");
         }
@@ -268,7 +269,7 @@ public class TradingBotService {
     }
 
     // ---------------------------------------------------------
-    // NOVO MÉTODO (OBRIGATÓRIO)
+    // NOVO MÉTODO
     // ---------------------------------------------------------
     private BigDecimal getAvailableBalance(TradingBot bot) {
 
@@ -290,11 +291,11 @@ public class TradingBotService {
     }
 
     // ---------------------------------------------------------
-    // EXECUTAR VENDA — VERSÃO FINAL
+    // EXECUTAR VENDA — ATUALIZADO COM ISOLAMENTO SERIALIZABLE
     // ---------------------------------------------------------
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     private void executeSell(TradingBot bot, BigDecimal price, BigDecimal quantity, String reason) {
 
-        // 1️⃣ Validação de saldo
         BigDecimal available = getAvailableBalance(bot);
 
         if (available.compareTo(quantity) < 0) {
@@ -302,7 +303,6 @@ public class TradingBotService {
             return;
         }
 
-        // 2️⃣ Buscar compras (FIFO)
         List<BotTrade> buys = tradeRepository.findByBotAndSideOrderByExecutedAtAsc(
                 bot, BotTrade.TradeSide.BUY);
 
@@ -333,7 +333,6 @@ public class TradingBotService {
 
         BigDecimal executedQty = quantity.subtract(remaining);
 
-        // 3️⃣ Registrar a venda
         BotTrade trade = BotTrade.builder()
                 .bot(bot)
                 .coinSymbol(bot.getCoinSymbol())
@@ -347,7 +346,6 @@ public class TradingBotService {
 
         tradeRepository.save(trade);
 
-        // 4️⃣ Atualizar métricas
         bot.setTotalTrades(bot.getTotalTrades() + 1);
         bot.setTotalProfitLoss(bot.getTotalProfitLoss().add(totalProfit));
 

@@ -33,7 +33,7 @@ public class UserActivityTracker {
     private final Map<String, UserActivity> activeUsers = new ConcurrentHashMap<>();
     private final MonitoringControlService monitoringService;
 
-    private static final long INACTIVITY_THRESHOLD_MS = 15 * 60 * 1000; // 15 minutos
+    private static final long INACTIVITY_THRESHOLD_MS = 60 * 60 * 1000; // 15 minutos
     private static final long HEARTBEAT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutos
 
     // ✅ FIX: @Lazy quebra a dependência circular

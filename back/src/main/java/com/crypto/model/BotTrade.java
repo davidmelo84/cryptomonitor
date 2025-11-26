@@ -69,6 +69,6 @@ public class BotTrade {
 
     public enum TradeSide {
         BUY,
-        SELL
+        BBUY, SELL
     }
 }

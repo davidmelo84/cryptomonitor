@@ -13,6 +13,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.security.SecureRandom;
 import java.util.UUID;
 
@@ -33,10 +35,11 @@ public class VerificationService {
     }
 
     // ============================================================
-    //  MÉTODO COM RETRY AUTOMÁTICO + EXPONENTIAL BACKOFF
+    //  MÉTODO COM RETRY CORRIGIDO — APENAS ERROS DE REDE
     // ============================================================
     @Retryable(
-            value = { Exception.class },
+            value = { IOException.class, SocketTimeoutException.class },  // ✅ Apenas falhas recuperáveis
+            exclude = { IllegalArgumentException.class },                 // ❌ Email inválido → sem retry
             maxAttempts = 3,
             backoff = @Backoff(delay = 2000, multiplier = 2) // 2s → 4s → 8s
     )
@@ -91,9 +94,7 @@ public class VerificationService {
         log.info("   🔑 Token salvo no banco: {}", LogMasker.maskToken(token));
         log.info("   🔢 Código gerado: ****** (oculto por segurança)");
 
-        // --------------------------------------
-        // ENVIO DE EMAIL COM SPRING RETRY
-        // --------------------------------------
+        // ENVIO DE EMAIL COM RETRY CORRIGIDO
         String subject = "🔐 Código de Verificação - Crypto Monitor";
 
         String body = String.format("""
@@ -114,7 +115,6 @@ public class VerificationService {
                 https://cryptomonitor-theta.vercel.app
                 """, user.getUsername(), code);
 
-        // Agora o retry é automático
         sendEmailWithRetry(user.getEmail(), subject, body);
 
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -122,9 +122,6 @@ public class VerificationService {
         return code;
     }
 
-    /**
-     * Mantido apenas para compatibilidade; não envia mais email diretamente.
-     */
     public void sendVerificationEmail(User user, String code) {
         log.warn("⚠️ sendVerificationEmail() foi chamado, mas o envio síncrono já ocorre em createVerificationToken.");
     }
@@ -162,9 +159,6 @@ public class VerificationService {
                 }).orElse(false);
     }
 
-    // ============================================================
-    //  REENVIAR CÓDIGO
-    // ============================================================
     @Transactional
     public boolean resendCode(String email) {
         log.info("🔄 Reenviando código para: {}", LogMasker.maskEmail(email));
