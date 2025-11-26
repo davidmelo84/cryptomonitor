@@ -52,5 +52,6 @@ public class CryptoCurrency {
     @JsonProperty("total_volume")
     private BigDecimal totalVolume;
 
+    @Builder.Default
     private LocalDateTime lastUpdated = LocalDateTime.now();
 }

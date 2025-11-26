@@ -1,7 +1,7 @@
 package com.crypto.config;
 
 import com.crypto.exception.RateLimitExceededException;
-import com.crypto.util.JwtUtil;
+import com.crypto.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;

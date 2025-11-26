@@ -30,6 +30,7 @@ public class VerificationToken {
     private LocalDateTime expiryDate;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean verified = false;
 
     @PrePersist
