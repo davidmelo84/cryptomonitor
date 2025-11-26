@@ -105,21 +105,37 @@ public class TradingBot {
     @Column(name = "stopped_at")
     private LocalDateTime stoppedAt;
 
+    /**
+     * ✅ ÚNICO MÉTODO @PrePersist
+     * Executa antes de INSERT no banco
+     */
     @PrePersist
     protected void onCreate() {
+        // 1. Definir timestamp
         createdAt = LocalDateTime.now();
+
+        // 2. Validar simulação (NUNCA permitir trading real)
+        validateSimulation();
+    }
+
+    /**
+     * ✅ VALIDAÇÃO EXECUTADA EM @PrePersist E @PreUpdate
+     */
+    @PreUpdate
+    protected void onUpdate() {
+        validateSimulation();
     }
 
     /**
      * 🔒 Validação: NUNCA permitir trading real
      */
-    @PrePersist
-    @PreUpdate
-    protected void validateSimulation() {
+    private void validateSimulation() {
+        // Garantir que isSimulation nunca seja null
         if (isSimulation == null) {
             isSimulation = true;
         }
 
+        // 🚨 BLOQUEIO CRÍTICO: Impedir trading real
         if (!isSimulation) {
             throw new UnsupportedOperationException(
                     "🚨 TRADING REAL DESABILITADO POR SEGURANÇA!\n\n" +
@@ -133,6 +149,10 @@ public class TradingBot {
             );
         }
     }
+
+    // =========================================
+    // ENUMS
+    // =========================================
 
     public enum TradingStrategy {
         GRID_TRADING,
