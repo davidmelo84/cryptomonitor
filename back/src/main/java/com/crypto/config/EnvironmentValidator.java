@@ -4,16 +4,16 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.Async;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * ✅ VALIDADOR DE VARIÁVEIS DE AMBIENTE OTIMIZADO
+ * ✅ VALIDADOR DE VARIÁVEIS DE AMBIENTE (OTIMIZADO)
  *
- * - ERROS críticos → interrompem o startup imediatamente
- * - AVISOS → validados de forma assíncrona para não atrasar o startup
+ * - Erros críticos → interrompem o startup imediatamente
+ * - Avisos → validados de forma assíncrona (não atrasam o startup)
  */
 @Slf4j
 @Configuration
@@ -53,7 +53,7 @@ public class EnvironmentValidator {
     private String telegramChatId;
 
     // ===============================================================
-    // 🚀 Validação principal (crítica) — não pode atrasar
+    // 🚀 Validação principal (crítica)
     // ===============================================================
     @PostConstruct
     public void validateEnvironment() {
@@ -72,7 +72,6 @@ public class EnvironmentValidator {
                        Dashboard → Environment → JWT_SECRET
                     """);
         }
-
         log.info("✅ JWT_SECRET configurado ({} chars)", jwtSecret.length());
 
         // ============================================================
@@ -84,83 +83,83 @@ public class EnvironmentValidator {
                     Configure PostgreSQL imediatamente.
                     """);
         }
-
         log.info("✅ DATABASE OK: {}", datasourceUrl);
 
         log.info("✅ Variáveis críticas validadas");
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-        // Agora roda validações secundárias sem bloquear
-        validateSecondaryConfigsAsync();
+        // ============================================================
+        // 🔄 Execução assíncrona sem @Async
+        // ============================================================
+        CompletableFuture.runAsync(this::validateSecondaryConfigs);
     }
 
     // ===============================================================
-    // 🧵 Validações secundárias — não bloqueiam o startup
+    // 🧵 Validação secundária — NÃO bloqueia o startup
     // ===============================================================
-    @Async
-    protected void validateSecondaryConfigsAsync() {
+    private void validateSecondaryConfigs() {
         try {
-            Thread.sleep(1500); // dá uma folga pós-inicialização
-
-            log.info("🔍 Validando variáveis secundárias...");
-
-            List<String> warnings = new ArrayList<>();
-
-            // ============================================================
-            // 📨 SENDGRID
-            // ============================================================
-            if ("prod".equals(activeProfile)) {
-
-                if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
-                    warnings.add("SENDGRID_API_KEY não configurado (recomendado em produção)");
-                } else if (!sendGridApiKey.startsWith("SG.")) {
-                    warnings.add("SENDGRID_API_KEY com formato inválido (deve começar com SG.)");
-                }
-
-                if (fromEmail == null || fromEmail.isEmpty()) {
-                    warnings.add("SENDGRID_FROM_EMAIL não configurado");
-                }
-            }
-
-            // ============================================================
-            // 🔐 JWT tamanho
-            // ============================================================
-            if (jwtSecret.length() < 32) {
-                warnings.add("JWT_SECRET tem menos de 32 caracteres (recomendado: 64)");
-            }
-
-            // ============================================================
-            // 🤖 TELEGRAM
-            // ============================================================
-            if ("prod".equals(activeProfile) && telegramEnabled) {
-
-                if (telegramBotToken == null ||
-                        !telegramBotToken.matches("^\\d+:[A-Za-z0-9_-]{35}$")) {
-                    warnings.add("""
-                            TELEGRAM_BOT_TOKEN inválido (esperado: número:token_35_chars)
-                            Exemplo: 1234567890:abcdefghijklmnopqrstuvwxyzABCDE_
-                            """);
-                }
-
-                if (telegramChatId == null || !telegramChatId.matches("^-?\\d+$")) {
-                    warnings.add("TELEGRAM_CHAT_ID inválido (deve ser um número)");
-                }
-            }
-
-            // ============================================================
-            // ⚠️ LOG FINAL DE AVISOS (não interrompe)
-            // ============================================================
-            if (!warnings.isEmpty()) {
-                log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-                log.warn("⚠️ AVISOS DE CONFIGURAÇÃO:");
-                warnings.forEach(w -> log.warn("   - {}", w));
-                log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            } else {
-                log.info("✅ Sem avisos. Ambiente configurado corretamente.");
-            }
-
+            Thread.sleep(1500); // pequena folga pós-startup
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        }
+
+        log.info("🔍 Validando variáveis secundárias...");
+
+        List<String> warnings = new ArrayList<>();
+
+        // ============================================================
+        // 📨 SENDGRID
+        // ============================================================
+        if ("prod".equals(activeProfile)) {
+
+            if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
+                warnings.add("SENDGRID_API_KEY não configurado (recomendado em produção)");
+            } else if (!sendGridApiKey.startsWith("SG.")) {
+                warnings.add("SENDGRID_API_KEY com formato inválido (deve começar com SG.)");
+            }
+
+            if (fromEmail == null || fromEmail.isEmpty()) {
+                warnings.add("SENDGRID_FROM_EMAIL não configurado");
+            }
+        }
+
+        // ============================================================
+        // 🔐 JWT tamanho
+        // ============================================================
+        if (jwtSecret.length() < 32) {
+            warnings.add("JWT_SECRET tem menos de 32 caracteres (recomendado: 64)");
+        }
+
+        // ============================================================
+        // 🤖 TELEGRAM
+        // ============================================================
+        if ("prod".equals(activeProfile) && telegramEnabled) {
+
+            if (telegramBotToken == null ||
+                    !telegramBotToken.matches("^\\d+:[A-Za-z0-9_-]{35}$")) {
+
+                warnings.add("""
+                        TELEGRAM_BOT_TOKEN inválido (esperado: número:token_de_35_caracteres)
+                        Exemplo: 1234567890:abcdefghijklmnopqrstuvwxyzABCDE_
+                        """);
+            }
+
+            if (telegramChatId == null || !telegramChatId.matches("^-?\\d+$")) {
+                warnings.add("TELEGRAM_CHAT_ID inválido (deve ser um número)");
+            }
+        }
+
+        // ============================================================
+        // ⚠️ LOG FINAL DE AVISOS
+        // ============================================================
+        if (!warnings.isEmpty()) {
+            log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+            log.warn("⚠️ AVISOS DE CONFIGURAÇÃO:");
+            warnings.forEach(w -> log.warn("   - {}", w));
+            log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        } else {
+            log.info("✅ Sem avisos. Ambiente configurado corretamente.");
         }
     }
 }
