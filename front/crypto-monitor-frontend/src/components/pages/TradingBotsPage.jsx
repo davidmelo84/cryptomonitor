@@ -1,11 +1,12 @@
 // front/crypto-monitor-frontend/src/components/pages/TradingBotsPage.jsx
-// ✅ VERSÃO FINAL COMPLETA - DARK MODE + CRIAÇÃO DE BOTS
+// ✅ VERSÃO FINAL COMPLETA - DARK MODE + CRIAÇÃO DE BOTS (AGORA SEM HARD-CODED URL)
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
 import { formatCurrency, formatPercent, formatPercentWithSign } from '../../utils/formatters';
 import CreateBotModal from '../bots/CreateBotModal';
+import { API_BASE_URL } from '../../utils/constants';   // <<<<<< ADICIONADO
 import '../../styles/trading-bots.css';
 
 function TradingBotsPage({ token, onBack }) {
@@ -19,7 +20,7 @@ function TradingBotsPage({ token, onBack }) {
   const fetchBots = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/crypto-monitor/api/bots', {
+      const response = await fetch(`${API_BASE_URL}/bots`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -51,7 +52,7 @@ function TradingBotsPage({ token, onBack }) {
     try {
       const endpoint = currentStatus === 'RUNNING' ? 'stop' : 'start';
       const response = await fetch(
-        `http://localhost:8080/crypto-monitor/api/bots/${botId}/${endpoint}`,
+        `${API_BASE_URL}/bots/${botId}/${endpoint}`,
         {
           method: 'POST',
           headers: {
@@ -75,7 +76,7 @@ function TradingBotsPage({ token, onBack }) {
     if (!window.confirm('Deseja realmente excluir este bot?')) return;
     try {
       const response = await fetch(
-        `http://localhost:8080/crypto-monitor/api/bots/${botId}`,
+        `${API_BASE_URL}/bots/${botId}`,
         {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
@@ -228,7 +229,7 @@ function TradingBotsPage({ token, onBack }) {
         )}
       </div>
 
-      {/* Modal de Criação */}
+      {/* Modal */}
       {showCreateModal && (
         <CreateBotModal
           token={token}
@@ -242,7 +243,7 @@ function TradingBotsPage({ token, onBack }) {
 
 /* ============================================
    COMPONENTE: BOT CARD
-   ============================================ */
+============================================ */
 function BotCard({ bot, onToggleStatus, onDelete, isDark }) {
   const isRunning = bot.status === 'RUNNING';
   const isProfitable = (bot.totalProfitLoss || 0) >= 0;

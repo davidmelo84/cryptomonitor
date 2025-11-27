@@ -1,8 +1,10 @@
 // front/crypto-monitor-frontend/src/components/portfolio/AddTransactionModal.jsx
 // ✅ REFATORADO - SEM CSS INLINE
+// ✅ URLs corrigidas para usar API_BASE_URL
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { formatCurrency, formatSymbol } from '../../utils/formatters';
+import { API_BASE_URL } from '../../utils/constants';
 import '../../styles/AddTransactionModal.css';
 
 function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
@@ -22,7 +24,7 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
   // ✅ CORREÇÃO: useCallback para fetchAvailableCryptos
   const fetchAvailableCryptos = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/crypto/list', {
+      const response = await fetch(`${API_BASE_URL}/crypto/list`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -44,12 +46,12 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
         { symbol: 'BNB', name: 'Binance Coin' }
       ]);
     }
-  }, [formData.cryptoSymbol]); // ✅ Dependência
+  }, [formData.cryptoSymbol]); // Dependência ok
 
   // ✅ CORREÇÃO: useCallback para fetchCurrentPrice
   const fetchCurrentPrice = useCallback(async (symbol) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/crypto/${symbol}`, {
+      const response = await fetch(`${API_BASE_URL}/crypto/${symbol}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -67,19 +69,19 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
       console.error('Error fetching price:', err);
       setCurrentPrice(null);
     }
-  }, [formData.price]); // ✅ Dependência
+  }, [formData.price]);
 
   useEffect(() => {
     if (isOpen) {
       fetchAvailableCryptos();
     }
-  }, [isOpen, fetchAvailableCryptos]); // ✅ Corrigido
+  }, [isOpen, fetchAvailableCryptos]);
 
   useEffect(() => {
     if (formData.cryptoSymbol) {
       fetchCurrentPrice(formData.cryptoSymbol);
     }
-  }, [formData.cryptoSymbol, fetchCurrentPrice]); // ✅ Corrigido
+  }, [formData.cryptoSymbol, fetchCurrentPrice]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -113,7 +115,7 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/transactions', {
+      const response = await fetch(`${API_BASE_URL}/transactions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,23 +173,19 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         
-        {/* Header */}
         <div className="modal-header">
           <h2>Nova Transação</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="transaction-form">
           
-          {/* Error Message */}
           {error && (
             <div className="error-message">
               ⚠️ {error}
             </div>
           )}
 
-          {/* Crypto Selection */}
           <div className="form-group">
             <label htmlFor="cryptoSymbol">Criptomoeda</label>
             <select
@@ -206,7 +204,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
             </select>
           </div>
 
-          {/* Transaction Type */}
           <div className="form-group">
             <label>Tipo de Transação</label>
             <div className="radio-group">
@@ -233,7 +230,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
             </div>
           </div>
 
-          {/* Quantity */}
           <div className="form-group">
             <label htmlFor="quantity">Quantidade</label>
             <input
@@ -249,7 +245,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
             />
           </div>
 
-          {/* Price */}
           <div className="form-group">
             <label htmlFor="price">Preço Unitário</label>
             <div className="price-input-group">
@@ -277,7 +272,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
             </div>
           </div>
 
-          {/* Date */}
           <div className="form-group">
             <label htmlFor="date">Data</label>
             <input
@@ -291,7 +285,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
             />
           </div>
 
-          {/* Total Value Display */}
           {formData.quantity && formData.price && (
             <div className="form-group total-display">
               <label>Valor Total</label>
@@ -301,7 +294,6 @@ function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
             </div>
           )}
 
-          {/* Action Buttons */}
           <div className="form-actions">
             <button 
               type="button" 

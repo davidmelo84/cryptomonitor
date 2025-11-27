@@ -1,12 +1,34 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ============================================
+   MAIN ENTRY POINT
+   Importa todos os estilos na ordem correta
+   ============================================ */
 
+/* 1. Base (reset, variáveis, fontes) */
+@import './styles/base.css';
 
-@import './styles/components.css';
-/* Portfolio específico */
+/* 2. Utilitários (classes reutilizáveis) */
+@import './styles/utils.css';
+
+/* 3. Componentes específicos */
+@import './styles/components/auth.css';
+@import './styles/components/dashboard.css';
+@import './styles/components/telegram.css';
+@import './styles/components/transactions.css';
+
+/* 4. Componentes (existentes no projeto) */
+@import './styles/crypto-card.css';
 @import './styles/portfolio.css';
+@import './styles/trading-bots.css';
+@import './styles/theme-toggle.css';
 
+/* ======================================================
+   LEGACY IMPORTS DO SEU PROJETO (mantidos sem quebrar)
+   ====================================================== */
+@import './styles/components.css';
+
+/* ======================================================
+   GLOBAL RESET + FONTES DO PROJETO (mantidos)
+   ====================================================== */
 * {
   margin: 0;
   padding: 0;
@@ -25,6 +47,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+/* ======================================================
+   SCROLLBAR PERSONALIZADO (mantido exatamente)
+   ====================================================== */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -43,6 +68,9 @@ code {
   background: linear-gradient(180deg, #2563eb, #7c3aed);
 }
 
+/* ======================================================
+   ANIMAÇÕES (mantidas)
+   ====================================================== */
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-20px); }
@@ -56,3 +84,10 @@ code {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ======================================================
+   TAILWIND (sempre por último)
+   ====================================================== */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

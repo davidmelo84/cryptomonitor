@@ -16,7 +16,6 @@ import '../../styles/portfolio.css';
 function PortfolioPage({ token, user, onBack, availableCryptos }) {
   const { isDark } = useTheme();
   
-  // ✅ CORREÇÃO: Backend retorna objeto { portfolio: [], totalInvested, ... }
   const [portfolioData, setPortfolioData] = useState({
     portfolio: [],
     totalInvested: 0,
@@ -42,7 +41,6 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         const data = await response.json();
         console.log('📦 Portfolio recebido:', data);
         
-        // ✅ CORREÇÃO: Validar estrutura
         if (data && typeof data === 'object') {
           setPortfolioData({
             portfolio: Array.isArray(data.portfolio) ? data.portfolio : [],
@@ -103,7 +101,6 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
     }
   };
 
-  // ✅ CORREÇÃO: Usar portfolioData ao invés de portfolio
   const isProfitable = portfolioData.totalProfitLoss >= 0;
 
   return (
@@ -134,7 +131,7 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         </div>
       </div>
 
-      {/* Resumo */}
+      {/* Summary */}
       <div className="portfolio-summary-cards">
         <div className={`summary-card ${isDark ? 'dark' : ''}`}>
           <div className="summary-card-icon total">
@@ -198,7 +195,7 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         </button>
       </div>
 
-      {/* Conteúdo das Tabs */}
+      {/* Tab content */}
       <div className="portfolio-content">
         {loading ? (
           <div className="portfolio-loading">
@@ -226,7 +223,6 @@ function PortfolioPage({ token, user, onBack, availableCryptos }) {
         )}
       </div>
 
-      {/* Modal */}
       {showAddModal && (
         <AddTransactionModal
           isOpen={showAddModal}

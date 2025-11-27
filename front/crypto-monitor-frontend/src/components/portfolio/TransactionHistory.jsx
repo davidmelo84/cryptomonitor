@@ -1,7 +1,7 @@
 // front/crypto-monitor-frontend/src/components/portfolio/TransactionHistory.jsx
-// ✅ REFATORADO - SEM CSS INLINE
+// ✅ AGORA COMPATÍVEL COM PortfolioPage (usa props, não faz fetch interno)
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   formatCurrency, 
   formatDate, 
@@ -9,40 +9,15 @@ import {
 } from '../../utils/formatters';
 import '../../styles/TransactionHistory.css';
 
-function TransactionHistory() {
-  const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+function TransactionHistory({ transactions, onRefresh }) {
   const [filter, setFilter] = useState('all'); // all, buy, sell
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const fetchTransactions = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://localhost:8080/api/transactions', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch transactions');
-
-      const data = await response.json();
-      setTransactions(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredTransactions = transactions.filter(tx => {
-    if (filter === 'all') return true;
-    return tx.type.toLowerCase() === filter;
-  });
+  // Aplica filtro sem alterar estado externo
+  const filteredTransactions = useMemo(() => {
+    if (!Array.isArray(transactions)) return [];
+    if (filter === 'all') return transactions;
+    return transactions.filter(tx => tx.type?.toLowerCase() === filter);
+  }, [transactions, filter]);
 
   const deleteTransaction = async (id) => {
     if (!window.confirm('Deseja realmente excluir esta transação?')) return;
@@ -51,44 +26,24 @@ function TransactionHistory() {
       const response = await fetch(`http://localhost:8080/api/transactions/${id}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
         }
       });
 
       if (!response.ok) throw new Error('Failed to delete transaction');
 
-      setTransactions(transactions.filter(tx => tx.id !== id));
+      // Recarrega lista usando a função da página
+      await onRefresh();
     } catch (err) {
       alert('Erro ao excluir transação: ' + err.message);
     }
   };
 
-  // Loading State
-  if (loading) {
-    return (
-      <div className="transaction-history">
-        <div className="loading">
-          Carregando histórico...
-        </div>
-      </div>
-    );
-  }
-
-  // Error State
-  if (error) {
-    return (
-      <div className="transaction-history">
-        <div className="error">
-          Erro: {error}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="transaction-history">
       
-      {/* Header with Filters */}
+      {/* Header com Filtros */}
       <div className="transaction-header">
         <h2>Histórico de Transações</h2>
         
@@ -114,14 +69,14 @@ function TransactionHistory() {
         </div>
       </div>
 
-      {/* Empty State */}
+      {/* Empty */}
       {filteredTransactions.length === 0 ? (
         <div className="no-transactions">
           <p>Nenhuma transação encontrada</p>
         </div>
       ) : (
         <>
-          {/* Transactions Table */}
+          {/* Tabela */}
           <div className="transactions-table-container">
             <table className="transactions-table">
               <thead>
@@ -138,35 +93,23 @@ function TransactionHistory() {
               <tbody>
                 {filteredTransactions.map((tx) => (
                   <tr key={tx.id}>
-                    {/* Date */}
                     <td>{formatDate(tx.date, 'short')}</td>
-                    
-                    {/* Crypto Symbol */}
                     <td className="crypto-cell">
-                      <span className="crypto-symbol">
-                        {tx.cryptoSymbol}
-                      </span>
+                      <span className="crypto-symbol">{tx.cryptoSymbol}</span>
                     </td>
                     
-                    {/* Transaction Type */}
                     <td>
                       <span className={`transaction-type ${tx.type.toLowerCase()}`}>
                         {tx.type === 'BUY' ? 'Compra' : 'Venda'}
                       </span>
                     </td>
-                    
-                    {/* Quantity */}
+
                     <td>{formatQuantity(tx.quantity)}</td>
-                    
-                    {/* Price */}
                     <td>{formatCurrency(tx.price)}</td>
-                    
-                    {/* Total */}
                     <td className="total-cell">
                       {formatCurrency(tx.quantity * tx.price)}
                     </td>
-                    
-                    {/* Actions */}
+
                     <td>
                       <button 
                         className="delete-btn"
@@ -182,7 +125,7 @@ function TransactionHistory() {
             </table>
           </div>
 
-          {/* Summary Footer */}
+          {/* Footer */}
           <div className="transaction-summary">
             <p>
               Total de transações: <strong>{filteredTransactions.length}</strong>
