@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
 import { API_BASE_URL } from '../../utils/constants'; // ✅ IMPORTAÇÃO CERTA
-import '../../styles/CreateBotModal.css';
+import '../../styles/trading-bots.css';
 
 function CreateBotModal({ token, onClose, onBotCreated }) {
   const { isDark } = useTheme();

@@ -22,11 +22,6 @@
 @import './styles/theme-toggle.css';
 
 /* ======================================================
-   LEGACY IMPORTS DO SEU PROJETO (mantidos sem quebrar)
-   ====================================================== */
-@import './styles/components.css';
-
-/* ======================================================
    GLOBAL RESET + FONTES DO PROJETO (mantidos)
    ====================================================== */
 * {
