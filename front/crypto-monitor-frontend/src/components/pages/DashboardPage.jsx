@@ -28,8 +28,6 @@ import {
 
 import useHeartbeat from '../../hooks/useHeartbeat'; // ✅ NOVO IMPORT
 
-import '../../styles/TelegramModal.css';
-
 function DashboardPage({
   user,
   token,
