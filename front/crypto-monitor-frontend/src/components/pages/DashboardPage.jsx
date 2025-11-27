@@ -14,6 +14,10 @@ import SettingsCard from '../dashboard/SettingsCard';
 import CryptocurrenciesCard from '../dashboard/CryptocurrenciesCard';
 import ChartTabs from '../dashboard/ChartTabs';
 import TelegramConfig from '../telegram/TelegramConfig';
+import '../../styles/components/dashboard.css';
+import '../../styles/components/telegram.css';
+
+
 
 import { 
   useCryptos, 

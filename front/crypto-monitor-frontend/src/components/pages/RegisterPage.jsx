@@ -7,7 +7,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
 import PasswordStrength from '../auth/PasswordStrength';
 import VerifyEmailPage from '../auth/VerifyEmailPage'; // ✅ Import da tela de verificação
-import '../../styles/components.css';
+import '../../styles/components/auth.css';
 
 function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
   const { isDark } = useTheme();

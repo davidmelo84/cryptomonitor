@@ -1,6 +1,8 @@
 import React from 'react';
 import { BarChart3, TrendingUp, Bell } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import '../../styles/components/dashboard.css';
+
 
 function StatsCards({ selectedCryptos, isMonitoring }) {
   const { isDark } = useTheme();

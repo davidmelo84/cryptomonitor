@@ -7,7 +7,7 @@ import {
   formatDate, 
   formatQuantity 
 } from '../../utils/formatters';
-import '../../styles/TransactionHistory.css';
+import '../../styles/components/transactions.css';
 
 function TransactionHistory({ transactions, onRefresh }) {
   const [filter, setFilter] = useState('all'); // all, buy, sell

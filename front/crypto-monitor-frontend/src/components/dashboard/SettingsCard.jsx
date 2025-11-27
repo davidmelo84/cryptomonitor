@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Settings, Copy, Check } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import '../../styles/components/dashboard.css';
+
 
 function SettingsCard({
   monitoringEmail,

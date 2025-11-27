@@ -5,7 +5,7 @@ import React, { useState, useRef } from 'react';
 import { Mail, ArrowLeft, RefreshCw, CheckCircle } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { API_BASE_URL } from '../../utils/constants';
-import '../../styles/components.css';
+import '../../styles/components/auth.css';
 
 function VerifyEmailPage({ email, onVerified, onBack }) {
   const { isDark } = useTheme();

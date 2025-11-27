@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTelegram } from '../../contexts/TelegramContext';
-import '../../styles/TelegramConfig.css';
+import '../../styles/components/telegram.css';
 
 const TelegramConfig = ({ userEmail }) => {
   // ✅ USAR CONTEXT ao invés de state local

@@ -2,7 +2,6 @@
 // ✅ REFATORADO - SEM CSS INLINE
 
 import React from 'react';
-import '../../styles/components.css';
 
 function PasswordStrength({ password }) {
   // Calcula a força da senha

@@ -2,7 +2,6 @@
 // ✅ REFATORADO - SEM CSS INLINE
 
 import React from 'react';
-import '../../styles/components.css';
 
 function AuthContainer({ children, variant = 'login' }) {
   // Configurações dos círculos flutuantes baseado na variante

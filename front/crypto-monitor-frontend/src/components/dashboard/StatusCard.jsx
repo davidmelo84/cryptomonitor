@@ -3,7 +3,8 @@
 
 import React from 'react';
 import { PlayCircle, StopCircle } from 'lucide-react';
-import '../../styles/components.css';
+import '../../styles/components/dashboard.css';
+
 
 function StatusCard({
   isMonitoring,

@@ -4,6 +4,8 @@ import React from 'react';
 import { TrendingUp, User, RefreshCw, LogOut, Wallet, Bot, Send } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
+import '../../styles/components/dashboard.css';
+
 
 function Header({ 
   user, 

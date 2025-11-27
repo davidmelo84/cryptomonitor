@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { formatCurrency, formatSymbol } from '../../utils/formatters';
 import { API_BASE_URL } from '../../utils/constants';
-import '../../styles/AddTransactionModal.css';
+import '../../styles/components/transactions.css';
 
 function AddTransactionModal({ isOpen, onClose, onTransactionAdded }) {
   const [formData, setFormData] = useState({

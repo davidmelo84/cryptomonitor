@@ -6,7 +6,7 @@ import { LogIn, TrendingUp, Mail, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useFormValidation, commonValidations } from '../../hooks/useFormValidation'; // ✅ NOVO
 import ThemeToggle from '../common/ThemeToggle';
-import '../../styles/components.css';
+import '../../styles/components/auth.css';
 
 function LoginPage({ onLogin, onNavigateToRegister, authError }) {
   const { isDark } = useTheme();

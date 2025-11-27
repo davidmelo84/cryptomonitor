@@ -5,6 +5,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Coins } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import CryptoCard from './CryptoCard';
+import '../../styles/components/dashboard.css';
 
 function CryptocurrenciesCard({
   availableCryptos,
