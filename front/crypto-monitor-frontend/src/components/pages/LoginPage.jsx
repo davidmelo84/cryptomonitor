@@ -1,17 +1,26 @@
 // front/crypto-monitor-frontend/src/components/pages/LoginPage.jsx
-// ✅ COM VALIDAÇÃO EM TEMPO REAL - SUBSTITUA O ARQUIVO COMPLETO
+// ✅ COM VALIDAÇÃO + REMEMBER ME IMPLEMENTADO
 
-import React from 'react';
+import React, { useState } from 'react';
 import { LogIn, TrendingUp, Mail, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { useFormValidation, commonValidations } from '../../hooks/useFormValidation'; // ✅ NOVO
+import { useFormValidation, commonValidations } from '../../hooks/useFormValidation';
 import ThemeToggle from '../common/ThemeToggle';
 import '../../styles/components/auth.css';
 
 function LoginPage({ onLogin, onNavigateToRegister, authError }) {
   const { isDark } = useTheme();
 
-  // ✅ VALIDAÇÃO COM HOOK
+  // ======================================================
+  // ✅ 1) ADICIONAR STATE rememberMe (PASSO 3)
+  // ======================================================
+  const [rememberMe, setRememberMe] = useState(() => {
+    return localStorage.getItem('rememberMe') === 'true';
+  });
+
+  // ======================================================
+  // Validação com hook
+  // ======================================================
   const {
     values,
     errors,
@@ -28,8 +37,11 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
     }
   );
 
+  // ======================================================
+  // ✅ 2) Atualizar onSubmit (PASSO 3)
+  // ======================================================
   const onSubmit = async () => {
-    await onLogin(values.username, values.password);
+    await onLogin(values.username, values.password, rememberMe);
   };
 
   return (
@@ -69,6 +81,7 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
           e.preventDefault();
           handleSubmit(onSubmit);
         }}>
+
           {/* Usuário */}
           <div className="auth-input-wrapper">
             <input
@@ -87,8 +100,7 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
               <Mail size={20} />
             </button>
           </div>
-          
-          {/* ✅ ERRO EM TEMPO REAL */}
+
           {touched.username && errors.username && (
             <p style={{
               color: '#ef4444',
@@ -120,7 +132,6 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
             </button>
           </div>
 
-          {/* ✅ ERRO EM TEMPO REAL */}
           {touched.password && errors.password && (
             <p style={{
               color: '#ef4444',
@@ -132,6 +143,45 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
               ⚠️ {errors.password}
             </p>
           )}
+
+          {/* ====================================================== */}
+          {/* ✅ 3) CHECKBOX LEMBRAR DE MIM (PASSO 3) */}
+          {/* ====================================================== */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginTop: '-0.5rem',
+              marginBottom: '0.5rem',
+              cursor: 'pointer',
+              userSelect: 'none'
+            }}
+            onClick={() => setRememberMe(!rememberMe)}
+          >
+            <input
+              type="checkbox"
+              id="rememberMe"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{
+                width: '18px',
+                height: '18px',
+                cursor: 'pointer',
+                accentColor: '#667eea'
+              }}
+            />
+            <label
+              htmlFor="rememberMe"
+              style={{
+                fontSize: '0.875rem',
+                color: 'var(--text-secondary)',
+                cursor: 'pointer'
+              }}
+            >
+              Lembrar de mim neste dispositivo
+            </label>
+          </div>
 
           {/* Botão Entrar */}
           <button
@@ -153,7 +203,7 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
           </button>
         </form>
 
-        {/* Link para Registro */}
+        {/* Registrar */}
         <div className="auth-link" onClick={onNavigateToRegister}>
           Não tem uma conta? <span>Cadastre-se agora</span>
         </div>

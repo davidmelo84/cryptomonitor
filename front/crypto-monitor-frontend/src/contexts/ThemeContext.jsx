@@ -16,11 +16,27 @@ export const ThemeProvider = ({ children }) => {
     return saved ? saved === 'dark' : false;
   });
 
+  // ==========================================================
+  // ✅ 1. Salva no localStorage
+  // ==========================================================
   useEffect(() => {
     localStorage.setItem('cryptoMonitorTheme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
-  const toggleTheme = () => setIsDark(!isDark);
+  // ==========================================================
+  // ✅ 2. Aplica a classe no <html> (persistente no refresh)
+  // ==========================================================
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isDark) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark((prev) => !prev);
 
   const theme = {
     isDark,

@@ -1,6 +1,6 @@
 // front/crypto-monitor-frontend/src/App.jsx
-// ✅ VERSÃO COM LOGOUT AUTOMÁTICO AO FECHAR ABA
-// ✅ Mantém configurações (email, telegram) mesmo após logout
+// ✅ VERSÃO COM STORAGE UNIFICADO (localStorage/sessionStorage)
+// ✅ LEMBRAR DE MIM + LOGOUT AUTOMÁTICO CORRIGIDOS
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,7 +10,10 @@ import { TelegramProvider } from './contexts/TelegramContext';
 import { API_BASE_URL } from './utils/constants';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// ✅ Lazy loading das páginas
+// 🔥 NOVO
+import { saveAuthData, loadAuthData, clearAuthData } from './utils/storage';
+
+// Lazy loading
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./components/pages/RegisterPage'));
 const DashboardPage = lazy(() => import('./components/pages/DashboardPage'));
@@ -42,14 +45,16 @@ function App() {
   const [token, setToken] = useState(null);
   const [authError, setAuthError] = useState('');
 
-  // ✅ Configurações gerais (persistem após logout)
+  // Configurações gerais
   const [selectedCryptos, setSelectedCryptos] = useState([]);
   const [monitoringEmail, setMonitoringEmail] = useState('');
   const [monitoringInterval, setMonitoringInterval] = useState(5);
   const [buyThreshold, setBuyThreshold] = useState(5.0);
   const [sellThreshold, setSellThreshold] = useState(10.0);
 
-  // ✅ CARREGAR CONFIGURAÇÕES SALVAS (independente de estar logado)
+  // ============================================================
+  // Carregar configurações (sempre)
+  // ============================================================
   useEffect(() => {
     try {
       const savedEmail = localStorage.getItem('monitoring_email');
@@ -61,14 +66,11 @@ function App() {
       if (savedInterval) setMonitoringInterval(parseInt(savedInterval));
       if (savedBuyThreshold) setBuyThreshold(parseFloat(savedBuyThreshold));
       if (savedSellThreshold) setSellThreshold(parseFloat(savedSellThreshold));
-
-      console.log('✅ Configurações carregadas do localStorage');
     } catch (error) {
       console.error('❌ Erro ao carregar configurações:', error);
     }
   }, []);
 
-  // ✅ SALVAR CONFIGURAÇÕES SEMPRE QUE MUDAREM
   useEffect(() => {
     if (monitoringEmail) {
       localStorage.setItem('monitoring_email', monitoringEmail);
@@ -87,206 +89,174 @@ function App() {
     localStorage.setItem('sell_threshold', sellThreshold.toString());
   }, [sellThreshold]);
 
-  // ✅ NOVA LÓGICA: Usar sessionStorage para token (limpa ao fechar aba)
+  // ============================================================
+  // RESTAURAR SESSÃO (agora usando storage.js)
+  // ============================================================
   useEffect(() => {
-    const savedToken = sessionStorage.getItem('token');
-    const savedUser = sessionStorage.getItem('user');
+    const authData = loadAuthData();
 
-    if (!savedToken || !savedUser) {
-      console.log('🔒 Nenhuma sessão ativa - redirecionando para login');
+    if (!authData) {
       setCurrentPage('login');
       return;
     }
 
-    try {
-      const parsedUser = JSON.parse(savedUser);
-      setToken(savedToken);
-      setUser(parsedUser);
-      setCurrentPage('dashboard');
-      console.log('✅ Sessão restaurada:', parsedUser.username);
-    } catch (error) {
-      console.error('❌ Erro ao restaurar sessão:', error);
-      sessionStorage.clear();
-      setCurrentPage('login');
-    }
+    setToken(authData.token);
+    setUser(authData.user);
+    setCurrentPage('dashboard');
   }, []);
 
-  // ✅ LIMPAR TOKEN AO FECHAR ABA/NAVEGADOR
+  // ============================================================
+  // BEFOREUNLOAD atualizado (agora respeita rememberMe)
+  // ============================================================
   useEffect(() => {
     const handleBeforeUnload = () => {
-      console.log('🚪 Fechando aba - limpando sessão');
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('user');
-      // ✅ NÃO remove configurações (email, telegram, etc)
+      const rememberMe = localStorage.getItem('rememberMe') === 'true';
+
+      if (!rememberMe) {
+        console.log('🚪 Fechando aba - limpando sessão temporária');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+      } else {
+        console.log('💾 Sessão mantida (rememberMe ativo)');
+      }
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, []);
 
-  // ✅ Login com sessão temporária
-  const handleLogin = useCallback(async (username, password) => {
-    setAuthError('');
+  // ============================================================
+  // LOGIN (novo)
+  // ============================================================
+  const handleLogin = useCallback(
+    async (username, password, rememberMe = false) => {
+      setAuthError('');
 
-    if (!username || !password) {
-      setAuthError('Preencha todos os campos');
-      return;
-    }
+      if (!username || !password) {
+        setAuthError('Preencha todos os campos');
+        return;
+      }
 
-    try {
-      console.log('🔑 Tentando login...', { username });
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
 
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
+        if (!response.ok) {
+          const text = await response.text();
 
-      console.log('📡 Response status:', response.status);
+          try {
+            const error = JSON.parse(text);
+            throw new Error(error.error || error.message || 'Credenciais inválidas');
+          } catch {
+            throw new Error('Credenciais inválidas');
+          }
+        }
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Erro no login:', errorText);
+        const data = await response.json();
+
+        if (!data.token) {
+          throw new Error('Token não recebido do servidor');
+        }
+
+        saveAuthData(data.token, { username }, rememberMe);
+
+        setToken(data.token);
+        setUser({ username });
+
+        localStorage.setItem('last_username', username);
+
+        setCurrentPage('dashboard');
+      } catch (error) {
+        setAuthError(error.message || 'Erro ao conectar com o servidor');
+      }
+    },
+    []
+  );
+
+  // ============================================================
+  // REGISTRO (mantido igual)
+  // ============================================================
+  const handleRegister = useCallback(
+    async (regUsername, regEmail, regPassword, regConfirmPassword) => {
+      setAuthError('');
+
+      if (!regUsername || !regEmail || !regPassword || !regConfirmPassword) {
+        setAuthError('Preencha todos os campos');
+        return false;
+      }
+
+      if (regPassword !== regConfirmPassword) {
+        setAuthError('As senhas não coincidem');
+        return false;
+      }
+
+      if (regPassword.length < 6) {
+        setAuthError('A senha deve ter pelo menos 6 caracteres');
+        return false;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: regUsername,
+            email: regEmail,
+            password: regPassword,
+          }),
+        });
+
+        const text = await response.text();
+        let data;
 
         try {
-          const errorData = JSON.parse(errorText);
-          throw new Error(errorData.error || errorData.message || 'Credenciais inválidas');
-        } catch (e) {
-          if (response.status === 500) {
-            throw new Error('Erro no servidor. Tente novamente mais tarde.');
-          }
-          throw new Error('Credenciais inválidas');
-        }
-      }
-
-      const data = await response.json();
-      console.log('✅ Login bem-sucedido:', data);
-
-      if (!data.token) {
-        throw new Error('Token não recebido do servidor');
-      }
-
-      setToken(data.token);
-      setUser({ username });
-      
-      // ✅ USA sessionStorage (limpa ao fechar aba)
-      sessionStorage.setItem('token', data.token);
-      sessionStorage.setItem('user', JSON.stringify({ username }));
-      
-      // ✅ Salva username no localStorage (para lembrar último login)
-      localStorage.setItem('last_username', username);
-      
-      setCurrentPage('dashboard');
-
-    } catch (error) {
-      console.error('❌ Erro no login:', error);
-      setAuthError(error.message || 'Erro ao conectar com o servidor');
-    }
-  }, []);
-
-  // ✅ Registro
-  const handleRegister = useCallback(async (regUsername, regEmail, regPassword, regConfirmPassword) => {
-    setAuthError('');
-
-    if (!regUsername || !regEmail || !regPassword || !regConfirmPassword) {
-      setAuthError('Preencha todos os campos');
-      return false;
-    }
-
-    if (regPassword !== regConfirmPassword) {
-      setAuthError('As senhas não coincidem');
-      return false;
-    }
-
-    if (regPassword.length < 6) {
-      setAuthError('A senha deve ter pelo menos 6 caracteres');
-      return false;
-    }
-
-    try {
-      console.log('📝 Tentando registrar...', { username: regUsername, email: regEmail });
-
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: regUsername,
-          email: regEmail,
-          password: regPassword,
-        }),
-      });
-
-      console.log('📡 Response status:', response.status);
-
-      const text = await response.text();
-      console.log('📄 Response body:', text);
-
-      let data;
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch {
-        throw new Error('Resposta inválida do servidor');
-      }
-
-      if (!response.ok) {
-        if (response.status === 400) {
-          if (data.error?.includes('Email') || data.message?.includes('Email')) {
-            throw new Error('Este email já está cadastrado. Use outro ou faça login.');
-          }
-          if (data.error?.includes('Username') || data.message?.includes('Username')) {
-            throw new Error('Este username já está em uso. Escolha outro.');
-          }
+          data = JSON.parse(text);
+        } catch {
+          throw new Error('Resposta inválida do servidor');
         }
 
-        throw new Error(data.error || data.message || 'Falha no registro');
+        if (!response.ok) {
+          throw new Error(data.error || data.message || 'Falha no registro');
+        }
+
+        if (data.requiresVerification) {
+          alert(`📧 Código enviado para ${regEmail}`);
+        } else {
+          alert('✅ Conta criada! Faça login.');
+        }
+
+        return true;
+      } catch (error) {
+        setAuthError(error.message || 'Erro ao criar conta');
+        return false;
       }
+    },
+    []
+  );
 
-      console.log('✅ Registro bem-sucedido:', data);
-
-      if (data.requiresVerification) {
-        alert(`📧 Código de verificação enviado para ${regEmail}!\n\nVerifique sua caixa de entrada.`);
-      } else {
-        alert('✅ Conta criada com sucesso! Faça login para continuar.');
-      }
-
-      return true;
-
-    } catch (error) {
-      console.error('❌ Erro no registro:', error);
-      setAuthError(error.message || 'Erro ao criar conta');
-      return false;
-    }
-  }, []);
-
-  // ✅ Logout (limpa apenas sessão, mantém configurações)
+  // ============================================================
+  // LOGOUT atualizado
+  // ============================================================
   const handleLogout = () => {
-    console.log('🚪 Fazendo logout...');
-    
+    console.log('🚪 Logout...');
+
+    clearAuthData();
+
     setUser(null);
     setToken(null);
     setCurrentPage('login');
-    
-    // ✅ Remove apenas dados de autenticação
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
-    
-    // ✅ NÃO remove:
-    // - monitoring_email
-    // - monitoring_interval
-    // - buy_threshold
-    // - sell_threshold
-    // - telegram_config_enc (do TelegramContext)
-    // - last_username
-    
+
     queryClient.clear();
-    
-    console.log('✅ Logout concluído (configurações mantidas)');
+
+    console.log('✅ Logout concluído');
   };
 
-  // ✅ Seleção de criptos
+  // ============================================================
+  // Seleção de criptos
+  // ============================================================
   const toggleCryptoSelection = (crypto) => {
     setSelectedCryptos((prev) => {
       const id = crypto.coinId || crypto.name || crypto.symbol;
@@ -296,7 +266,9 @@ function App() {
     });
   };
 
-  // ✅ Props compartilhadas
+  // ============================================================
+  // Props compartilhadas
+  // ============================================================
   const sharedProps = {
     user,
     token,
@@ -310,24 +282,33 @@ function App() {
     setMonitoringInterval,
     setBuyThreshold,
     setSellThreshold,
+
     onToggleCryptoSelection: toggleCryptoSelection,
     onLogout: handleLogout,
     onClearSelection: () => setSelectedCryptos([]),
-    onNavigateToPortfolio: () => setCurrentPage('portfolio'),
-    onNavigateToBots: () => setCurrentPage('bots'),
+
     onLogin: handleLogin,
     onRegister: handleRegister,
+
+    onNavigateToPortfolio: () => setCurrentPage('portfolio'),
+    onNavigateToBots: () => setCurrentPage('bots'),
+
     onNavigateToLogin: () => {
       setCurrentPage('login');
       setAuthError('');
     },
+
     onNavigateToRegister: () => {
       setCurrentPage('register');
       setAuthError('');
     },
+
     onBack: () => setCurrentPage('dashboard'),
   };
 
+  // ============================================================
+  // Render
+  // ============================================================
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
