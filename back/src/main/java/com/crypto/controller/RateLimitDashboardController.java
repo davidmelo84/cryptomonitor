@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/controller/RateLimitDashboardController.java
 package com.crypto.controller;
 
 import com.crypto.service.CoinGeckoApiService;
@@ -13,16 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
-/**
- * ✅ DASHBOARD COMPLETO - MONITORAMENTO DE RATE LIMITING
- *
- * Endpoints:
- * - GET /api/rate-limit/dashboard    → Dashboard completo
- * - GET /api/rate-limit/status       → Status resumido
- * - GET /api/rate-limit/metrics      → Métricas detalhadas
- * - POST /api/rate-limit/clear-cache → Limpar cache
- * - POST /api/rate-limit/reset-stats → Resetar estatísticas
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/rate-limit")
@@ -34,17 +24,12 @@ public class RateLimitDashboardController {
     private final RateLimitMetricsService metricsService;
     private final CacheManager cacheManager;
 
-    /**
-     * ✅ DASHBOARD COMPLETO
-     *
-     * GET /api/rate-limit/dashboard
-     */
+
     @GetMapping("/dashboard")
     public ResponseEntity<?> getDashboard() {
         try {
             Map<String, Object> dashboard = new HashMap<>();
 
-            // 1. Status da API
             dashboard.put("coinGecko", Map.of(
                     "provider", "CoinGecko",
                     "tier", "FREE",
@@ -53,11 +38,9 @@ public class RateLimitDashboardController {
                     "apiUrl", "https://api.coingecko.com/api/v3"
             ));
 
-            // 2. Métricas de uso
             Map<String, Object> metrics = metricsService.getStatistics();
             dashboard.put("metrics", metrics);
 
-            // 3. Status do Cache
             Map<String, Object> cacheStats = new HashMap<>();
             Collection<String> cacheNames = cacheManager.getCacheNames();
             cacheStats.put("totalCaches", cacheNames.size());
@@ -67,7 +50,6 @@ public class RateLimitDashboardController {
 
             dashboard.put("cache", cacheStats);
 
-            // 4. Comparação de Uso (estimativa)
             Map<String, Object> usage = new HashMap<>();
             usage.put("effectiveRequestsPerHour", 2);
             usage.put("theoreticalMaxPerHour", 1800); // 30 * 60
@@ -77,7 +59,6 @@ public class RateLimitDashboardController {
 
             dashboard.put("usage", usage);
 
-            // 5. Alertas
             List<String> alerts = new ArrayList<>();
             if (metricsService.isNearRateLimit()) {
                 alerts.add("⚠️ Requests por minuto próximo do limite!");
@@ -90,7 +71,6 @@ public class RateLimitDashboardController {
             }
             dashboard.put("alerts", alerts);
 
-            // 6. Recomendações
             List<String> recommendations = List.of(
                     "✅ Cache está ativo (TTL: 30min)",
                     "✅ WebSocket habilitado (tempo real)",
@@ -100,7 +80,6 @@ public class RateLimitDashboardController {
             );
             dashboard.put("recommendations", recommendations);
 
-            // 7. Timestamp
             dashboard.put("timestamp", LocalDateTime.now());
 
             return ResponseEntity.ok(dashboard);
@@ -112,11 +91,7 @@ public class RateLimitDashboardController {
         }
     }
 
-    /**
-     * ✅ STATUS RESUMIDO
-     *
-     * GET /api/rate-limit/status
-     */
+
     @GetMapping("/status")
     public ResponseEntity<?> getStatus() {
         try {
@@ -142,11 +117,7 @@ public class RateLimitDashboardController {
         }
     }
 
-    /**
-     * ✅ MÉTRICAS DETALHADAS
-     *
-     * GET /api/rate-limit/metrics
-     */
+
     @GetMapping("/metrics")
     public ResponseEntity<?> getMetrics() {
         try {
@@ -162,11 +133,7 @@ public class RateLimitDashboardController {
         }
     }
 
-    /**
-     * ⚠️ LIMPAR CACHE (força nova request)
-     *
-     * POST /api/rate-limit/clear-cache
-     */
+
     @PostMapping("/clear-cache")
     public ResponseEntity<?> clearCache() {
         try {
@@ -198,11 +165,7 @@ public class RateLimitDashboardController {
         }
     }
 
-    /**
-     * 🔥 AQUECER CACHE (útil após deploy)
-     *
-     * POST /api/rate-limit/warm-cache
-     */
+
     @PostMapping("/warm-cache")
     public ResponseEntity<?> warmCache() {
         try {
@@ -225,11 +188,7 @@ public class RateLimitDashboardController {
         }
     }
 
-    /**
-     * 🗑️ RESETAR ESTATÍSTICAS
-     *
-     * POST /api/rate-limit/reset-stats
-     */
+
     @PostMapping("/reset-stats")
     public ResponseEntity<?> resetStats() {
         try {
@@ -250,21 +209,14 @@ public class RateLimitDashboardController {
         }
     }
 
-    /**
-     * ✅ CALCULAR ECONOMIA DE REQUESTS
-     *
-     * GET /api/rate-limit/savings
-     */
     @GetMapping("/savings")
     public ResponseEntity<?> calculateSavings() {
         Map<String, Object> savings = new HashMap<>();
 
-        // Sem cache: Frontend faz 1 request/usuário/minuto
         int usersSimulated = 10;
         int requestsPerUserPerHour = 60;
         int withoutCachePerHour = usersSimulated * requestsPerUserPerHour;
 
-        // Com cache: Backend faz 2 requests/hora
         int withCachePerHour = 2;
 
         int savedRequests = withoutCachePerHour - withCachePerHour;

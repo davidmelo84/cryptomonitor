@@ -18,11 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-/**
- * ✅ CRYPTO CONTROLLER - PROTEGIDO CONTRA RATE LIMIT + SANITIZAÇÃO
- *
- * Agora com documentação Swagger
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/crypto")
@@ -32,12 +28,8 @@ public class CryptoController {
 
     private final CryptoService cryptoService;
 
-    // Sanitização
     private final InputSanitizer sanitizer;
 
-    // ============================================================
-    // GET /current
-    // ============================================================
 
     @Operation(
             summary = "Buscar preços atuais",
@@ -61,9 +53,7 @@ public class CryptoController {
         }
     }
 
-    // ============================================================
-    // GET /current/{coinId}
-    // ============================================================
+
 
     @Operation(
             summary = "Buscar uma criptomoeda específica",
@@ -95,9 +85,6 @@ public class CryptoController {
         }
     }
 
-    // ============================================================
-    // GET /history/{coinId}
-    // ============================================================
 
     @Operation(
             summary = "Buscar histórico de preços",
@@ -146,10 +133,6 @@ public class CryptoController {
         }
     }
 
-    // ============================================================
-    // POST /force-update
-    // ============================================================
-
     @Operation(
             summary = "Forçar atualização de preços",
             description = "Limpa o cache e baixa os preços novamente",
@@ -177,10 +160,6 @@ public class CryptoController {
                     .body(Map.of("error", e.getMessage()));
         }
     }
-
-    // ============================================================
-    // GET /status
-    // ============================================================
 
     @Operation(
             summary = "Status da API",

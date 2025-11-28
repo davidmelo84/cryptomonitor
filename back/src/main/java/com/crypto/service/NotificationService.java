@@ -288,9 +288,7 @@ public class NotificationService {
         }
     }
 
-    // =============================================================
-    // ✅ NOVOS MÉTODOS (AGORA NO LUGAR CORRETO)
-    // =============================================================
+
 
     public void clearCooldown(String coinSymbol, String alertType) {
         String key = coinSymbol.toUpperCase() + "_" + alertType;

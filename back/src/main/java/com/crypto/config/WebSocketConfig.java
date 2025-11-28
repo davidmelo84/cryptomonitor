@@ -30,10 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final JwtUtil jwtUtil;
 
-    /**
-     * 🛡 Estrutura com contador + último uso
-     * Evita memory leak e mantém controle preciso por sessão
-     */
+
     private final Map<String, SessionRateLimit> sessionLimits = new ConcurrentHashMap<>();
 
     private static class SessionRateLimit {
@@ -58,7 +55,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "http://localhost:8080",
                         "http://127.0.0.1:*"
                 )
-                .setHandshakeHandler(new UserHandshakeHandler()) // 🔥 obrigatório p/ autenticação
+                .setHandshakeHandler(new UserHandshakeHandler())
                 .withSockJS();
 
         log.info("✅ WebSocket endpoint registrado: /ws/crypto");
@@ -75,9 +72,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         log.info("⏳ WebSocket transport configurado com timeouts");
     }
 
-    /**
-     * 🔐 AUTENTICAÇÃO + RATE LIMIT por sessão
-     */
+
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
 
@@ -88,9 +83,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-                // =======================================================
-                // 🔐 1. AUTENTICAÇÃO NA CONEXÃO (CONNECT FRAME)
-                // =======================================================
+
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 
                     String tokenHeader = accessor.getFirstNativeHeader("Authorization");
@@ -109,7 +102,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                             throw new IllegalArgumentException("Invalid JWT");
                         }
 
-                        // Define usuário autenticado na sessão WebSocket
                         accessor.setUser(new Principal() {
                             @Override
                             public String getName() {
@@ -125,9 +117,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                     }
                 }
 
-                // =======================================================
-                // ⚡ 2. RATE LIMIT POR SESSÃO (SEND FRAME)
-                // =======================================================
+
                 if (StompCommand.SEND.equals(accessor.getCommand())) {
 
                     String sessionId = accessor.getSessionId();
@@ -148,9 +138,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         });
     }
 
-    /**
-     * 🧹 LIMPEZA INTELIGENTE — evita memory leak
-     */
+
     @Scheduled(fixedDelay = 60_000)
     public void cleanupOldSessions() {
 

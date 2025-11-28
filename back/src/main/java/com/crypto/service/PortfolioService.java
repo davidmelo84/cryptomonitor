@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/service/PortfolioService.java
 
 package com.crypto.service;
 
@@ -29,13 +28,7 @@ public class PortfolioService {
     private final UserRepository userRepository;
     private final CryptoService cryptoService;
 
-    // =========================================================
-    // ✅ MAPEAMENTO DE SÍMBOLOS (MÉTODO ADICIONADO)
-    // =========================================================
 
-    /**
-     * Mapeia símbolo da moeda para coinId da CoinGecko
-     */
     private String mapSymbolToCoinId(String symbol) {
         Map<String, String> symbolMap = Map.ofEntries(
                 Map.entry("BTC", "bitcoin"),
@@ -57,13 +50,6 @@ public class PortfolioService {
         return symbolMap.getOrDefault(upperSymbol, symbol.toLowerCase());
     }
 
-    // =========================================================
-    // TRANSAÇÕES
-    // =========================================================
-
-    /**
-     * Adiciona uma transação e atualiza o portfolio
-     */
     @Transactional
     public Transaction addTransaction(String username, Transaction transaction) {
         User user = userRepository.findByUsername(username)
@@ -72,7 +58,6 @@ public class PortfolioService {
         transaction.setUser(user);
         Transaction savedTransaction = transactionRepository.save(transaction);
 
-        // Atualizar portfolio
         updatePortfolio(user, transaction);
 
         log.info("Transação adicionada: {} {} {} @ {}",
@@ -84,9 +69,6 @@ public class PortfolioService {
         return savedTransaction;
     }
 
-    /**
-     * Atualiza o portfolio com base na transação
-     */
     private void updatePortfolio(User user, Transaction transaction) {
         Optional<Portfolio> existingPortfolio = portfolioRepository
                 .findByUserAndCoinSymbol(user, transaction.getCoinSymbol());
@@ -98,14 +80,11 @@ public class PortfolioService {
         }
     }
 
-    /**
-     * Processa compra
-     */
+
     private void handleBuyTransaction(User user, Transaction transaction, Optional<Portfolio> existingPortfolio) {
         if (existingPortfolio.isPresent()) {
             Portfolio portfolio = existingPortfolio.get();
 
-            // Calcular novo custo médio
             BigDecimal currentTotal = portfolio.getTotalInvested();
             BigDecimal newTotal = currentTotal.add(transaction.getTotalValue());
 
@@ -120,7 +99,6 @@ public class PortfolioService {
 
             portfolioRepository.save(portfolio);
         } else {
-            // Criar novo portfolio
             Portfolio newPortfolio = Portfolio.builder()
                     .user(user)
                     .coinSymbol(transaction.getCoinSymbol())
@@ -134,9 +112,7 @@ public class PortfolioService {
         }
     }
 
-    /**
-     * Processa venda
-     */
+
     private void handleSellTransaction(User user, Transaction transaction, Optional<Portfolio> existingPortfolio) {
         if (existingPortfolio.isEmpty()) {
             throw new RuntimeException("Você não possui " + transaction.getCoinSymbol() + " para vender");
@@ -149,7 +125,6 @@ public class PortfolioService {
                     portfolio.getQuantity() + " " + transaction.getCoinSymbol());
         }
 
-        // Calcular novo total investido (proporcionalmente)
         BigDecimal percentageSold = transaction.getQuantity()
                 .divide(portfolio.getQuantity(), 8, RoundingMode.HALF_UP);
         BigDecimal investmentSold = portfolio.getTotalInvested().multiply(percentageSold);
@@ -158,7 +133,6 @@ public class PortfolioService {
         BigDecimal newTotalInvested = portfolio.getTotalInvested().subtract(investmentSold);
 
         if (newQuantity.compareTo(BigDecimal.ZERO) == 0) {
-            // Vendeu tudo, remover do portfolio
             portfolioRepository.delete(portfolio);
         } else {
             portfolio.setQuantity(newQuantity);
@@ -167,19 +141,12 @@ public class PortfolioService {
         }
     }
 
-    // =========================================================
-    // CONSULTA DE PORTFOLIO
-    // =========================================================
 
-    /**
-     * ✅ OTIMIZADO - Usa Projeção + Lazy Loading
-     */
     public Map<String, Object> getPortfolio(String username) {
 
         List<PortfolioRepository.PortfolioProjection> portfolios =
                 portfolioRepository.findByUserUsernameOptimized(username);
 
-        // ✅ OTIMIZAÇÃO: buscar APENAS preços necessários
         List<String> coinIds = portfolios.stream()
                 .map(p -> mapSymbolToCoinId(p.getCoinSymbol()))
                 .filter(Objects::nonNull)
@@ -251,13 +218,7 @@ public class PortfolioService {
         return result;
     }
 
-    // =========================================================
-    // OUTRAS OPERAÇÕES
-    // =========================================================
 
-    /**
-     * Busca histórico de transações
-     */
     public List<Transaction> getTransactions(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -265,9 +226,7 @@ public class PortfolioService {
         return transactionRepository.findByUserOrderByTransactionDateDesc(user);
     }
 
-    /**
-     * Deleta uma transação (não recomendado, mas útil para correções)
-     */
+
     @Transactional
     public void deleteTransaction(String username, Long transactionId) {
         User user = userRepository.findByUsername(username)

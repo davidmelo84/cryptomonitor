@@ -14,19 +14,14 @@ public class EmailService {
 
     private final SendGridEmailService sendGridEmailService;
 
-    /**
-     * ✅ SÍNCRONO: Para verificação de conta (precisa falhar se der erro)
-     */
+
     public void sendEmail(String to, String subject, String body) {
         log.info("📧 EmailService: Delegando para SendGridEmailService");
 
-        // ✅ IMPORTANTE: Chamada SÍNCRONA (sem .join())
         sendGridEmailService.sendEmail(to, subject, body);
     }
 
-    /**
-     * ✅ ASSÍNCRONO: Para notificações (não precisa bloquear)
-     */
+
     @Async
     public CompletableFuture<Void> sendEmailAsync(String to, String subject, String body) {
         try {

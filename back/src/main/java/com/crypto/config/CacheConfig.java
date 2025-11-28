@@ -16,10 +16,6 @@ import java.util.concurrent.TimeUnit;
 @EnableCaching
 public class CacheConfig {
 
-    /**
-     * ✅ CACHE PRINCIPAL - TTL 30 minutos
-     * Inclui TODOS os caches da aplicação
-     */
     @Primary
     @Bean("caffeineCacheManager")
     public CacheManager caffeineCacheManager() {
@@ -35,17 +31,17 @@ public class CacheConfig {
                 "coinCapPrices",
                 "coinCapHistory",
                 "topCoinCapPrices",
-                "cryptoHistory",        // ✅ ADICIONADO
-                "topCryptoPrices",      // ✅ ADICIONADO
-                "userPortfolio",        // ✅ ADICIONADO
-                "userTransactions",     // ✅ ADICIONADO
-                "userAlertRules"        // ✅ ADICIONADO
+                "cryptoHistory",
+                "topCryptoPrices",
+                "userPortfolio",
+                "userTransactions",
+                "userAlertRules"
         );
 
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(2000)
                 .expireAfterWrite(30, TimeUnit.MINUTES)
-                .expireAfterAccess(15, TimeUnit.MINUTES)  // ⭐ NOVO — Evict por inatividade
+                .expireAfterAccess(15, TimeUnit.MINUTES)
                 .recordStats()
         );
 
@@ -56,9 +52,7 @@ public class CacheConfig {
         return cacheManager;
     }
 
-    /**
-     * ✅ CACHE PARA HISTÓRICO - TTL 2 horas
-     */
+
     @Bean("historyCacheManager")
     public CacheManager historyCacheManager() {
         log.info("🕒 Configurando cache para histórico (TTL: 2h)");
@@ -67,16 +61,14 @@ public class CacheConfig {
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(500)
                 .expireAfterWrite(120, TimeUnit.MINUTES)
-                .expireAfterAccess(60, TimeUnit.MINUTES) // ⭐ NOVO
+                .expireAfterAccess(60, TimeUnit.MINUTES) //
                 .recordStats()
         );
 
         return cacheManager;
     }
 
-    /**
-     * ✅ CACHE DE USUÁRIO - TTL 5 minutos
-     */
+
     @Bean("userDataCacheManager")
     public CacheManager userDataCacheManager() {
         log.info("👤 Configurando cache de dados de usuário (TTL: 5min)");
@@ -90,7 +82,7 @@ public class CacheConfig {
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .maximumSize(1000)
                 .expireAfterWrite(5, TimeUnit.MINUTES)
-                .expireAfterAccess(2, TimeUnit.MINUTES) // ⭐ NOVO
+                .expireAfterAccess(2, TimeUnit.MINUTES)
                 .recordStats()
         );
 

@@ -1,6 +1,4 @@
--- data.sql - Dados iniciais para a aplicação
 
--- Inserir algumas regras de alerta padrão
 INSERT INTO alert_rules (coin_symbol, alert_type, threshold_value, time_period, is_active, notification_email) VALUES
                                                                                                                    ('BTC', 'PRICE_DECREASE', 5.00, 'TWENTY_FOUR_HOURS', true, 'seu-email@gmail.com'),
                                                                                                                    ('BTC', 'PRICE_INCREASE', 10.00, 'TWENTY_FOUR_HOURS', true, 'seu-email@gmail.com'),
@@ -9,7 +7,6 @@ INSERT INTO alert_rules (coin_symbol, alert_type, threshold_value, time_period, 
                                                                                                                    ('ADA', 'PRICE_DECREASE', 7.00, 'TWENTY_FOUR_HOURS', true, 'seu-email@gmail.com'),
                                                                                                                    ('ADA', 'PRICE_INCREASE', 12.00, 'TWENTY_FOUR_HOURS', true, 'seu-email@gmail.com');
 
--- Índices para melhorar performance
 CREATE INDEX IF NOT EXISTS idx_crypto_coin_id ON cryptocurrencies(coin_id);
 CREATE INDEX IF NOT EXISTS idx_crypto_symbol ON cryptocurrencies(symbol);
 CREATE INDEX IF NOT EXISTS idx_crypto_last_updated ON cryptocurrencies(last_updated);

@@ -23,7 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
 
-        // ✅ Verificar se conta está habilitada
         if (!user.getEnabled()) {
             log.warn("⚠️  Tentativa de login com conta não verificada: {}", username);
             throw new DisabledException("Conta não verificada. Verifique seu email.");
@@ -32,10 +31,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                user.getEnabled(), // ✅ enabled
-                true,  // accountNonExpired
-                true,  // credentialsNonExpired
-                true,  // accountNonLocked
+                user.getEnabled(),
+                true,
+                true,
+                true,
                 List.of(new SimpleGrantedAuthority(user.getRole()))
         );
     }

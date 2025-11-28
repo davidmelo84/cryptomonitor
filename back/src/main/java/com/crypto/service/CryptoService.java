@@ -8,16 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-/**
- * ✅ CRYPTO SERVICE - VERSÃO OTIMIZADA COM SMART CACHE
- *
- * 🚀 CARACTERÍSTICAS:
- * - Cache inteligente via SmartCacheService
- * - 3 camadas: Memória (30min), Banco (2h), CoinGecko (fallback)
- * - Sem uso direto de Caffeine aqui (evita conflitos)
- * - Sem schedulers locais — agendamento centralizado no SmartCache
- * - Reduz drasticamente o rate limit: ~2 req/hora (≈98% menos)
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,30 +18,16 @@ public class CryptoService {
     private final CoinGeckoApiService coinGeckoService;
     private final CryptoCurrencyRepository cryptoRepository;
 
-    // ======================================
-    // 🔹 MÉTODOS PRINCIPAIS
-    // ======================================
 
-    /**
-     * ✅ Buscar todas as criptomoedas
-     *
-     * Usa SmartCache que gerencia:
-     * - Memória (30min)
-     * - Banco (2h)
-     * - CoinGecko (fallback)
-     */
     public List<CryptoCurrency> getCurrentPrices() {
         return smartCache.getCurrentPrices();
     }
 
-    /**
-     * ✅ Buscar uma moeda específica
-     */
+
     public Optional<CryptoCurrency> getCryptoByCoinId(String coinId) {
         try {
             log.debug("🔍 Buscando: {}", coinId);
 
-            // Busca na lista cacheada (evita requisições externas)
             return getCurrentPrices().stream()
                     .filter(c -> c.getCoinId().equalsIgnoreCase(coinId))
                     .findFirst();
@@ -58,14 +35,11 @@ public class CryptoService {
         } catch (Exception e) {
             log.error("❌ Erro ao buscar {}: {}", coinId, e.getMessage());
 
-            // Fallback: banco de dados
             return cryptoRepository.findByCoinId(coinId);
         }
     }
 
-    /**
-     * ✅ Buscar múltiplas moedas (lazy loading)
-     */
+
     public List<CryptoCurrency> getPricesByIds(List<String> coinIds) {
         if (coinIds == null || coinIds.isEmpty()) {
             return Collections.emptyList();
@@ -73,27 +47,21 @@ public class CryptoService {
 
         log.info("🔍 Lazy Loading: {} moedas", coinIds.size());
 
-        // Filtra da lista já carregada em cache
         return getCurrentPrices().stream()
                 .filter(c -> coinIds.contains(c.getCoinId()))
                 .toList();
     }
 
-    /**
-     * ✅ Buscar Top N moedas
-     */
+
     public List<CryptoCurrency> getTopCryptoPrices(int limit) {
         return getCurrentPrices().stream()
                 .limit(limit)
                 .toList();
     }
 
-    /**
-     * ✅ Histórico de preços (para gráficos)
-     */
+
     public List<Map<String, Object>> getHistory(String coinId, int days) {
         try {
-            // Endpoint leve — busca direto da CoinGecko
             List<? extends Map<String, ? extends Number>> rawHistory =
                     coinGeckoService.getHistory(coinId, days);
 
@@ -109,9 +77,6 @@ public class CryptoService {
         }
     }
 
-    // ======================================
-    // 💾 BANCO DE DADOS
-    // ======================================
 
     public List<CryptoCurrency> getAllSavedCryptos() {
         return cryptoRepository.findAllByOrderByMarketCapDesc();
@@ -121,29 +86,19 @@ public class CryptoService {
         return cryptoRepository.findByCoinId(coinId);
     }
 
-    // ======================================
-    // ⚙️ CACHE MANAGEMENT
-    // ======================================
 
-    /**
-     * ✅ Limpa todos os caches
-     */
     public void clearCache() {
         smartCache.clearCache();
         log.info("🗑️ Cache limpo manualmente");
     }
 
-    /**
-     * ✅ Força atualização completa (CoinGecko → Banco → Cache)
-     */
+
     public void forceUpdate() {
         log.warn("⚠️ FORCE UPDATE solicitado — atualizando todas as fontes...");
         smartCache.forceUpdate();
     }
 
-    /**
-     * ✅ Pré-carrega o cache na inicialização
-     */
+
     public void warmUpCache() {
         log.info("🔥 Aquecendo cache...");
         try {
@@ -154,9 +109,6 @@ public class CryptoService {
         }
     }
 
-    // ======================================
-    // 🩺 HEALTH CHECK / STATUS
-    // ======================================
 
     public Map<String, Object> getApiStatus() {
         boolean coinGeckoAvailable = coinGeckoService.isAvailable();

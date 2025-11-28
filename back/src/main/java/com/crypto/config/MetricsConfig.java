@@ -17,13 +17,6 @@ import org.springframework.context.annotation.Configuration;
 import java.net.InetAddress;
 import java.util.Map;
 
-/**
- * ✅ SPRINT 1 & 2: Configuração de Métricas Prometheus
- *
- * CORREÇÕES:
- * - Removido parâmetro MeterRegistry do customizer (evita dependência circular)
- * - Beans de Counter/Timer injetados via @Lazy no RateLimitFilter
- */
 @Slf4j
 @Configuration
 public class MetricsConfig {
@@ -37,9 +30,7 @@ public class MetricsConfig {
     @Value("${spring.profiles.active:dev}")
     private String environment;
 
-    /**
-     * ✅ CORRIGIDO - Sem parâmetros para evitar dependência circular
-     */
+
     @Bean
     public MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
         return registry -> {
@@ -63,7 +54,7 @@ public class MetricsConfig {
         };
     }
 
-    // ✅ Timers
+
     @Bean
     public Timer coinGeckoRequestTimer(MeterRegistry registry) {
         return Timer.builder("crypto_coingecko_request_duration_seconds")
@@ -80,7 +71,6 @@ public class MetricsConfig {
                 .register(registry);
     }
 
-    // ✅ Counters
     @Bean
     public Counter websocketConnectionsCounter(MeterRegistry registry) {
         return Counter.builder("crypto_websocket_connections_total")
@@ -113,7 +103,6 @@ public class MetricsConfig {
                 .register(registry);
     }
 
-    // Adicionar ao MetricsConfig.java existente
 
     @Bean
     public Gauge cacheHitRateGauge(MeterRegistry registry, CacheManager cacheManager) {
@@ -159,7 +148,6 @@ public class MetricsConfig {
                 .register(registry);
     }
 
-    // Métrica de latência por endpoint
     @Bean
     public MeterFilter addEndpointTag() {
         return MeterFilter.commonTags(

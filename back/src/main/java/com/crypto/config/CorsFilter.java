@@ -10,12 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-/**
- * ✅ FILTRO CORS ADICIONAL
- *
- * Garante que CORS funcione ANTES de qualquer outro filtro
- * (incluindo Security e RateLimit)
- */
+
 @Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -30,7 +25,7 @@ public class CorsFilter implements Filter {
 
         String origin = request.getHeader("Origin");
 
-        // 🔥 VALIDAÇÃO ESTRITA DE ORIGEM
+
         if (origin != null && isOriginAllowed(origin)) {
             response.setHeader("Access-Control-Allow-Origin", origin);
             log.debug("✅ CORS permitido para: {}", origin);
@@ -38,14 +33,13 @@ public class CorsFilter implements Filter {
             log.warn("⚠️ CORS BLOQUEADO para origem suspeita: {}", origin);
         }
 
-        // ✅ Headers CORS
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD");
         response.setHeader("Access-Control-Allow-Headers", "*");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Max-Age", "7200");
         response.setHeader("Access-Control-Expose-Headers", "Authorization, Content-Type, X-Total-Count");
 
-        // ✅ CRÍTICO: Responder OPTIONS imediatamente
+
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             log.debug("✅ OPTIONS preflight: {} {}", request.getMethod(), request.getRequestURI());
             response.setStatus(HttpServletResponse.SC_OK);
@@ -65,15 +59,13 @@ public class CorsFilter implements Filter {
         log.info("🔌 CORS Filter destruído");
     }
 
-    /**
-     * 🔒 Valida se origem é permitida
-     */
+
     private boolean isOriginAllowed(String origin) {
         if (origin == null || origin.isEmpty()) {
             return false;
         }
 
-        // ✅ Lista de padrões permitidos
+
         return origin.equals("https://cryptomonitor-theta.vercel.app") ||
                 origin.endsWith(".vercel.app") ||
                 origin.startsWith("http://localhost:") ||

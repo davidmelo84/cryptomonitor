@@ -14,11 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.*;
 
-/**
- * ✅ CONTROLLER DE DEBUG
- *
- * Endpoints para diagnosticar problemas no sistema de alertas
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/debug")
@@ -30,9 +26,7 @@ public class DebugController {
     private final NotificationService notificationService;
     private final AlertRuleRepository alertRuleRepository;
 
-    /**
-     * 🔍 DIAGNÓSTICO COMPLETO DO SISTEMA
-     */
+
     @GetMapping("/status")
     public ResponseEntity<?> getSystemStatus() {
         try {
@@ -40,7 +34,6 @@ public class DebugController {
 
             Map<String, Object> status = new HashMap<>();
 
-            // 1. Verificar cryptos disponíveis
             List<CryptoCurrency> cryptos = cryptoService.getCurrentPrices();
             status.put("cryptosAvailable", cryptos.size());
 
@@ -57,7 +50,6 @@ public class DebugController {
             }
             status.put("cryptos", cryptoInfo);
 
-            // 2. Verificar alertas cadastrados
             List<AlertRule> allAlerts = alertRuleRepository.findAll();
             status.put("totalAlerts", allAlerts.size());
             status.put("activeAlerts", alertRuleRepository.findByActiveTrue().size());
@@ -75,7 +67,6 @@ public class DebugController {
             }
             status.put("alerts", alertInfo);
 
-            // 3. Simular verificação de alertas
             Map<String, Object> simulationResults = simulateAlertCheck();
             status.put("simulation", simulationResults);
 
@@ -91,9 +82,7 @@ public class DebugController {
         }
     }
 
-    /**
-     * 🧪 SIMULAR VERIFICAÇÃO DE ALERTAS
-     */
+
     private Map<String, Object> simulateAlertCheck() {
         Map<String, Object> results = new HashMap<>();
 
@@ -108,7 +97,6 @@ public class DebugController {
                 String normalizedSymbol = crypto.getSymbol().toUpperCase();
 
                 for (AlertRule alert : alerts) {
-                    // Comparar símbolos
                     boolean symbolMatch = normalizedSymbol.equals(alert.getCoinSymbol().toUpperCase());
 
                     if (symbolMatch && alert.getAlertType() == AlertRule.AlertType.PERCENT_CHANGE_24H) {
@@ -119,11 +107,9 @@ public class DebugController {
                         String reason = "";
 
                         if (threshold < 0) {
-                            // Alerta de queda
                             wouldTrigger = priceChange <= threshold;
                             reason = String.format("Queda: %.2f%% <= %.2f%%", priceChange, threshold);
                         } else if (threshold > 0) {
-                            // Alerta de alta
                             wouldTrigger = priceChange >= threshold;
                             reason = String.format("Alta: %.2f%% >= %.2f%%", priceChange, threshold);
                         }
@@ -156,9 +142,7 @@ public class DebugController {
         return results;
     }
 
-    /**
-     * 🔔 TESTAR ENVIO DE EMAIL
-     */
+
     @PostMapping("/test-email")
     public ResponseEntity<?> testEmail(@RequestBody Map<String, String> request) {
         try {
@@ -196,9 +180,7 @@ public class DebugController {
         }
     }
 
-    /**
-     * 🗑️ LIMPAR COOLDOWN DE NOTIFICAÇÕES
-     */
+
     @PostMapping("/clear-cooldown")
     public ResponseEntity<?> clearCooldown(@RequestBody(required = false) Map<String, String> request) {
         try {
@@ -228,9 +210,6 @@ public class DebugController {
         }
     }
 
-    /**
-     * 🔥 FORÇAR DISPARO DE ALERTA (para testes)
-     */
     @PostMapping("/force-alert")
     public ResponseEntity<?> forceAlert(@RequestBody Map<String, Object> request) {
         try {
@@ -254,7 +233,6 @@ public class DebugController {
 
             CryptoCurrency crypto = cryptoOpt.get();
 
-            // Criar alerta temporário
             AlertRule tempAlert = new AlertRule();
             tempAlert.setCoinSymbol(coinSymbol.toUpperCase());
             tempAlert.setNotificationEmail(email);
@@ -262,7 +240,6 @@ public class DebugController {
             tempAlert.setThresholdValue(BigDecimal.valueOf(-999)); // Sempre vai disparar
             tempAlert.setActive(true);
 
-            // Simular disparo
             alertService.checkAlertsForCryptoAndUser(crypto, email);
 
             return ResponseEntity.ok(Map.of(
@@ -282,9 +259,7 @@ public class DebugController {
         }
     }
 
-    /**
-     * 📋 LISTAR ALERTAS DE UM EMAIL
-     */
+
     @GetMapping("/alerts/{email}")
     public ResponseEntity<?> getAlertsByEmail(@PathVariable String email) {
         try {
@@ -314,9 +289,7 @@ public class DebugController {
         }
     }
 
-    /**
-     * 🔄 REPROCESSAR ALERTAS MANUALMENTE
-     */
+
     @PostMapping("/reprocess-alerts")
     public ResponseEntity<?> reprocessAlerts(@RequestBody Map<String, String> request) {
         try {

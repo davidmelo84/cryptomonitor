@@ -9,28 +9,14 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * ✅ FILA CENTRALIZADA PARA REQUESTS DO COINGECKO
- *
- * 🔁 Agora com deduplicação de requisições idênticas:
- * - Requests com a mesma chave (requestKey) compartilham o mesmo Future
- * - Evita chamadas repetidas para o mesmo endpoint em paralelo
- *
- * SOLUÇÃO PARA MÚLTIPLOS USUÁRIOS:
- * - Todos os requests passam por esta fila
- * - Rate limit global: 1 request a cada 2 segundos
- * - Máximo 30 requests por minuto
- * - Timeout de 30 segundos por request
- */
+
 @Slf4j
 @Service
 public class CoinGeckoRequestQueue {
 
-    // ✅ Fila thread-safe com prioridade
     private final PriorityBlockingQueue<QueuedRequest> requestQueue =
             new PriorityBlockingQueue<>(100);
 
-    // ✅ Executor para processar fila
     private final ExecutorService queueProcessor =
             Executors.newSingleThreadExecutor(r -> {
                 Thread t = new Thread(r, "CoinGecko-Queue-Processor");
@@ -38,11 +24,9 @@ public class CoinGeckoRequestQueue {
                 return t;
             });
 
-    // ✅ Map para deduplicação
     private final Map<String, CompletableFuture<?>> pendingRequests =
-            new ConcurrentHashMap<>(); // ✅ ADICIONADO
+            new ConcurrentHashMap<>(); //
 
-    // ✅ Rate limit tracking
     private final ConcurrentLinkedQueue<Instant> recentRequests =
             new ConcurrentLinkedQueue<>();
 
@@ -62,34 +46,27 @@ public class CoinGeckoRequestQueue {
                 MAX_REQUESTS_PER_MINUTE, MIN_INTERVAL_MS);
     }
 
-    /**
-     * ✅ ENFILEIRAR REQUEST (com deduplicação)
-     */
+
     @SuppressWarnings("unchecked")
     public <T> CompletableFuture<T> enqueue(
             Callable<T> supplier,
             RequestPriority priority
     ) {
-        // ✅ Gerar chave única baseada no callable
         String requestKey = generateRequestKey(supplier);
 
-        // ✅ Reutilizar request pendente
         CompletableFuture<?> existing = pendingRequests.get(requestKey);
         if (existing != null && !existing.isDone()) {
             log.debug("♻️ Reusando request existente: {}", requestKey);
             return (CompletableFuture<T>) existing;
         }
 
-        // ✅ Criar novo future e registrar no mapa
         CompletableFuture<T> future = new CompletableFuture<>();
         pendingRequests.put(requestKey, future);
 
-        // ✅ Criar e enfileirar
         QueuedRequest request = new QueuedRequest(supplier, future, priority, requestKey);
         queuedRequests.incrementAndGet();
         requestQueue.offer(request);
 
-        // ✅ Remover do mapa ao concluir
         future.whenComplete((result, error) -> pendingRequests.remove(requestKey));
 
         log.debug("📥 Request enfileirado (Prioridade: {}, Fila: {})",
@@ -98,14 +75,11 @@ public class CoinGeckoRequestQueue {
         return future;
     }
 
-    // ✅ Gera uma chave única para deduplicação
     private String generateRequestKey(Callable<?> supplier) {
         return supplier.getClass().getName() + "@" + System.identityHashCode(supplier);
     }
 
-    /**
-     * ✅ PROCESSAR FILA
-     */
+
     private void processQueue() {
         log.info("🔄 Queue processor iniciado");
 
@@ -138,9 +112,6 @@ public class CoinGeckoRequestQueue {
         log.info("🛑 Queue processor finalizado");
     }
 
-    /**
-     * ✅ EXECUTAR REQUEST (com detecção de HTTP 429)
-     */
     @SuppressWarnings("unchecked")
     private <T> void executeRequest(QueuedRequest request) {
         try {
@@ -158,7 +129,6 @@ public class CoinGeckoRequestQueue {
         } catch (Exception e) {
             String message = e.getMessage() != null ? e.getMessage() : "";
 
-            // 🚨 Detecta erro HTTP 429 e aplica cooldown
             if (message.contains("429") || message.contains("Too Many Requests")) {
                 log.warn("⚠️ Erro HTTP 429 detectado! Entrando em cooldown por 60 segundos...");
                 try {
@@ -176,9 +146,6 @@ public class CoinGeckoRequestQueue {
     }
 
 
-    /**
-     * ✅ AGUARDAR RATE LIMIT
-     */
     private void waitForRateLimit() throws InterruptedException {
         cleanOldRequests();
 
@@ -205,17 +172,13 @@ public class CoinGeckoRequestQueue {
         recentRequests.offer(Instant.now());
     }
 
-    /**
-     * ✅ LIMPAR REQUESTS ANTIGOS
-     */
+
     private void cleanOldRequests() {
         Instant oneMinuteAgo = Instant.now().minus(Duration.ofMinutes(1));
         recentRequests.removeIf(instant -> instant.isBefore(oneMinuteAgo));
     }
 
-    /**
-     * ✅ ESTATÍSTICAS DA FILA
-     */
+
     public QueueStats getStats() {
         return new QueueStats(
                 requestQueue.size(),
@@ -226,27 +189,20 @@ public class CoinGeckoRequestQueue {
         );
     }
 
-    // =========================================
-    // CLASSES AUXILIARES
-    // =========================================
-
-    /**
-     * Request enfileirado
-     */
     private static class QueuedRequest implements Comparable<QueuedRequest> {
         final Callable<?> callable;
         final CompletableFuture<?> future;
         final RequestPriority priority;
         final Instant enqueuedAt;
-        final String requestKey;  // ✅ ADICIONADO
+        final String requestKey;
 
         QueuedRequest(Callable<?> callable, CompletableFuture<?> future,
-                      RequestPriority priority, String requestKey) { // ✅ ADICIONADO
+                      RequestPriority priority, String requestKey) {
             this.callable = callable;
             this.future = future;
             this.priority = priority;
             this.enqueuedAt = Instant.now();
-            this.requestKey = requestKey; // ✅ ADICIONADO
+            this.requestKey = requestKey;
         }
 
         boolean isExpired(long timeoutMs) {
@@ -259,13 +215,11 @@ public class CoinGeckoRequestQueue {
         }
     }
 
-    /**
-     * Prioridade do request
-     */
+
     public enum RequestPriority {
-        HIGH(0),    // Schedulers críticos
-        NORMAL(1),  // Requests de usuários
-        LOW(2);     // Background tasks
+        HIGH(0),
+        NORMAL(1),
+        LOW(2);
 
         final int value;
 
@@ -274,9 +228,7 @@ public class CoinGeckoRequestQueue {
         }
     }
 
-    /**
-     * Estatísticas
-     */
+
     public record QueueStats(
             int queueSize,
             int queuedRequests,

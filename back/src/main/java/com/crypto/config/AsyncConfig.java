@@ -1,5 +1,4 @@
-// AsyncConfig.java
-// Localização: src/main/java/com/crypto/config/AsyncConfig.java
+
 package com.crypto.config;
 
 import org.springframework.context.annotation.Bean;

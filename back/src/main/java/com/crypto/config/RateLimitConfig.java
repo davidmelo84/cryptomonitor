@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/config/RateLimitConfig.java
 package com.crypto.config;
 
 import io.github.bucket4j.Bandwidth;
@@ -13,16 +12,8 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * ✅ SPRINT 1 - RATE LIMITING
- *
- * Configuração de rate limiting por IP usando Bucket4j.
- *
- * Limites:
- * - API Geral: 100 req/min por IP
- * - Auth Endpoints: 10 req/min por IP (proteção contra brute force)
- * - Admin Endpoints: 50 req/min por IP
- */
+
+
 @Slf4j
 @Configuration
 public class RateLimitConfig {
@@ -36,17 +27,10 @@ public class RateLimitConfig {
     @Value("${rate-limit.admin.requests-per-minute:50}")
     private int adminRequestsPerMinute;
 
-    /**
-     * ✅ Cache de buckets por IP
-     * Key: IP do cliente
-     * Value: Bucket com limites configurados
-     */
+
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
-    /**
-     * ✅ Bucket para endpoints gerais da API
-     * 100 requisições por minuto por IP
-     */
+
     @Bean("apiBucket")
     public Bucket createApiBucket() {
         Bandwidth limit = Bandwidth.classic(
@@ -58,10 +42,7 @@ public class RateLimitConfig {
         return Bucket.builder().addLimit(limit).build();
     }
 
-    /**
-     * ✅ Bucket para endpoints de autenticação
-     * 10 requisições por minuto por IP (proteção contra brute force)
-     */
+
     @Bean("authBucket")
     public Bucket createAuthBucket() {
         Bandwidth limit = Bandwidth.classic(
@@ -73,10 +54,7 @@ public class RateLimitConfig {
         return Bucket.builder().addLimit(limit).build();
     }
 
-    /**
-     * ✅ Bucket para endpoints administrativos
-     * 50 requisições por minuto por IP
-     */
+
     @Bean("adminBucket")
     public Bucket createAdminBucket() {
         Bandwidth limit = Bandwidth.classic(
@@ -88,9 +66,7 @@ public class RateLimitConfig {
         return Bucket.builder().addLimit(limit).build();
     }
 
-    /**
-     * ✅ Resolver bucket por IP e tipo de endpoint
-     */
+
     public Bucket resolveBucket(String key, BucketType type) {
         return buckets.computeIfAbsent(key, k -> {
             Bandwidth limit;
@@ -121,18 +97,14 @@ public class RateLimitConfig {
         });
     }
 
-    /**
-     * ✅ Tipos de buckets
-     */
+
     public enum BucketType {
         API,    // Endpoints gerais (100/min)
         AUTH,   // Autenticação (10/min)
         ADMIN   // Admin (50/min)
     }
 
-    /**
-     * ✅ Limpar buckets inativos (cleanup periódico)
-     */
+
     public void clearInactiveBuckets() {
         int sizeBefore = buckets.size();
 
@@ -150,9 +122,7 @@ public class RateLimitConfig {
         }
     }
 
-    /**
-     * ✅ Estatísticas de rate limiting
-     */
+
     public Map<String, Object> getStats() {
         return Map.of(
                 "totalBuckets", buckets.size(),

@@ -16,18 +16,14 @@ public class CryptoMonitorApplication {
 
         long startTime = System.currentTimeMillis();
 
-        // =========================================================
-        // ✅ OTIMIZAÇÕES PARA STARTUP MAIS RÁPIDO
-        // =========================================================
+
         System.setProperty("spring.jmx.enabled", "false");
         System.setProperty("spring.main.lazy-initialization", "true");
         System.setProperty("server.tomcat.mbeanregistry.enabled", "false");
 
         SpringApplication app = new SpringApplication(CryptoMonitorApplication.class);
 
-        // =========================================================
-        // ✅ Listener para medir tempo de inicialização
-        // =========================================================
+
         app.addListeners(event -> {
             if (event instanceof org.springframework.boot.context.event.ApplicationReadyEvent) {
                 long elapsed = System.currentTimeMillis() - startTime;
@@ -37,7 +33,6 @@ public class CryptoMonitorApplication {
                     log.warn("⚠️ Startup demorou mais de 60s - verifique configurações");
                 }
 
-                // Banner final pós-inicialização
                 log.info("\n" +
                         "🚀 Crypto Monitor iniciado com sucesso!\n" +
                         "📊 API: http://localhost:8080/crypto-monitor/api/crypto\n" +
@@ -48,25 +43,15 @@ public class CryptoMonitorApplication {
             }
         });
 
-        // =========================================================
-        // ▶️ Iniciar aplicação
-        // =========================================================
+
         app.run(args);
 
-        // Log final curto
         log.info("✅ Crypto Monitor ONLINE");
         log.info("📊 API: http://localhost:8080/crypto-monitor/api/crypto");
         log.info("💚 Health: http://localhost:8080/crypto-monitor/actuator/health");
     }
 
-    /**
-     * ❌ CACHE WARMUP - DESABILITADO
-     *
-     * Motivo: causava timeout de 60 segundos na inicialização.
-     * Solução: Cache é populado automaticamente no primeiro request (lazy loading).
-     */
-    // @PostConstruct // removido
+
     public void warmUpCache() {
-        // Desabilitado para evitar timeout.
     }
 }

@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/model/dto/AlertRuleDTO.java
 package com.crypto.model.dto;
 
 import com.crypto.model.AlertRule;
@@ -32,23 +31,19 @@ public class AlertRuleDTO {
     @NotBlank(message = "E-mail é obrigatório")
     private String email;
 
-    /**
-     * ✅ Converte DTO → Entity
-     */
+
     public AlertRule toEntity() {
         AlertRule alertRule = new AlertRule();
         alertRule.setCoinSymbol(this.coinSymbol);
         alertRule.setAlertType(this.alertType);
         alertRule.setThresholdValue(this.thresholdValue);
         alertRule.setNotificationEmail(this.email);
-        alertRule.setTargetPrice(null);  // ✅ Sempre null para este DTO
-        alertRule.setActive(true);       // ✅ Nova regra sempre ativa
+        alertRule.setTargetPrice(null);
+        alertRule.setActive(true);
         return alertRule;
     }
 
-    /**
-     * ✅ Converte Entity → DTO
-     */
+
     public static AlertRuleDTO fromEntity(AlertRule alertRule) {
         return AlertRuleDTO.builder()
                 .coinSymbol(alertRule.getCoinSymbol())

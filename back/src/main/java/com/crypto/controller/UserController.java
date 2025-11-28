@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/controller/UserController.java
 package com.crypto.controller;
 
 import com.crypto.model.User;
@@ -29,9 +28,7 @@ public class UserController {
     private final VerificationService verificationService;
     private final InputSanitizer sanitizer;
 
-    // ==========================================
-    // REGISTRO COM SANITIZAÇÃO
-    // ==========================================
+
     @PostMapping
     @Transactional
     public ResponseEntity<?> register(@RequestBody User newUser) {
@@ -138,9 +135,7 @@ public class UserController {
         }
     }
 
-    // ==========================================
-    // VERIFICAR CÓDIGO
-    // ==========================================
+
     @PostMapping("/verify")
     public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> request) {
         String code = request.get("code");
@@ -154,9 +149,7 @@ public class UserController {
                 : ResponseEntity.badRequest().body(Map.of("error", "Código inválido ou expirado"));
     }
 
-    // ==========================================
-    // REENVIAR CÓDIGO
-    // ==========================================
+
     @PostMapping("/resend-code")
     @Transactional
     public ResponseEntity<?> resendCode(@RequestBody Map<String, String> request) {
@@ -201,9 +194,7 @@ public class UserController {
         ));
     }
 
-    // ==========================================
-    // PERFIL
-    // ==========================================
+
     @GetMapping("/me")
     public ResponseEntity<User> getProfile(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
@@ -219,9 +210,7 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // ==========================================
-    // ATUALIZAR PERFIL
-    // ==========================================
+
     @PutMapping("/me")
     public ResponseEntity<User> updateProfile(
             @RequestHeader("Authorization") String authHeader,

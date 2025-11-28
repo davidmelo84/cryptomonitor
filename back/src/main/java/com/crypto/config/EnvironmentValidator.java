@@ -9,12 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * ✅ VALIDADOR DE VARIÁVEIS DE AMBIENTE (OTIMIZADO)
- *
- * - Erros críticos → interrompem o startup imediatamente
- * - Avisos → validados de forma assíncrona (não atrasam o startup)
- */
+
 @Slf4j
 @Configuration
 public class EnvironmentValidator {
@@ -31,18 +26,12 @@ public class EnvironmentValidator {
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
-    // ===============================================================
-    // 📨 SendGrid
-    // ===============================================================
     @Value("${sendgrid.api.key:}")
     private String sendGridApiKey;
 
     @Value("${sendgrid.from.email:}")
     private String fromEmail;
 
-    // ===============================================================
-    // 🤖 Telegram
-    // ===============================================================
     @Value("${telegram.enabled:false}")
     private boolean telegramEnabled;
 
@@ -52,9 +41,6 @@ public class EnvironmentValidator {
     @Value("${telegram.chat.id:}")
     private String telegramChatId;
 
-    // ===============================================================
-    // 🚀 Validação principal (crítica)
-    // ===============================================================
     @PostConstruct
     public void validateEnvironment() {
 
@@ -62,9 +48,6 @@ public class EnvironmentValidator {
         log.info("🔍 VALIDANDO VARIÁVEIS CRÍTICAS DE AMBIENTE...");
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-        // ============================================================
-        // ❌ ERRO CRÍTICO #1 – JWT
-        // ============================================================
         if (jwtSecret == null || jwtSecret.isEmpty() || "default_secret".equals(jwtSecret)) {
             throw new IllegalStateException("""
                     ❌ JWT_SECRET não configurado ou usando valor inseguro!
@@ -74,9 +57,6 @@ public class EnvironmentValidator {
         }
         log.info("✅ JWT_SECRET configurado ({} chars)", jwtSecret.length());
 
-        // ============================================================
-        // ❌ ERRO CRÍTICO #2 – Banco de dados em produção
-        // ============================================================
         if ("prod".equals(activeProfile) && datasourceUrl.contains("h2:mem")) {
             throw new IllegalStateException("""
                     ❌ H2 em memória detectado em PRODUÇÃO!
@@ -88,15 +68,9 @@ public class EnvironmentValidator {
         log.info("✅ Variáveis críticas validadas");
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-        // ============================================================
-        // 🔄 Execução assíncrona sem @Async
-        // ============================================================
         CompletableFuture.runAsync(this::validateSecondaryConfigs);
     }
 
-    // ===============================================================
-    // 🧵 Validação secundária — NÃO bloqueia o startup
-    // ===============================================================
     private void validateSecondaryConfigs() {
         try {
             Thread.sleep(1500); // pequena folga pós-startup
@@ -108,9 +82,6 @@ public class EnvironmentValidator {
 
         List<String> warnings = new ArrayList<>();
 
-        // ============================================================
-        // 📨 SENDGRID
-        // ============================================================
         if ("prod".equals(activeProfile)) {
 
             if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
@@ -124,16 +95,11 @@ public class EnvironmentValidator {
             }
         }
 
-        // ============================================================
-        // 🔐 JWT tamanho
-        // ============================================================
+
         if (jwtSecret.length() < 32) {
             warnings.add("JWT_SECRET tem menos de 32 caracteres (recomendado: 64)");
         }
 
-        // ============================================================
-        // 🤖 TELEGRAM
-        // ============================================================
         if ("prod".equals(activeProfile) && telegramEnabled) {
 
             if (telegramBotToken == null ||
@@ -150,9 +116,6 @@ public class EnvironmentValidator {
             }
         }
 
-        // ============================================================
-        // ⚠️ LOG FINAL DE AVISOS
-        // ============================================================
         if (!warnings.isEmpty()) {
             log.warn("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.warn("⚠️ AVISOS DE CONFIGURAÇÃO:");

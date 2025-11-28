@@ -17,7 +17,6 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
                                       WebSocketHandler wsHandler,
                                       Map<String, Object> attributes) {
 
-        // Usuário real será definido no interceptor via accessor.setUser()
         return null;
     }
 }

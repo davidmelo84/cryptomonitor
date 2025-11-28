@@ -21,11 +21,11 @@ public class CryptoCurrency {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore // Não mapeia esse campo no JSON
+    @JsonIgnore
     private Long id;
 
     @Column(unique = true, nullable = false)
-    @JsonProperty("id") // Esse será mapeado do JSON
+    @JsonProperty("id")
     private String coinId;
 
     @JsonProperty("symbol")

@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/model/Transaction.java
 
 package com.crypto.model;
 
@@ -61,12 +60,11 @@ public class Transaction {
         if (transactionDate == null) {
             transactionDate = LocalDateTime.now();
         }
-        // Calcular total
         totalValue = quantity.multiply(pricePerUnit);
     }
 
     public enum TransactionType {
-        BUY,    // Compra
-        SELL    // Venda
+        BUY,
+        SELL
     }
 }

@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/repository/TradingBotRepository.java
 
 package com.crypto.repository;
 

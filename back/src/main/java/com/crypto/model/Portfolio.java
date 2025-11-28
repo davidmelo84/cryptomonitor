@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/model/Portfolio.java
 
 package com.crypto.model;
 

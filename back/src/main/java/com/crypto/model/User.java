@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/model/User.java
 package com.crypto.model;
 
 import jakarta.persistence.*;
@@ -30,12 +29,10 @@ public class User {
     @Builder.Default
     private String role = "USER";
 
-    // ✅ Campo para verificação
     @Column(nullable = false)
     @Builder.Default
     private Boolean enabled = false;
 
-    // ✅ NOVO: Timestamps para controle
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

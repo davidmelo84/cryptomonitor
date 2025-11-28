@@ -11,14 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * ✅ VERSÃO OTIMIZADA - SCHEDULER GLOBAL REMOVIDO
- *
- * MUDANÇAS:
- * - Scheduler automático foi completamente removido
- * - SmartCacheService controla updates a cada hora
- * - Monitoramento ocorre apenas quando um usuário ativa
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,16 +24,11 @@ public class CryptoMonitoringService {
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
     private LocalDateTime lastSuccessfulRun = null;
 
-    /**
-     * ✅ ATUALIZAÇÃO MANUAL (para usuário específico)
-     *
-     * Usado pelo MonitoringControlService quando usuário ativa monitoramento
-     */
+
     public void updateAndProcessAlertsForUser(String userEmail) {
         try {
             log.info("🔄 Processando alertas para: {}", userEmail);
 
-            // Buscar preços (cacheados pelo SmartCache)
             List<CryptoCurrency> currentCryptos = cryptoService.getCurrentPrices();
 
             if (currentCryptos.isEmpty()) {
@@ -61,9 +49,7 @@ public class CryptoMonitoringService {
         }
     }
 
-    /**
-     * 📡 Envia preços via WebSocket
-     */
+
     public void broadcastPrices() {
         try {
             List<CryptoCurrency> cryptos = cryptoService.getCurrentPrices();
@@ -78,9 +64,7 @@ public class CryptoMonitoringService {
         }
     }
 
-    /**
-     * 📤 Publica evento para processamento de alertas
-     */
+
     private void publishCryptoUpdateEvent(
             List<CryptoCurrency> cryptos,
             String userEmail,
@@ -101,9 +85,6 @@ public class CryptoMonitoringService {
         }
     }
 
-    /**
-     * 📊 Estatísticas do monitoramento
-     */
     public MonitoringStats getMonitoringStats() {
         try {
             List<CryptoCurrency> savedCryptos = cryptoService.getAllSavedCryptos();

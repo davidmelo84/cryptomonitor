@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/controller/ApiStatusController.java
 package com.crypto.controller;
 
 import lombok.RequiredArgsConstructor;
@@ -18,15 +17,12 @@ import java.util.concurrent.atomic.AtomicLong;
 @RequiredArgsConstructor
 public class ApiStatusController {
 
-    // Estatísticas globais
     private static final AtomicInteger rateLimitHits = new AtomicInteger(0);
     private static final AtomicInteger successfulRequests = new AtomicInteger(0);
     private static final AtomicLong lastRateLimitTime = new AtomicLong(0);
     private static final Map<String, Integer> requestsPerMinute = new ConcurrentHashMap<>();
 
-    /**
-     * ✅ STATUS GERAL DA API
-     */
+
     @GetMapping
     public ResponseEntity<?> getApiStatus() {
         long currentTime = System.currentTimeMillis();
@@ -58,26 +54,18 @@ public class ApiStatusController {
         return ResponseEntity.ok(status);
     }
 
-    /**
-     * ✅ REGISTRAR HIT DE RATE LIMIT
-     * (Chamar no CryptoService quando pegar 429)
-     */
+
     public static void recordRateLimitHit() {
         rateLimitHits.incrementAndGet();
         lastRateLimitTime.set(System.currentTimeMillis());
         log.warn("⚠️ Rate Limit registrado (total: {})", rateLimitHits.get());
     }
 
-    /**
-     * ✅ REGISTRAR REQUISIÇÃO BEM-SUCEDIDA
-     */
+
     public static void recordSuccessfulRequest() {
         successfulRequests.incrementAndGet();
     }
 
-    /**
-     * ✅ HEALTH CHECK DETALHADO
-     */
     @GetMapping("/health")
     public ResponseEntity<?> healthCheck() {
         long timeSinceLastRateLimit = System.currentTimeMillis() - lastRateLimitTime.get();
@@ -98,9 +86,7 @@ public class ApiStatusController {
         return ResponseEntity.ok(health);
     }
 
-    /**
-     * ✅ RESETAR ESTATÍSTICAS (ADMIN)
-     */
+
     @PostMapping("/reset-stats")
     public ResponseEntity<?> resetStats() {
         rateLimitHits.set(0);

@@ -1,4 +1,3 @@
-// Localização: back/src/main/java/com/crypto/controller/PortfolioController.java
 
 package com.crypto.controller;
 
@@ -23,12 +22,9 @@ public class PortfolioController {
 
     private final PortfolioService portfolioService;
 
-    // ✅ Sanitização e proteção contra ataques (injeção, XSS, etc.)
     private final InputSanitizer sanitizer;
 
-    /**
-     * 🔍 Retorna portfolio do usuário autenticado
-     */
+
     @GetMapping
     public ResponseEntity<Map<String, Object>> getPortfolio(Authentication authentication) {
         try {
@@ -42,9 +38,7 @@ public class PortfolioController {
         }
     }
 
-    /**
-     * ➕ Adiciona uma transação
-     */
+
     @PostMapping("/transaction")
     public ResponseEntity<?> addTransaction(
             @RequestBody Transaction transaction,
@@ -53,7 +47,6 @@ public class PortfolioController {
         try {
             String username = authentication.getName();
 
-            // 🔐 Sanitização e validação antes do processamento
             transaction.setCoinSymbol(
                     sanitizer.sanitizeCoinSymbol(transaction.getCoinSymbol())
             );
@@ -62,7 +55,6 @@ public class PortfolioController {
                     sanitizer.validateAndSanitize(transaction.getCoinName(), "coinName")
             );
 
-            // 🧮 Quantidade e preço precisam ser > 0
             if (transaction.getQuantity() == null ||
                     transaction.getQuantity().compareTo(BigDecimal.ZERO) <= 0) {
                 return ResponseEntity.badRequest()
@@ -89,9 +81,7 @@ public class PortfolioController {
         }
     }
 
-    /**
-     * 📜 Histórico de transações
-     */
+
     @GetMapping("/transactions")
     public ResponseEntity<List<Transaction>> getTransactions(Authentication authentication) {
         try {
@@ -104,9 +94,6 @@ public class PortfolioController {
         }
     }
 
-    /**
-     * 🗑 Deleta uma transação
-     */
     @DeleteMapping("/transaction/{id}")
     public ResponseEntity<?> deleteTransaction(
             @PathVariable Long id,

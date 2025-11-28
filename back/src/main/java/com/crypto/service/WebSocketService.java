@@ -9,11 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 
-/**
- * ✅ SPRINT 2 - WEBSOCKET SERVICE
- *
- * Envia atualizações de preços via WebSocket
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,9 +17,7 @@ public class WebSocketService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    /**
-     * ✅ Broadcast de preços para todos conectados
-     */
+
     public void broadcastPrices(List<CryptoCurrency> cryptos) {
         try {
             messagingTemplate.convertAndSend("/topic/prices", cryptos);
@@ -35,9 +29,7 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * ✅ Enviar atualização de uma crypto específica
-     */
+
     public void sendCryptoUpdate(CryptoCurrency crypto) {
         try {
             messagingTemplate.convertAndSend(
@@ -52,9 +44,7 @@ public class WebSocketService {
         }
     }
 
-    /**
-     * ✅ Enviar status de saúde do sistema
-     */
+
     public void broadcastSystemStatus(Map<String, Object> status) {
         try {
             messagingTemplate.convertAndSend("/topic/system/status", status);

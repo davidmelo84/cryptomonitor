@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/controller/MonitoringController.java
 
 package com.crypto.controller;
 
@@ -29,18 +28,14 @@ public class MonitoringController {
     private final AlertService alertService;
     private final InputSanitizer sanitizer;
 
-    /**
-     * Inicia o monitoramento para o usuário autenticado
-     */
+
     @PostMapping("/start")
     public ResponseEntity<?> startMonitoring(
             @RequestBody Map<String, Object> request,
             Authentication authentication
     ) {
         try {
-            // ------------------------------
-            // ✅ EMAIL
-            // ------------------------------
+
             String emailRaw = (String) request.get("email");
             if (emailRaw == null || emailRaw.trim().isEmpty()) {
                 return ResponseEntity.badRequest()
@@ -48,9 +43,7 @@ public class MonitoringController {
             }
             String email = sanitizer.sanitizeEmail(emailRaw);
 
-            // ------------------------------
-            // ✅ CRYPTOS
-            // ------------------------------
+
             @SuppressWarnings("unchecked")
             List<String> cryptocurrenciesRaw = (List<String>) request.get("cryptocurrencies");
 
@@ -71,11 +64,7 @@ public class MonitoringController {
 
             Integer checkIntervalMinutes = (Integer) request.get("checkIntervalMinutes");
 
-            // ------------------------------
-            // ✅ VALIDAÇÃO DOS THRESHOLDS (CORRIGIDA)
-            // ------------------------------
 
-            // 🔹 valor informado pelo usuário (positivo)
             Double buyThreshold = request.get("buyThreshold") != null
                     ? ((Number) request.get("buyThreshold")).doubleValue()
                     : 5.0;
@@ -85,7 +74,6 @@ public class MonitoringController {
                         .body(Map.of("error", "buyThreshold deve estar entre 0.1% e 100%"));
             }
 
-            // 💡 Será transformado em negativo na criação das regras
 
             Double sellThreshold = request.get("sellThreshold") != null
                     ? ((Number) request.get("sellThreshold")).doubleValue()
@@ -100,9 +88,6 @@ public class MonitoringController {
                     ? authentication.getName()
                     : "guest";
 
-            // ------------------------------
-            // LOG
-            // ------------------------------
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             log.info("📥 REQUISIÇÃO PARA INICIAR MONITORAMENTO");
             log.info("   👤 Usuário: {}", LogMasker.maskUsername(username));
@@ -113,9 +98,7 @@ public class MonitoringController {
             log.info("   📈 Threshold venda: {}%", sellThreshold);
             log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-            // ------------------------------
-            // 🔄 Limpar alertas antigos
-            // ------------------------------
+
             try {
                 log.info("🗑️  Apagando alertas antigos de {}", email);
                 alertService.deactivateAllAlertsForUser(email);
@@ -123,19 +106,15 @@ public class MonitoringController {
                 log.warn("⚠️  Erro ao deletar alertas antigos: {}", e.getMessage());
             }
 
-            // ------------------------------
-            // Criação das regras
-            // ------------------------------
+
             int rulesCreated = createAlertRulesForUser(
                     email,
                     cryptocurrencies,
-                    buyThreshold,   // positivo aqui
+                    buyThreshold,
                     sellThreshold
             );
 
-            // ------------------------------
-            // Inicia monitoramento
-            // ------------------------------
+
             boolean started = monitoringControlService.startMonitoring(username, email);
 
             if (started) {
@@ -171,13 +150,11 @@ public class MonitoringController {
         }
     }
 
-    /**
-     * Cria alertas apenas para as criptomoedas selecionadas
-     */
+
     private int createAlertRulesForUser(
             String email,
             List<String> cryptos,
-            Double buyThreshold,      // positivo
+            Double buyThreshold,
             Double sellThreshold
     ) {
         int count = 0;
@@ -190,10 +167,7 @@ public class MonitoringController {
 
                 log.info("   🔹 Criando alertas para: {} ({})", symbol, cryptoId);
 
-                // ------------------------------
-                // 📉 ALERTA DE COMPRA (queda)
-                // buyThreshold -> negativo aqui
-                // ------------------------------
+
                 AlertRule buyRule = new AlertRule();
                 buyRule.setCoinSymbol(symbol);
                 buyRule.setNotificationEmail(email);
@@ -204,9 +178,7 @@ public class MonitoringController {
                 alertService.createAlertRule(buyRule);
                 count++;
 
-                // ------------------------------
-                // 📈 ALERTA DE VENDA (alta)
-                // ------------------------------
+
                 AlertRule sellRule = new AlertRule();
                 sellRule.setCoinSymbol(symbol);
                 sellRule.setNotificationEmail(email);
@@ -226,9 +198,7 @@ public class MonitoringController {
         return count;
     }
 
-    /**
-     * Mapeia coinId -> símbolo
-     */
+
     private String mapCoinIdToSymbol(String coinId) {
         return switch (coinId.toLowerCase()) {
             case "bitcoin" -> "BTC";
@@ -248,9 +218,7 @@ public class MonitoringController {
         };
     }
 
-    /**
-     * Para o monitoramento
-     */
+
     @PostMapping("/stop")
     public ResponseEntity<?> stopMonitoring(Authentication authentication) {
         try {
@@ -286,9 +254,7 @@ public class MonitoringController {
         }
     }
 
-    /**
-     * Status do monitoramento
-     */
+
     @GetMapping("/status")
     public ResponseEntity<?> getStatus(Authentication authentication) {
         try {
@@ -310,9 +276,7 @@ public class MonitoringController {
         }
     }
 
-    /**
-     * Lista monitoramentos ativos
-     */
+
     @GetMapping("/active")
     public ResponseEntity<?> getActiveMonitorings() {
         try {

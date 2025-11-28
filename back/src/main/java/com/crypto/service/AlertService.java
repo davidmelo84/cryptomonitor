@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/service/AlertService.java
 package com.crypto.service;
 
 import com.crypto.model.AlertRule;
@@ -32,9 +31,7 @@ public class AlertService {
 
     private final DecimalFormat df = new DecimalFormat("#,##0.00");
 
-    // ============================================================
-    // CRUD DE ALERTAS
-    // ============================================================
+
 
     @Transactional
     public AlertRule createAlertRule(AlertRule alertRule) {
@@ -45,7 +42,6 @@ public class AlertService {
                 alertRule.setCoinSymbol(alertRule.getCoinSymbol().toUpperCase());
             }
 
-            // Amarrar usuário autenticado
             try {
                 Object principal = SecurityContextHolder.getContext().getAuthentication() != null
                         ? SecurityContextHolder.getContext().getAuthentication().getPrincipal()
@@ -124,9 +120,7 @@ public class AlertService {
         alertRuleRepository.save(rule);
     }
 
-    // ============================================================
-    // CONSULTA
-    // ============================================================
+
 
     public List<AlertRule> getActiveAlertRules() {
         return alertRuleRepository.findByActiveTrue();
@@ -136,9 +130,7 @@ public class AlertService {
         return alertRuleRepository.findByNotificationEmailAndActiveTrue(email);
     }
 
-    // ============================================================
-    // PROCESSAMENTO DE ALERTAS
-    // ============================================================
+
 
     @Transactional
     public void processAlertsForUser(List<CryptoCurrency> cryptos, String userEmail) {
@@ -196,9 +188,7 @@ public class AlertService {
         }
     }
 
-    // ============================================================
-    // LÓGICA — CORRIGIDA ✔
-    // ============================================================
+
 
     private boolean shouldTriggerAlert(CryptoCurrency crypto, AlertRule rule) {
         if (crypto == null || rule == null || rule.getThresholdValue() == null) {
@@ -237,9 +227,6 @@ public class AlertService {
         }
     }
 
-    // ============================================================
-    // DISPARO DE ALERTA
-    // ============================================================
 
     private void triggerAlert(CryptoCurrency crypto, AlertRule rule) {
         String msg = buildAlertMessage(crypto, rule);
@@ -282,9 +269,7 @@ public class AlertService {
         }
     }
 
-    // ============================================================
-    // UTILITÁRIOS
-    // ============================================================
+
 
     public long countActiveAlerts() {
         return alertRuleRepository.findByActiveTrue().size();

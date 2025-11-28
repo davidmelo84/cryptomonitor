@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/config/SecurityConfig.java
 package com.crypto.config;
 
 import com.crypto.security.JwtAuthenticationFilter;
@@ -39,17 +38,14 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        // 🔥 OBRIGATÓRIO: liberar OPTIONS para CORS
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // 🔥 Swagger liberado
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // 🔓 Endpoints públicos existentes
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/user/**",
@@ -64,7 +60,6 @@ public class SecurityConfig {
                                 "/sockjs-node/**"
                         ).permitAll()
 
-                        // 🔒 Qualquer outra rota exige login
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

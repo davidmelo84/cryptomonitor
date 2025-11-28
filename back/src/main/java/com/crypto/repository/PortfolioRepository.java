@@ -13,16 +13,12 @@ import java.util.Optional;
 @Repository
 public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
 
-    // Consultas padrão
     List<Portfolio> findByUser(User user);
 
     List<Portfolio> findByUserOrderByTotalInvestedDesc(User user);
 
     Optional<Portfolio> findByUserAndCoinSymbol(User user, String coinSymbol);
 
-    // =========================================
-    // Projeção otimizada para não carregar User completo
-    // =========================================
     @Query("SELECT p.id as id, p.coinSymbol as coinSymbol, p.coinName as coinName, " +
             "p.quantity as quantity, p.averageBuyPrice as averageBuyPrice, " +
             "p.totalInvested as totalInvested " +

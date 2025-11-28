@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/repository/BotTradeRepository.java
 
 package com.crypto.repository;
 
@@ -14,9 +13,6 @@ public interface BotTradeRepository extends JpaRepository<BotTrade, Long> {
 
     List<BotTrade> findByBotOrderByExecutedAtDesc(TradingBot bot);
 
-    // ============================================
-    // ✅ NOVO MÉTODO — FIFO (ordenação crescente)
-    // ============================================
     List<BotTrade> findByBotAndSideOrderByExecutedAtAsc(
             TradingBot bot,
             BotTrade.TradeSide side

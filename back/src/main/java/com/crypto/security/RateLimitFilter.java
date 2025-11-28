@@ -20,13 +20,7 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-/**
- * ✅ SPRINT 1 - RATE LIMITING FILTER
- *
- * CORREÇÕES:
- * - Uso de Optional<Counter> para injeção opcional (type-safe)
- * - Não quebra se métricas não estiverem disponíveis
- */
+
 @Slf4j
 @Component
 @Order(1)
@@ -36,9 +30,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private final Optional<Counter> rateLimitHitsCounter;
     private final Optional<Counter> apiRequestsCounter;
 
-    /**
-     * ✅ SOLUÇÃO FINAL: Injeção via Optional (null-safe e type-safe)
-     */
+
     public RateLimitFilter(
             RateLimitConfig rateLimitConfig,
             @Autowired(required = false) Counter rateLimitHitsCounter,
@@ -67,7 +59,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
         if (probe.isConsumed()) {
-            // ✅ Incrementar contador (usando Optional - null-safe)
             apiRequestsCounter.ifPresent(Counter::increment);
 
             response.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
@@ -77,7 +68,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } else {
-            // ✅ Rate limit atingido
             rateLimitHitsCounter.ifPresent(Counter::increment);
 
             long waitForRefill = TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill());
@@ -127,7 +117,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
             return true;
         }
 
-        // ✅ CORRIGIDO: Excluir WebSocket dos rate limits
         return path.startsWith("/crypto-monitor/actuator/health") ||
                 path.startsWith("/crypto-monitor/actuator/prometheus") ||
                 path.startsWith("/crypto-monitor/ws/") ||  // ✅ WebSocket

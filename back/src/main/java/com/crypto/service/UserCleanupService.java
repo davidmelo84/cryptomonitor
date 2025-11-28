@@ -14,11 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Serviço responsável por limpar:
- * - Contas não verificadas criadas há mais de 7 dias
- * - Tokens de verificação expirados (> 24h)
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,9 +23,7 @@ public class UserCleanupService {
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
 
-    /**
-     * Executado diariamente às 3h da manhã
-     */
+
     @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void cleanupUnverifiedAccounts() {
@@ -54,9 +48,7 @@ public class UserCleanupService {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 
-    /**
-     * Estatísticas diárias
-     */
+
     @Scheduled(fixedDelay = 86400000, initialDelay = 3600000)
     public void logDailyStats() {
         try {
@@ -82,9 +74,6 @@ public class UserCleanupService {
         }
     }
 
-    /**
-     * Remove tokens expirados (> 24 horas)
-     */
     @Transactional
     public int cleanupExpiredTokens() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(24);
@@ -99,9 +88,6 @@ public class UserCleanupService {
         return expiredTokens.size();
     }
 
-    /**
-     * Remove usuários não verificados com > 7 dias
-     */
     @Transactional
     public int cleanupOldUnverifiedUsers() {
         LocalDateTime cutoff = LocalDateTime.now().minusDays(7);
@@ -128,9 +114,6 @@ public class UserCleanupService {
         return usersToDelete.size();
     }
 
-    /**
-     * Limpeza manual via endpoint admin
-     */
     @Transactional
     public Map<String, Object> performManualCleanup() {
         int tokens = cleanupExpiredTokens();
@@ -144,9 +127,7 @@ public class UserCleanupService {
         );
     }
 
-    /**
-     * Estatísticas gerais de verificação
-     */
+
     public Map<String, Object> getUnverifiedStats() {
         List<User> all = userRepository.findAll();
 

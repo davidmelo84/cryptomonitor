@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/controller/TradingBotController.java
 
 package com.crypto.controller;
 
@@ -22,9 +21,7 @@ public class TradingBotController {
 
     private final TradingBotService tradingBotService;
 
-    /**
-     * Criar novo bot
-     */
+
     @PostMapping
     public ResponseEntity<?> createBot(@RequestBody TradingBot bot, Authentication auth) {
         try {
@@ -45,9 +42,7 @@ public class TradingBotController {
         }
     }
 
-    /**
-     * Listar bots do usuário
-     */
+
     @GetMapping
     public ResponseEntity<?> getUserBots(Authentication auth) {
         try {
@@ -67,14 +62,10 @@ public class TradingBotController {
         }
     }
 
-    /**
-     * Buscar bot específico
-     */
     @GetMapping("/{botId}")
     public ResponseEntity<?> getBot(@PathVariable Long botId, Authentication auth) {
         try {
             String username = auth.getName();
-            // Implementar getBotById no service
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
@@ -88,9 +79,7 @@ public class TradingBotController {
         }
     }
 
-    /**
-     * Iniciar bot
-     */
+
     @PostMapping("/{botId}/start")
     public ResponseEntity<?> startBot(@PathVariable Long botId, Authentication auth) {
         try {
@@ -110,9 +99,6 @@ public class TradingBotController {
         }
     }
 
-    /**
-     * Parar bot
-     */
     @PostMapping("/{botId}/stop")
     public ResponseEntity<?> stopBot(@PathVariable Long botId, Authentication auth) {
         try {
@@ -132,9 +118,7 @@ public class TradingBotController {
         }
     }
 
-    /**
-     * Buscar trades do bot
-     */
+
     @GetMapping("/{botId}/trades")
     public ResponseEntity<?> getBotTrades(@PathVariable Long botId, Authentication auth) {
         try {
@@ -154,9 +138,7 @@ public class TradingBotController {
         }
     }
 
-    /**
-     * Deletar bot
-     */
+
     @DeleteMapping("/{botId}")
     public ResponseEntity<?> deleteBot(@PathVariable Long botId, Authentication auth) {
         try {
@@ -176,16 +158,13 @@ public class TradingBotController {
         }
     }
 
-    /**
-     * Estatísticas do bot
-     */
+
     @GetMapping("/{botId}/stats")
     public ResponseEntity<?> getBotStats(@PathVariable Long botId, Authentication auth) {
         try {
             String username = auth.getName();
             List<BotTrade> trades = tradingBotService.getBotTrades(username, botId);
 
-            // Calcular estatísticas
             int totalTrades = trades.size();
             long buyTrades = trades.stream().filter(t -> t.getSide() == BotTrade.TradeSide.BUY).count();
             long sellTrades = trades.stream().filter(t -> t.getSide() == BotTrade.TradeSide.SELL).count();

@@ -17,9 +17,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // =============================
-    // 1. VALIDAÇÃO (400)
-    // =============================
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex, WebRequest request) {
@@ -41,9 +39,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // =============================
-    // 2. NOT FOUND (404)
-    // =============================
+
     @ExceptionHandler({
             UserNotFoundException.class,
             CryptoNotFoundException.class
@@ -59,9 +55,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // =============================
-    // 3. RATE LIMIT (429)
-    // =============================
+
     @ExceptionHandler(RateLimitExceededException.class)
     public ResponseEntity<Map<String, Object>> handleRateLimit(RateLimitExceededException ex, WebRequest request) {
 
@@ -74,9 +68,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // =============================
-    // 4. RUNTIME ERROR (500)
-    // =============================
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, Object>> handleRuntimeException(RuntimeException ex, WebRequest request) {
 
@@ -91,9 +83,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // =============================
-    // 5. EXCEÇÃO GLOBAL (500)
-    // =============================
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGlobalException(Exception ex, WebRequest request) {
 
@@ -108,9 +98,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    // =============================
-    // MÉTODO UTILITÁRIO
-    // =============================
+
     private ResponseEntity<Map<String, Object>> buildResponse(
             HttpStatus status,
             String error,

@@ -1,6 +1,4 @@
-// ===========================================================
-// TradingBotService.java COMPLETO E ATUALIZADO
-// ===========================================================
+
 
 package com.crypto.service;
 
@@ -31,9 +29,7 @@ public class TradingBotService {
     private final CryptoService cryptoService;
     private final NotificationService notificationService;
 
-    // ---------------------------------------------------------
-    // MAPEAR SÍMBOLOS
-    // ---------------------------------------------------------
+
     private String mapSymbolToCoinId(String symbol) {
         Map<String, String> symbolMap = Map.ofEntries(
                 Map.entry("BTC", "bitcoin"),
@@ -55,9 +51,7 @@ public class TradingBotService {
         return symbolMap.getOrDefault(upperSymbol, symbol.toLowerCase());
     }
 
-    // ---------------------------------------------------------
-    // CRIAR BOT
-    // ---------------------------------------------------------
+
     @Transactional
     public TradingBot createBot(String username, TradingBot bot) {
         User user = userRepository.findByUsername(username)
@@ -70,9 +64,7 @@ public class TradingBotService {
         return botRepository.save(bot);
     }
 
-    // ---------------------------------------------------------
-    // START BOT
-    // ---------------------------------------------------------
+
     @Transactional
     public void startBot(String username, Long botId) {
         TradingBot bot = getBotByIdAndUser(botId, username);
@@ -90,9 +82,7 @@ public class TradingBotService {
         botRepository.save(bot);
     }
 
-    // ---------------------------------------------------------
-    // STOP BOT
-    // ---------------------------------------------------------
+
     @Transactional
     public void stopBot(String username, Long botId) {
         TradingBot bot = getBotByIdAndUser(botId, username);
@@ -103,9 +93,7 @@ public class TradingBotService {
         botRepository.save(bot);
     }
 
-    // ---------------------------------------------------------
-    // SCHEDULER EXECUTA OS BOTS
-    // ---------------------------------------------------------
+
     @Scheduled(fixedDelay = 60000)
     public void executeBots() {
         List<TradingBot> runningBots = botRepository.findByStatus(TradingBot.BotStatus.RUNNING);
@@ -120,7 +108,6 @@ public class TradingBotService {
         }
     }
 
-    // ---------------------------------------------------------
     private void executeBot(TradingBot bot) {
         switch (bot.getStrategy()) {
             case GRID_TRADING -> executeGridTrading(bot);
@@ -130,9 +117,7 @@ public class TradingBotService {
         }
     }
 
-    // ---------------------------------------------------------
-    // GRID TRADING
-    // ---------------------------------------------------------
+
     private void executeGridTrading(TradingBot bot) {
         String coinId = mapSymbolToCoinId(bot.getCoinSymbol());
         Optional<CryptoCurrency> cryptoOpt = cryptoService.getCryptoByCoinId(coinId);
@@ -159,9 +144,7 @@ public class TradingBotService {
         }
     }
 
-    // ---------------------------------------------------------
-    // DCA
-    // ---------------------------------------------------------
+
     private void executeDCA(TradingBot bot) {
         LocalDateTime now = LocalDateTime.now();
 
@@ -196,9 +179,7 @@ public class TradingBotService {
         botRepository.save(bot);
     }
 
-    // ---------------------------------------------------------
-    // STOP LOSS / TAKE PROFIT
-    // ---------------------------------------------------------
+
     private void executeStopLossTakeProfit(TradingBot bot) {
         if (bot.getEntryPrice() == null) return;
 
@@ -235,9 +216,6 @@ public class TradingBotService {
         }
     }
 
-    // ---------------------------------------------------------
-    // EXECUTAR TRADE
-    // ---------------------------------------------------------
     private void executeTrade(TradingBot bot, CryptoCurrency crypto, BotTrade.TradeSide side, String reason) {
         BigDecimal price = crypto.getCurrentPrice();
         BigDecimal quantity = bot.getAmountPerGrid();
@@ -248,9 +226,7 @@ public class TradingBotService {
             executeSell(bot, price, quantity, reason);
     }
 
-    // ---------------------------------------------------------
-    // EXECUTAR COMPRA
-    // ---------------------------------------------------------
+
     private void executeBuy(TradingBot bot, BigDecimal price, BigDecimal quantity, String reason) {
         BotTrade trade = BotTrade.builder()
                 .bot(bot)
@@ -268,9 +244,6 @@ public class TradingBotService {
         botRepository.save(bot);
     }
 
-    // ---------------------------------------------------------
-    // NOVO MÉTODO
-    // ---------------------------------------------------------
     private BigDecimal getAvailableBalance(TradingBot bot) {
 
         List<BotTrade> buys = tradeRepository.findByBotAndSideOrderByExecutedAtAsc(
@@ -290,9 +263,7 @@ public class TradingBotService {
         return totalBuy.subtract(totalSell);
     }
 
-    // ---------------------------------------------------------
-    // EXECUTAR VENDA — ATUALIZADO COM ISOLAMENTO SERIALIZABLE
-    // ---------------------------------------------------------
+
     @Transactional(isolation = Isolation.SERIALIZABLE)
     private void executeSell(TradingBot bot, BigDecimal price, BigDecimal quantity, String reason) {
 
@@ -357,9 +328,6 @@ public class TradingBotService {
         botRepository.save(bot);
     }
 
-    // ---------------------------------------------------------
-    // BUSCAR BOT
-    // ---------------------------------------------------------
     private TradingBot getBotByIdAndUser(Long botId, String username) {
         TradingBot bot = botRepository.findById(botId)
                 .orElseThrow(() -> new RuntimeException("Bot não encontrado"));
@@ -370,7 +338,6 @@ public class TradingBotService {
         return bot;
     }
 
-    // ---------------------------------------------------------
     public List<TradingBot> getUserBots(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));

@@ -2,9 +2,7 @@ spring:
   application:
     name: crypto-monitor
 
-  # ============================================
-  # 🚀 OTIMIZAÇÃO #1: DataSource com Pool Menor
-  # ============================================
+
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     driver-class-name: org.postgresql.Driver
@@ -20,9 +18,7 @@ spring:
       leak-detection-threshold: 60000
       initialization-fail-timeout: 1
 
-  # ============================================
-  # 🚀 OTIMIZAÇÃO #2: JPA Lazy Loading
-  # ============================================
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -39,9 +35,7 @@ spring:
         cache.use_second_level_cache: false
         cache.use_query_cache: false
 
-  # ============================================
-  # 🚀 OTIMIZAÇÃO #3: Flyway Rápido
-  # ============================================
+
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -51,17 +45,13 @@ spring:
     connect-retries: 3
     connect-retries-interval: 2
 
-  # ============================================
-  # 🚀 OTIMIZAÇÃO #4: Cache Simples no Startup
-  # ============================================
+
   cache:
     type: caffeine
     caffeine:
       spec: maximumSize=500,expireAfterWrite=30m,recordStats
 
-  # ============================================
-  # 🚀 OTIMIZAÇÃO #5: Task Scheduling Reduzido
-  # ============================================
+
   task:
     scheduling:
       pool:
@@ -81,9 +71,7 @@ spring:
       interval: 10000
     enabled: true
 
-# ============================================
-# 🚀 OTIMIZAÇÃO #6: Management Endpoints Mínimos
-# ============================================
+
 management:
   endpoints:
     web:
@@ -101,9 +89,7 @@ management:
     tags:
       application: ${spring.application.name}
 
-# ============================================
-# SERVER
-# ============================================
+
 server:
   port: ${PORT:8080}
   http2:
@@ -119,18 +105,14 @@ server:
     enabled: false
   forward-headers-strategy: framework
 
-# ============================================
-# SWAGGER
-# ============================================
+
 springdoc:
   api-docs:
     enabled: false
   swagger-ui:
     enabled: false
 
-# ============================================
-# SENDGRID
-# ============================================
+
 sendgrid:
   api:
     key: ${SENDGRID_API_KEY}
@@ -148,9 +130,7 @@ email:
     resend-cooldown-minutes: 2
   from: ${SENDGRID_FROM_EMAIL}
 
-# ============================================
-# JWT
-# ============================================
+
 jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000
@@ -159,9 +139,7 @@ jwt:
   validate-expiration: true
   refresh-token-expiration: 604800000
 
-# ============================================
-# COINGECKO
-# ============================================
+
 coingecko:
   api:
     url: https://api.coingecko.com/api/v3
@@ -187,9 +165,7 @@ coingecko:
     scheduler-interval-minutes: 30
     broadcast-interval-seconds: 60
 
-# ============================================
-# RESILIENCE4J
-# ============================================
+
 resilience4j:
   circuitbreaker:
     instances:
@@ -212,9 +188,7 @@ resilience4j:
       coingecko:
         timeout-duration: 15s
 
-# ============================================
-# ALERTAS
-# ============================================
+
 alert:
   buy:
     threshold: -5.0
@@ -238,9 +212,7 @@ monitoring:
   thread-pool-size: 5
   shutdown-timeout: 30
 
-# ============================================
-# RATE LIMIT
-# ============================================
+
 rate-limit:
   coingecko:
     enabled: true
@@ -253,18 +225,14 @@ rate-limit:
   admin:
     requests-per-minute: 50
 
-# ============================================
-# WEBSOCKET
-# ============================================
+
 websocket:
   enabled: true
   heartbeat-interval: 30000
   message-size-limit: 65536
   broadcast-interval: 60000
 
-# ============================================
-# LOGGING
-# ============================================
+
 logging:
   level:
     root: WARN
@@ -278,9 +246,7 @@ logging:
   pattern:
     console: "%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n"
 
-# ============================================
-# CORS
-# ============================================
+
 app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:3000,https://cryptomonitor-theta.vercel.app}
@@ -289,17 +255,13 @@ app:
     allow-credentials: true
     max-age: 3600
 
-# ============================================
-# API LIMITES
-# ============================================
+
 api:
   timeout: 15000
   max-request-size: 5MB
   max-file-size: 2MB
 
-# ============================================
-# PERFIL PROD
-# ============================================
+
 ---
 spring:
   config:

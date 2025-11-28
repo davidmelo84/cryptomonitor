@@ -34,14 +34,12 @@ public class VerificationService {
         return String.valueOf(code);
     }
 
-    // ============================================================
-    //  MÉTODO COM RETRY CORRIGIDO — APENAS ERROS DE REDE
-    // ============================================================
+
     @Retryable(
-            value = { IOException.class, SocketTimeoutException.class },  // ✅ Apenas falhas recuperáveis
-            exclude = { IllegalArgumentException.class },                 // ❌ Email inválido → sem retry
+            value = { IOException.class, SocketTimeoutException.class },
+            exclude = { IllegalArgumentException.class },
             maxAttempts = 3,
-            backoff = @Backoff(delay = 2000, multiplier = 2) // 2s → 4s → 8s
+            backoff = @Backoff(delay = 2000, multiplier = 2)
     )
     public void sendEmailWithRetry(String to, String subject, String body) {
         log.info("📧 Tentando enviar e-mail para {} ...",
@@ -52,9 +50,7 @@ public class VerificationService {
         log.info("   ✅ EMAIL ENVIADO COM SUCESSO!");
     }
 
-    // ============================================================
-    //  RECUPERAÇÃO QUANDO TODAS AS TENTATIVAS FALHAM
-    // ============================================================
+
     @Recover
     public void recoverEmailSend(Exception e, String to, String subject, String body) {
         log.error("❌ ERRO FATAL: Não foi possível enviar o e-mail para {} mesmo após múltiplas tentativas!",
@@ -62,9 +58,7 @@ public class VerificationService {
         throw new RuntimeException("Falha ao enviar email: " + e.getMessage(), e);
     }
 
-    // ============================================================
-    //  CRIAÇÃO DO TOKEN + ENVIO DO EMAIL
-    // ============================================================
+
     @Transactional
     public String createVerificationToken(User user) {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -94,7 +88,6 @@ public class VerificationService {
         log.info("   🔑 Token salvo no banco: {}", LogMasker.maskToken(token));
         log.info("   🔢 Código gerado: ****** (oculto por segurança)");
 
-        // ENVIO DE EMAIL COM RETRY CORRIGIDO
         String subject = "🔐 Código de Verificação - Crypto Monitor";
 
         String body = String.format("""
@@ -126,9 +119,7 @@ public class VerificationService {
         log.warn("⚠️ sendVerificationEmail() foi chamado, mas o envio síncrono já ocorre em createVerificationToken.");
     }
 
-    // ============================================================
-    //  VERIFICAR CÓDIGO
-    // ============================================================
+
     @Transactional
     public boolean verifyCode(String code) {
         log.info("🔍 Verificando código recebido: ******");

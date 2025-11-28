@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/controller/AdminCleanupController.java
 package com.crypto.controller;
 
 import com.crypto.service.UserCleanupService;
@@ -9,11 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-/**
- * ✅ CONTROLLER ADMIN - LIMPEZA DE CONTAS
- *
- * Endpoints para gerenciar limpeza de contas não verificadas
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/admin/cleanup")
@@ -22,10 +17,7 @@ public class AdminCleanupController {
 
     private final UserCleanupService cleanupService;
 
-    /**
-     * ✅ Executar limpeza manual
-     * POST /api/admin/cleanup/run
-     */
+
     @PostMapping("/run")
     public ResponseEntity<?> runCleanup() {
         try {
@@ -45,10 +37,7 @@ public class AdminCleanupController {
         }
     }
 
-    /**
-     * ✅ Estatísticas de contas não verificadas
-     * GET /api/admin/cleanup/stats
-     */
+
     @GetMapping("/stats")
     public ResponseEntity<?> getStats() {
         try {
@@ -63,10 +52,7 @@ public class AdminCleanupController {
         }
     }
 
-    /**
-     * ✅ Limpar apenas tokens expirados
-     * POST /api/admin/cleanup/tokens
-     */
+
     @PostMapping("/tokens")
     public ResponseEntity<?> cleanupTokens() {
         try {
@@ -87,10 +73,7 @@ public class AdminCleanupController {
         }
     }
 
-    /**
-     * ✅ Limpar apenas contas antigas não verificadas
-     * POST /api/admin/cleanup/accounts
-     */
+
     @PostMapping("/accounts")
     public ResponseEntity<?> cleanupAccounts() {
         try {
@@ -111,10 +94,7 @@ public class AdminCleanupController {
         }
     }
 
-    /**
-     * ✅ Health check da limpeza
-     * GET /api/admin/cleanup/health
-     */
+
     @GetMapping("/health")
     public ResponseEntity<?> health() {
         try {

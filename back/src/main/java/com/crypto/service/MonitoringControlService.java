@@ -29,9 +29,7 @@ public class MonitoringControlService {
 
     private final TaskScheduler taskScheduler = createTaskScheduler();
 
-    // =========================================================
-    //   API PRINCIPAL EXTERNA → Com Lock
-    // =========================================================
+
     public boolean startMonitoring(String username, String userEmail) {
         if (username == null || username.isBlank()) return false;
         if (userEmail == null || userEmail.isBlank()) return false;
@@ -59,12 +57,9 @@ public class MonitoringControlService {
         }
     }
 
-    // =========================================================
-    //   MÉTODOS INTERNOS (NÃO PEGAM LOCK)
-    // =========================================================
+
     private boolean startMonitoring_INTERNAL(String username, String userEmail) {
 
-        // se já existe → parar de forma segura SEM pegar lock
         if (isMonitoringActiveInternal(username)) {
             stopMonitoring_INTERNAL(username);
         }
@@ -79,7 +74,6 @@ public class MonitoringControlService {
         activeMonitors.put(username, scheduledTask);
         monitoringMetadata.put(username, new MonitoringMetadata(userEmail, Instant.now()));
 
-        // registrar atividade
         activityTracker.recordActivity(username);
 
         runFirstCheckAsync(username, userEmail);
@@ -105,9 +99,7 @@ public class MonitoringControlService {
         return cancelled;
     }
 
-    // =========================================================
-    //   CONSULTAS
-    // =========================================================
+
     public boolean isMonitoringActive(String username) {
         if (username == null || username.isBlank()) return false;
         return isMonitoringActiveInternal(username);
@@ -148,9 +140,7 @@ public class MonitoringControlService {
         );
     }
 
-    // =========================================================
-    //   CICLOS DO MONITORAMENTO
-    // =========================================================
+
     private void runMonitoringCycle(String username, String email) {
         try {
             if (!isMonitoringActiveInternal(username)) return;
@@ -171,9 +161,7 @@ public class MonitoringControlService {
         }, "FirstCheck-" + username).start();
     }
 
-    // =========================================================
-    //   SHUTDOWN
-    // =========================================================
+
     public void stopAllMonitoring() {
         activeMonitors.keySet().forEach(this::stopMonitoring);
     }
@@ -187,9 +175,6 @@ public class MonitoringControlService {
         }
     }
 
-    // =========================================================
-    //   UTILS
-    // =========================================================
     private TaskScheduler createTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(10);

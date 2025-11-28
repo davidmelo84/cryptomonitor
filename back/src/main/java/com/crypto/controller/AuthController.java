@@ -33,9 +33,7 @@ public class AuthController {
     private final EmailService emailService;
     private final InputSanitizer sanitizer;
 
-    /**
-     * Registro de usuário
-     */
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody User user) {
         log.info("📝 Tentativa de registro: {}", LogMasker.maskUsername(user.getUsername()));
@@ -89,9 +87,7 @@ public class AuthController {
         }
     }
 
-    /**
-     * Login
-     */
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User user) {
         log.info("🔐 Tentativa de login para usuário: {}", LogMasker.maskUsername(user.getUsername()));
@@ -125,7 +121,6 @@ public class AuthController {
 
             String token = jwtUtil.generateToken(user.getUsername());
 
-            // 🔥 CORREÇÃO RECOMENDADA — nunca logar token completo
             log.info("🔑 Token JWT gerado (mascarado): {}", LogMasker.maskToken(token));
 
             return ResponseEntity.ok(Map.of("token", token));
@@ -143,9 +138,7 @@ public class AuthController {
         }
     }
 
-    /**
-     * Verificação de código
-     */
+
     @PostMapping("/verify")
     public ResponseEntity<?> verifyUser(@RequestBody VerificationRequest request) {
         try {
@@ -174,9 +167,6 @@ public class AuthController {
         }
     }
 
-    /**
-     * Reenvio de código
-     */
     @PostMapping("/resend-code")
     public ResponseEntity<?> resendCode(@RequestParam String email) {
 
@@ -197,9 +187,7 @@ public class AuthController {
         ));
     }
 
-    /**
-     * Testar envio de email
-     */
+
     @PostMapping("/test-email")
     public ResponseEntity<?> testEmail(@RequestBody Map<String, String> request) {
         try {
@@ -232,9 +220,7 @@ public class AuthController {
         }
     }
 
-    /**
-     * Debug de variáveis de ambiente
-     */
+
     @GetMapping("/debug-env")
     public ResponseEntity<?> debugEnv() {
         String apiKey = System.getenv("SENDGRID_API_KEY");

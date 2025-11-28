@@ -10,22 +10,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * ✅ RASTREADOR DE ATIVIDADE DO USUÁRIO
- *
- * FUNCIONALIDADES:
- * - Detecta inatividade (padrão: 15 minutos)
- * - Para schedulers automaticamente
- * - Heartbeat via WebSocket
- * - Auto-cleanup de sessões inativas
- *
- * INTEGRAÇÃO:
- * - Frontend envia heartbeat a cada 60 segundos
- * - Backend verifica a cada 5 minutos
- * - Usuários inativos têm monitoramento pausado
- *
- * ✅ FIX: Usa @Lazy para evitar dependência circular
- */
+
 @Slf4j
 @Service
 public class UserActivityTracker {
@@ -36,7 +21,6 @@ public class UserActivityTracker {
     private static final long INACTIVITY_THRESHOLD_MS = 60 * 60 * 1000; // 15 minutos
     private static final long HEARTBEAT_TIMEOUT_MS = 3 * 60 * 1000; // 3 minutos
 
-    // ✅ FIX: @Lazy quebra a dependência circular
     public UserActivityTracker(@Lazy MonitoringControlService monitoringService) {
         this.monitoringService = monitoringService;
         log.info("✅ UserActivityTracker inicializado");
@@ -44,14 +28,7 @@ public class UserActivityTracker {
                 INACTIVITY_THRESHOLD_MS / 60000);
     }
 
-    /**
-     * ✅ REGISTRAR ATIVIDADE DO USUÁRIO
-     *
-     * Chamado:
-     * - Login
-     * - Qualquer request autenticado
-     * - Heartbeat do WebSocket
-     */
+
     public void recordActivity(String username) {
         UserActivity activity = activeUsers.computeIfAbsent(
                 username,
@@ -63,16 +40,7 @@ public class UserActivityTracker {
         log.debug("👤 Atividade registrada: {}", username);
     }
 
-    /**
-     * ✅ HEARTBEAT (WebSocket)
-     *
-     * Frontend deve enviar a cada 60 segundos:
-     *
-     * stompClient.send("/app/heartbeat", {}, JSON.stringify({
-     *   username: currentUser,
-     *   timestamp: Date.now()
-     * }));
-     */
+
     public void receiveHeartbeat(String username) {
         recordActivity(username);
 
@@ -84,11 +52,6 @@ public class UserActivityTracker {
         log.debug("💓 Heartbeat recebido: {}", username);
     }
 
-    /**
-     * ✅ VERIFICAR INATIVIDADE
-     *
-     * Executado a cada 5 minutos
-     */
     @Scheduled(fixedDelay = 300000, initialDelay = 60000) // 5 minutos
     public void checkInactiveUsers() {
         log.debug("🔍 Verificando usuários inativos...");
@@ -101,11 +64,9 @@ public class UserActivityTracker {
             String username = entry.getKey();
             UserActivity activity = entry.getValue();
 
-            // ✅ 1. Verificar se usuário está inativo
             if (activity.isInactive(INACTIVITY_THRESHOLD_MS)) {
                 inactiveCount++;
 
-                // ✅ 2. Parar monitoramento se estiver ativo
                 if (activity.hasActiveMonitoring() &&
                         monitoringService.isMonitoringActive(username)) {
 
@@ -124,20 +85,17 @@ public class UserActivityTracker {
                     }
                 }
 
-                // ✅ 3. Remover se muito tempo inativo (> 1 hora)
                 if (activity.isInactive(60 * 60 * 1000)) {
                     log.info("🗑️ Removendo usuário muito inativo: {}", username);
                     activeUsers.remove(username);
                 }
             }
 
-            // ✅ 4. Verificar se heartbeat parou (WebSocket desconectado)
             if (activity.heartbeatTimeout(HEARTBEAT_TIMEOUT_MS)) {
                 log.warn("⚠️ Heartbeat timeout para: {} (última: {})",
                         username, activity.getLastHeartbeatDuration());
 
-                // Marcar como possivelmente inativo
-                // (pode estar em outra aba, então não para imediatamente)
+
             }
         }
 
@@ -147,21 +105,15 @@ public class UserActivityTracker {
         }
     }
 
-    /**
-     * ✅ VERIFICAR SE USUÁRIO ESTÁ ATIVO
-     */
+
     public boolean isUserActive(String username) {
         UserActivity activity = activeUsers.get(username);
         return activity != null && !activity.isInactive(INACTIVITY_THRESHOLD_MS);
     }
 
-    /**
-     * ✅ REGISTRAR LOGOUT
-     */
     public void recordLogout(String username) {
         log.info("👋 Logout registrado: {}", username);
 
-        // Parar monitoramento
         if (monitoringService.isMonitoringActive(username)) {
             try {
                 monitoringService.stopMonitoring(username);
@@ -170,13 +122,10 @@ public class UserActivityTracker {
             }
         }
 
-        // Remover da lista
         activeUsers.remove(username);
     }
 
-    /**
-     * ✅ ESTATÍSTICAS
-     */
+
     public Map<String, Object> getStats() {
         int totalUsers = activeUsers.size();
         int activeNow = (int) activeUsers.values().stream()
@@ -196,13 +145,7 @@ public class UserActivityTracker {
         );
     }
 
-    // =========================================
-    // CLASSE AUXILIAR
-    // =========================================
 
-    /**
-     * Rastreamento de atividade individual
-     */
     private static class UserActivity {
         private final String username;
         private volatile Instant lastActivity;

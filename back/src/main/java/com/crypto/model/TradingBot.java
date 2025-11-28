@@ -45,7 +45,6 @@ public class TradingBot {
     @Column(name = "is_simulation", nullable = false)
     private Boolean isSimulation = true;
 
-    // Grid Trading
     @Column(name = "grid_lower_price", precision = 19, scale = 8)
     private BigDecimal gridLowerPrice;
 
@@ -58,7 +57,6 @@ public class TradingBot {
     @Column(name = "amount_per_grid", precision = 19, scale = 8)
     private BigDecimal amountPerGrid;
 
-    // DCA
     @Column(name = "dca_amount", precision = 19, scale = 2)
     private BigDecimal dcaAmount;
 
@@ -68,7 +66,6 @@ public class TradingBot {
     @Column(name = "last_dca_execution")
     private LocalDateTime lastDcaExecution;
 
-    // SL / TP
     @Column(name = "stop_loss_percent", precision = 5, scale = 2)
     private BigDecimal stopLossPercent;
 
@@ -78,7 +75,6 @@ public class TradingBot {
     @Column(name = "entry_price", precision = 19, scale = 8)
     private BigDecimal entryPrice;
 
-    // Stats
     @Builder.Default
     @Column(name = "total_profit_loss", precision = 19, scale = 2)
     private BigDecimal totalProfitLoss = BigDecimal.ZERO;
@@ -95,7 +91,6 @@ public class TradingBot {
     @Column(name = "losing_trades")
     private Integer losingTrades = 0;
 
-    // Time
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -105,37 +100,26 @@ public class TradingBot {
     @Column(name = "stopped_at")
     private LocalDateTime stoppedAt;
 
-    /**
-     * ✅ ÚNICO MÉTODO @PrePersist
-     * Executa antes de INSERT no banco
-     */
+
     @PrePersist
     protected void onCreate() {
-        // 1. Definir timestamp
         createdAt = LocalDateTime.now();
 
-        // 2. Validar simulação (NUNCA permitir trading real)
         validateSimulation();
     }
 
-    /**
-     * ✅ VALIDAÇÃO EXECUTADA EM @PrePersist E @PreUpdate
-     */
+
     @PreUpdate
     protected void onUpdate() {
         validateSimulation();
     }
 
-    /**
-     * 🔒 Validação: NUNCA permitir trading real
-     */
+
     private void validateSimulation() {
-        // Garantir que isSimulation nunca seja null
         if (isSimulation == null) {
             isSimulation = true;
         }
 
-        // 🚨 BLOQUEIO CRÍTICO: Impedir trading real
         if (!isSimulation) {
             throw new UnsupportedOperationException(
                     "🚨 TRADING REAL DESABILITADO POR SEGURANÇA!\n\n" +
@@ -150,9 +134,7 @@ public class TradingBot {
         }
     }
 
-    // =========================================
-    // ENUMS
-    // =========================================
+
 
     public enum TradingStrategy {
         GRID_TRADING,

@@ -11,16 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.UUID;
 
-/**
- * ✅ MDC (Mapped Diagnostic Context) Filter
- *
- * Adiciona informações de contexto a TODOS os logs da requisição:
- * - requestId: UUID único por request
- * - username: usuário autenticado (se houver)
- * - clientIp: IP do cliente
- * - method: HTTP method
- * - uri: URI da requisição
- */
+
 @Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -33,19 +24,15 @@ public class MdcFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         try {
-            // 1. Gerar Request ID único
             String requestId = UUID.randomUUID().toString().substring(0, 8);
             MDC.put("requestId", requestId);
 
-            // 2. Extrair IP do cliente
             String clientIp = extractClientIp(httpRequest);
             MDC.put("clientIp", clientIp);
 
-            // 3. Adicionar método HTTP e URI
             MDC.put("method", httpRequest.getMethod());
             MDC.put("uri", httpRequest.getRequestURI());
 
-            // 4. Tentar extrair username (se autenticado)
             String username = extractUsername(httpRequest);
             if (username != null) {
                 MDC.put("username", username);
@@ -59,7 +46,6 @@ public class MdcFilter implements Filter {
             chain.doFilter(request, response);
 
         } finally {
-            // ✅ CRÍTICO: Limpar MDC após a requisição
             MDC.clear();
         }
     }

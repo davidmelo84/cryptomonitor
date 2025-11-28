@@ -24,16 +24,14 @@ public class SendGridEmailService {
     @Value("${sendgrid.from.name:Crypto Monitor}")
     private String fromName;
 
-    /**
-     * 🔧 Validação PERMISSIVA — NÃO BLOQUEIA O STARTUP
-     */
+
+
     @PostConstruct
     public void validateConfiguration() {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         log.info("🔧 VALIDANDO CONFIGURAÇÃO DO SENDGRID");
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
-        // ⛔ Não configurar API Key é permitido — apenas warn
         if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
             log.warn("⚠️ SENDGRID_API_KEY não configurada!");
             log.warn("   Emails NÃO serão enviados.");
@@ -41,19 +39,16 @@ public class SendGridEmailService {
             return; // 👉 Não bloqueia
         }
 
-        // Apenas valida formato (não bloqueia)
         if (!sendGridApiKey.startsWith("SG.")) {
             log.warn("⚠️ SENDGRID_API_KEY com formato inválido (esperado: SG.xxxxx)");
         }
 
-        // Tamanho esperado ~69 chars
         if (sendGridApiKey.length() < 50) {
             log.warn("⚠️ SENDGRID_API_KEY parece curta (esperado ~69 chars). Pode falhar.");
         }
 
         log.info("✅ SENDGRID_API_KEY: {}", maskApiKey(sendGridApiKey));
 
-        // Validar email remetente — apenas warn
         if (fromEmail == null || fromEmail.isEmpty()) {
             log.warn("⚠️ SENDGRID_FROM_EMAIL não configurado.");
             log.warn("   Emails NÃO serão enviados.");
@@ -65,17 +60,13 @@ public class SendGridEmailService {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     }
 
-    /**
-     * 🔒 Mascara API Key antes de logar
-     */
+
     private String maskApiKey(String apiKey) {
         if (apiKey == null || apiKey.length() < 15) return "***";
         return apiKey.substring(0, 10) + "..." + apiKey.substring(apiKey.length() - 4);
     }
 
-    /**
-     * 📧 Envia email via SendGrid
-     */
+
     public void sendEmail(String to, String subject, String body) {
         log.info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         log.info("📧 ENVIANDO EMAIL VIA SENDGRID");
@@ -83,7 +74,6 @@ public class SendGridEmailService {
         log.info("   Para: {}", to);
         log.info("   Assunto: {}", subject);
 
-        // ✔ Validar antes de enviar (aqui sim é crítico)
         if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {
             throw new IllegalStateException("SENDGRID_API_KEY não configurada — configure no Render.");
         }
@@ -131,9 +121,7 @@ public class SendGridEmailService {
         }
     }
 
-    /**
-     * 🧪 Testa a configuração enviando email para o próprio remetente
-     */
+
     public boolean testConnection() {
         try {
             if (sendGridApiKey == null || sendGridApiKey.isEmpty()) {

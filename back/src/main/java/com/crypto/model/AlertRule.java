@@ -1,4 +1,3 @@
-// back/src/main/java/com/crypto/model/AlertRule.java
 package com.crypto.model;
 
 import jakarta.persistence.*;
@@ -30,12 +29,9 @@ public class AlertRule {
     @Column(name = "alert_type", nullable = false)
     private AlertType alertType;
 
-    // ✅ Usado para PERCENT_CHANGE_24H (percentual)
     @Column(name = "threshold_value", precision = 10, scale = 6)
     private BigDecimal thresholdValue;
 
-    // ✅ Usado para PRICE_INCREASE/PRICE_DECREASE (preço absoluto)
-    // ✅ CORRIGIDO: Agora pode ser NULL
     @Column(name = "target_price", precision = 20, scale = 8, nullable = true)
     private BigDecimal targetPrice;
 
@@ -47,7 +43,6 @@ public class AlertRule {
     @Column(name = "notification_email", nullable = false)
     private String notificationEmail;
 
-    // ✅ CORRIGIDO: Campo correto é "active", não "isActive"
     @Column(name = "is_active", nullable = false)
     @Builder.Default
     private Boolean active = true;
@@ -60,13 +55,12 @@ public class AlertRule {
         createdAt = LocalDateTime.now();
     }
 
-    // ✅ ENUMS DENTRO DA CLASSE
     public enum AlertType {
-        PRICE_INCREASE,      // Preço atingiu valor (usa targetPrice)
-        PRICE_DECREASE,      // Preço caiu abaixo de valor (usa targetPrice)
-        VOLUME_SPIKE,        // Volume disparou (usa thresholdValue)
-        PERCENT_CHANGE_24H,  // Variação percentual 24h (usa thresholdValue)
-        MARKET_CAP           // Market cap (usa thresholdValue)
+        PRICE_INCREASE,
+        PRICE_DECREASE,
+        VOLUME_SPIKE,
+        PERCENT_CHANGE_24H,
+        MARKET_CAP
     }
 
     public enum TimePeriod {
@@ -75,7 +69,6 @@ public class AlertRule {
         SEVEN_DAYS
     }
 
-    // ✅ Getter/Setter customizados para compatibilidade
     public Boolean getActive() {
         return active;
     }
@@ -84,7 +77,6 @@ public class AlertRule {
         this.active = active;
     }
 
-    // ✅ Alias para código legado
     public Boolean getIsActive() {
         return active;
     }

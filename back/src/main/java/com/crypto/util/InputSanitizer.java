@@ -5,16 +5,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
 
-/**
- * ✅ SANITIZAÇÃO DE INPUTS - PREVENÇÃO SQL INJECTION & XSS
- *
- * Localização: back/src/main/java/com/crypto/util/InputSanitizer.java
- */
+
 @Slf4j
 @Component
 public class InputSanitizer {
 
-    // ✅ Patterns perigosos
     private static final Pattern SQL_INJECTION = Pattern.compile(
             "('(''|[^'])*')|(;)|(\\b(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( +INTO)?|MERGE|SELECT|UPDATE|UNION( +ALL)?)\\b)",
             Pattern.CASE_INSENSITIVE
@@ -30,9 +25,7 @@ public class InputSanitizer {
             Pattern.CASE_INSENSITIVE
     );
 
-    /**
-     * ✅ Sanitiza string removendo caracteres perigosos
-     */
+
     public String sanitize(String input) {
         if (input == null || input.trim().isEmpty()) {
             return input;
@@ -40,18 +33,14 @@ public class InputSanitizer {
 
         String sanitized = input.trim();
 
-        // Remove null bytes
         sanitized = sanitized.replace("\0", "");
 
-        // Remove caracteres de controle
         sanitized = sanitized.replaceAll("\\p{Cntrl}", "");
 
         return sanitized;
     }
 
-    /**
-     * ✅ Detecta SQL Injection
-     */
+
     public boolean containsSqlInjection(String input) {
         if (input == null) return false;
 
@@ -64,9 +53,7 @@ public class InputSanitizer {
         return detected;
     }
 
-    /**
-     * ✅ Detecta XSS
-     */
+
     public boolean containsXss(String input) {
         if (input == null) return false;
 
@@ -79,9 +66,7 @@ public class InputSanitizer {
         return detected;
     }
 
-    /**
-     * ✅ Detecta Path Traversal
-     */
+
     public boolean containsPathTraversal(String input) {
         if (input == null) return false;
 
@@ -94,18 +79,15 @@ public class InputSanitizer {
         return detected;
     }
 
-    /**
-     * ✅ Validação completa (SQL + XSS + Path Traversal)
-     */
+
     public boolean isSafe(String input) {
         return !containsSqlInjection(input)
                 && !containsXss(input)
                 && !containsPathTraversal(input);
     }
 
-    /**
-     * ✅ Valida e sanitiza (lança exceção se perigoso)
-     */
+
+
     public String validateAndSanitize(String input, String fieldName) {
         if (input == null) {
             return null;
@@ -120,9 +102,7 @@ public class InputSanitizer {
         return sanitize(input);
     }
 
-    /**
-     * ✅ Sanitiza EMAIL
-     */
+
     public String sanitizeEmail(String email) {
         if (email == null) return null;
 
@@ -135,9 +115,7 @@ public class InputSanitizer {
         return email;
     }
 
-    /**
-     * ✅ Sanitiza USERNAME (alfanumérico + underscore/dash)
-     */
+
     public String sanitizeUsername(String username) {
         if (username == null) return null;
 
@@ -152,9 +130,7 @@ public class InputSanitizer {
         return username;
     }
 
-    /**
-     * ✅ Sanitiza COIN SYMBOL (uppercase, alfanumérico)
-     */
+
     public String sanitizeCoinSymbol(String symbol) {
         if (symbol == null) return null;
 
@@ -167,9 +143,6 @@ public class InputSanitizer {
         return symbol;
     }
 
-    /**
-     * ✅ Sanitiza COIN ID (lowercase, alfanumérico + hífen)
-     */
     public String sanitizeCoinId(String coinId) {
         if (coinId == null) return null;
 
@@ -182,9 +155,7 @@ public class InputSanitizer {
         return coinId;
     }
 
-    /**
-     * 🔒 Mascara dados sensíveis em logs
-     */
+
     private String maskSensitive(String input) {
         if (input == null || input.length() <= 10) {
             return "***";

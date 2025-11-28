@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-/**
- * ✅ SPRINT 2 - Endpoint para testar WebSocket
- */
+
 @Slf4j
 @RestController
 @RequestMapping("/api/websocket")
@@ -19,9 +17,7 @@ public class WebSocketTestController {
 
     private final WebSocketService webSocketService;
 
-    /**
-     * Enviar mensagem de teste via WebSocket
-     */
+
     @PostMapping("/test")
     public ResponseEntity<?> testWebSocket(@RequestBody Map<String, Object> message) {
         try {
