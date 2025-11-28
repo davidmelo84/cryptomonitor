@@ -1,7 +1,7 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
 // ✅ COM TOAST E SKELETON - SUBSTITUA O ARQUIVO COMPLETO
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTelegram } from '../../contexts/TelegramContext';
 import { useToast } from '../common/Toast'; // ✅ NOVO
@@ -16,8 +16,6 @@ import ChartTabs from '../dashboard/ChartTabs';
 import TelegramConfig from '../telegram/TelegramConfig';
 import '../../styles/components/dashboard.css';
 import '../../styles/components/telegram.css';
-
-
 
 import { 
   useCryptos, 
@@ -48,7 +46,7 @@ function DashboardPage({
 }) {
   const { isDark } = useTheme();
   const { telegramConfig, isConfigured } = useTelegram();
-  const { showToast, ToastContainer } = useToast(); // ✅ NOVO
+  const { showToast, ToastContainer } = useToast({maxToasts: 3});
   
   const [showTelegramConfig, setShowTelegramConfig] = useState(false);
 
@@ -68,19 +66,16 @@ function DashboardPage({
   const stopMonitoringMutation = useStopMonitoring();
 
   const isMonitoringActive = monitoringStatusData?.active || false;
+
   // ✅ NOVO: Ativar heartbeat quando monitoramento está ativo
   useHeartbeat(
-   isMonitoringActive && !!user,  // Só ativa se monitoramento está rodando
-   user?.username,                // Username
-   null                           // stompClient (você pode adicionar depois)
-);
+    isMonitoringActive && !!user,
+    user?.username,
+    null
+  );
 
-  const telegramConfigMemo = useMemo(() => telegramConfig, [
-    telegramConfig.enabled,
-    telegramConfig.botToken,
-    telegramConfig.chatId,
-    telegramConfig.isConnected
-  ]);
+  // ✅ SIMPLIFICADO — Removido useMemo desnecessário
+  const telegramConfigMemo = telegramConfig;
 
   const handleStartStopMonitoring = useCallback(async () => {
     console.log('🔘 handleStartStopMonitoring chamado');
@@ -94,7 +89,6 @@ function DashboardPage({
         console.log('✅ Monitoramento parado:', result);
         refetchMonitoringStatus();
         
-        // ✅ TOAST ao invés de alert
         showToast('Monitoramento parado com sucesso!', 'info');
         
       } catch (error) {
@@ -164,7 +158,6 @@ function DashboardPage({
         console.log('✅ Monitoramento iniciado:', result);
         refetchMonitoringStatus();
         
-        // ✅ TOAST ao invés de alert
         let message = `Monitoramento iniciado! ${cryptocurrencies.length} moeda(s) sendo monitorada(s).`;
         if (telegramConfigMemo.enabled && isConfigured()) {
           message += ' Telegram ativo!';
@@ -195,14 +188,13 @@ function DashboardPage({
   const handleRefresh = () => {
     refetchCryptos();
     refetchMonitoringStatus();
-    showToast('Dados atualizados!', 'info', 2000); // ✅ TOAST
+    showToast('Dados atualizados!', 'info', 2000);
   };
 
   const lastUpdate = cryptosLoading ? null : new Date();
 
   return (
     <div className={`page-container ${isDark ? 'dark' : ''}`}>
-      {/* ✅ TOAST CONTAINER */}
       <ToastContainer />
       
       <Header
@@ -218,8 +210,7 @@ function DashboardPage({
 
       <div className="content-wrapper">
         {cryptosLoading ? (
-          // ✅ SKELETON ao invés de spinner
-          <div>
+          <>
             <div style={{ 
               background: isDark ? '#1f2937' : 'white',
               padding: '2rem',
@@ -242,7 +233,7 @@ function DashboardPage({
                 <CryptoCardSkeleton key={i} />
               ))}
             </div>
-          </div>
+          </>
         ) : (
           <>
             <StatusCard

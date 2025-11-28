@@ -1,5 +1,5 @@
 // front/crypto-monitor-frontend/src/components/dashboard/CryptoCard.jsx
-import React, { useState, memo } from 'react';
+import React, { memo } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { formatCurrency } from '../../utils/formatters';
 import '../../styles/crypto-card.css';

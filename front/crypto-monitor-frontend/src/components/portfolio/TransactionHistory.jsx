@@ -7,6 +7,9 @@ import {
   formatDate, 
   formatQuantity 
 } from '../../utils/formatters';
+
+import { API_BASE_URL } from '../../utils/constants';   // ✅ IMPORTAÇÃO CORRETA
+
 import '../../styles/components/transactions.css';
 
 function TransactionHistory({ transactions, onRefresh }) {
@@ -23,7 +26,8 @@ function TransactionHistory({ transactions, onRefresh }) {
     if (!window.confirm('Deseja realmente excluir esta transação?')) return;
 
     try {
-      const response = await fetch(`http://localhost:8080/api/transactions/${id}`, {
+      // ✅ URL CORRIGIDA — SEM HARDCODED
+      const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,

@@ -108,7 +108,7 @@ function MultiCryptoChart({ selectedCryptos }) {
     if (selectedCryptos.length > 0) {
       fetchAllData();
     }
-  }, [fetchAllData]);
+  }, [fetchAllData, selectedCryptos.length]);
 
   if (selectedCryptos.length === 0) {
     return (

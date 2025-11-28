@@ -28,21 +28,21 @@ function CreateBotModal({ token, onClose, onBotCreated }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const strategies = [
+  /* const strategies = [
     { value: 'GRID_TRADING', label: 'Grid Trading', description: 'Compra e venda em níveis de preço' },
     { value: 'DCA', label: 'Dollar Cost Average', description: 'Compras periódicas automáticas' },
     { value: 'STOP_LOSS', label: 'Stop Loss / Take Profit', description: 'Gestão de risco automática' }
-  ];
+  ]; */
 
-  const cryptos = ['BTC', 'ETH', 'ADA', 'DOT', 'LINK', 'SOL', 'AVAX', 'MATIC', 'LTC', 'BCH'];
-
-  const handleChange = (e) => {
+/*   const cryptos = ['BTC', 'ETH', 'ADA', 'DOT', 'LINK', 'SOL', 'AVAX', 'MATIC', 'LTC', 'BCH'];
+ */
+  /* const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
-  };
+  }; */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
