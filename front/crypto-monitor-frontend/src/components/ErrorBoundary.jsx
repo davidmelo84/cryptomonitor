@@ -1,6 +1,7 @@
 // src/components/ErrorBoundary.jsx
 import React from 'react';
-// import * as Sentry from '@sentry/react'; // 👉 descomente se já usa Sentry
+import { API_BASE_URL } from '../constants'; 
+// import * as Sentry from '@sentry/react';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -15,11 +16,26 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
 
-    // ============================================================
-    // ✅ Enviar erro para Sentry (apenas produção)
-    // ============================================================
+    // 👉 Enviar somente em produção
     if (process.env.NODE_ENV === 'production') {
+      // 1. Enviar ao Sentry (caso esteja usando)
       // Sentry.captureException(error, { extra: errorInfo });
+
+      // 2. Enviar ao backend (Render)
+      fetch(`${API_BASE_URL}/logs/frontend-error`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: error.toString(),
+          stack: error.stack,
+          componentStack: errorInfo.componentStack,
+          url: window.location.href,
+          userAgent: navigator.userAgent,
+          timestamp: new Date().toISOString(),
+        })
+      }).catch(() => {
+        // Silenciar erro para não quebrar o app
+      });
     }
   }
 
@@ -29,14 +45,13 @@ class ErrorBoundary extends React.Component {
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-md text-center">
             <h2 className="text-2xl font-bold text-red-600 mb-4">
-              Algo deu errado
+              Algo deu errado 😕
             </h2>
 
             <p className="text-gray-600 mb-4">
               Ocorreu um erro inesperado. Tente recarregar a página.
             </p>
 
-            {/* Botão de recarregar */}
             <button
               onClick={() => window.location.reload()}
               className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition"
@@ -44,7 +59,7 @@ class ErrorBoundary extends React.Component {
               Recarregar Página
             </button>
 
-            {/* Debug opcional em ambiente de desenvolvimento */}
+            {/* Debug no modo dev */}
             {process.env.NODE_ENV === 'development' && (
               <pre className="mt-4 p-3 bg-gray-200 text-sm text-left rounded overflow-x-auto">
                 {this.state.error?.toString()}

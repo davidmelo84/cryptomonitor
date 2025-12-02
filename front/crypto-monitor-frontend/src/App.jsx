@@ -1,6 +1,4 @@
 // front/crypto-monitor-frontend/src/App.jsx
-// ✅ VERSÃO COM STORAGE UNIFICADO (localStorage/sessionStorage)
-// ✅ LEMBRAR DE MIM + LOGOUT AUTOMÁTICO CORRIGIDOS
 
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,15 +8,30 @@ import { TelegramProvider } from './contexts/TelegramContext';
 import { API_BASE_URL } from './utils/constants';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// 🔥 NOVO
 import { saveAuthData, loadAuthData, clearAuthData } from './utils/storage';
 
-// Lazy loading
+// ===========================================================
+// LAZY LOADING + PRELOAD
+// ===========================================================
 const LoginPage = lazy(() => import('./components/pages/LoginPage'));
+LoginPage.preload = () => import('./components/pages/LoginPage');
+
 const RegisterPage = lazy(() => import('./components/pages/RegisterPage'));
+RegisterPage.preload = () => import('./components/pages/RegisterPage');
+
 const DashboardPage = lazy(() => import('./components/pages/DashboardPage'));
+DashboardPage.preload = () => import('./components/pages/DashboardPage');
+
 const PortfolioPage = lazy(() => import('./components/pages/PortfolioPage'));
+PortfolioPage.preload = () => import('./components/pages/PortfolioPage');
+
 const TradingBotsPage = lazy(() => import('./components/pages/TradingBotsPage'));
+TradingBotsPage.preload = () => import('./components/pages/TradingBotsPage');
+
+// Função que pre-carrega o componente quando o mouse passa por cima
+const preloadComponent = (component) => {
+  component?.preload?.();
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,7 +58,6 @@ function App() {
   const [token, setToken] = useState(null);
   const [authError, setAuthError] = useState('');
 
-  // Configurações gerais
   const [selectedCryptos, setSelectedCryptos] = useState([]);
   const [monitoringEmail, setMonitoringEmail] = useState('');
   const [monitoringInterval, setMonitoringInterval] = useState(5);
@@ -53,7 +65,7 @@ function App() {
   const [sellThreshold, setSellThreshold] = useState(10.0);
 
   // ============================================================
-  // Carregar configurações (sempre)
+  // Carregamento de configurações
   // ============================================================
   useEffect(() => {
     try {
@@ -71,187 +83,133 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    if (monitoringEmail) {
-      localStorage.setItem('monitoring_email', monitoringEmail);
-    }
-  }, [monitoringEmail]);
-
-  useEffect(() => {
-    localStorage.setItem('monitoring_interval', monitoringInterval.toString());
-  }, [monitoringInterval]);
-
-  useEffect(() => {
-    localStorage.setItem('buy_threshold', buyThreshold.toString());
-  }, [buyThreshold]);
-
-  useEffect(() => {
-    localStorage.setItem('sell_threshold', sellThreshold.toString());
-  }, [sellThreshold]);
+  useEffect(() => localStorage.setItem('monitoring_email', monitoringEmail), [monitoringEmail]);
+  useEffect(() => localStorage.setItem('monitoring_interval', monitoringInterval), [monitoringInterval]);
+  useEffect(() => localStorage.setItem('buy_threshold', buyThreshold), [buyThreshold]);
+  useEffect(() => localStorage.setItem('sell_threshold', sellThreshold), [sellThreshold]);
 
   // ============================================================
-  // RESTAURAR SESSÃO (agora usando storage.js)
+  // Restaurar sessão
   // ============================================================
   useEffect(() => {
     const authData = loadAuthData();
-
     if (!authData) {
       setCurrentPage('login');
       return;
     }
-
     setToken(authData.token);
     setUser(authData.user);
     setCurrentPage('dashboard');
   }, []);
 
   // ============================================================
-  // BEFOREUNLOAD atualizado (agora respeita rememberMe)
+  // LOGIN
   // ============================================================
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      const rememberMe = localStorage.getItem('rememberMe') === 'true';
+  const handleLogin = useCallback(async (username, password, rememberMe = false) => {
+    setAuthError('');
 
-      if (!rememberMe) {
-        console.log('🚪 Fechando aba - limpando sessão temporária');
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('user');
-      } else {
-        console.log('💾 Sessão mantida (rememberMe ativo)');
+    if (!username || !password) {
+      setAuthError('Preencha todos os campos');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        try {
+          const err = JSON.parse(text);
+          throw new Error(err.error || err.message || 'Credenciais inválidas');
+        } catch {
+          throw new Error('Credenciais inválidas');
+        }
       }
-    };
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+      const data = await response.json();
+      if (!data.token) throw new Error('Token não recebido do servidor');
+
+      saveAuthData(data.token, { username }, rememberMe);
+
+      setToken(data.token);
+      setUser({ username });
+      localStorage.setItem('last_username', username);
+
+      setCurrentPage('dashboard');
+
+    } catch (error) {
+      setAuthError(error.message || 'Erro ao conectar com o servidor');
+    }
   }, []);
 
   // ============================================================
-  // LOGIN (novo)
+  // REGISTRO
   // ============================================================
-  const handleLogin = useCallback(
-    async (username, password, rememberMe = false) => {
-      setAuthError('');
+  const handleRegister = useCallback(async (u, e, p, cp) => {
+    setAuthError('');
 
-      if (!username || !password) {
-        setAuthError('Preencha todos os campos');
-        return;
-      }
+    if (!u || !e || !p || !cp) {
+      setAuthError('Preencha todos os campos');
+      return false;
+    }
+
+    if (p !== cp) {
+      setAuthError('As senhas não coincidem');
+      return false;
+    }
+
+    if (p.length < 6) {
+      setAuthError('A senha deve ter pelo menos 6 caracteres');
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: u, email: e, password: p }),
+      });
+
+      const text = await response.text();
+      let data;
 
       try {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password }),
-        });
-
-        if (!response.ok) {
-          const text = await response.text();
-
-          try {
-            const error = JSON.parse(text);
-            throw new Error(error.error || error.message || 'Credenciais inválidas');
-          } catch {
-            throw new Error('Credenciais inválidas');
-          }
-        }
-
-        const data = await response.json();
-
-        if (!data.token) {
-          throw new Error('Token não recebido do servidor');
-        }
-
-        saveAuthData(data.token, { username }, rememberMe);
-
-        setToken(data.token);
-        setUser({ username });
-
-        localStorage.setItem('last_username', username);
-
-        setCurrentPage('dashboard');
-      } catch (error) {
-        setAuthError(error.message || 'Erro ao conectar com o servidor');
+        data = JSON.parse(text);
+      } catch {
+        throw new Error('Resposta inválida do servidor');
       }
-    },
-    []
-  );
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Falha no registro');
+      }
+
+      if (data.requiresVerification) {
+        alert(`📧 Código enviado para ${e}`);
+      } else {
+        alert('✅ Conta criada! Faça login.');
+      }
+
+      return true;
+
+    } catch (error) {
+      setAuthError(error.message || 'Erro ao criar conta');
+      return false;
+    }
+  }, []);
 
   // ============================================================
-  // REGISTRO (mantido igual)
-  // ============================================================
-  const handleRegister = useCallback(
-    async (regUsername, regEmail, regPassword, regConfirmPassword) => {
-      setAuthError('');
-
-      if (!regUsername || !regEmail || !regPassword || !regConfirmPassword) {
-        setAuthError('Preencha todos os campos');
-        return false;
-      }
-
-      if (regPassword !== regConfirmPassword) {
-        setAuthError('As senhas não coincidem');
-        return false;
-      }
-
-      if (regPassword.length < 6) {
-        setAuthError('A senha deve ter pelo menos 6 caracteres');
-        return false;
-      }
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: regUsername,
-            email: regEmail,
-            password: regPassword,
-          }),
-        });
-
-        const text = await response.text();
-        let data;
-
-        try {
-          data = JSON.parse(text);
-        } catch {
-          throw new Error('Resposta inválida do servidor');
-        }
-
-        if (!response.ok) {
-          throw new Error(data.error || data.message || 'Falha no registro');
-        }
-
-        if (data.requiresVerification) {
-          alert(`📧 Código enviado para ${regEmail}`);
-        } else {
-          alert('✅ Conta criada! Faça login.');
-        }
-
-        return true;
-      } catch (error) {
-        setAuthError(error.message || 'Erro ao criar conta');
-        return false;
-      }
-    },
-    []
-  );
-
-  // ============================================================
-  // LOGOUT atualizado
+  // LOGOUT
   // ============================================================
   const handleLogout = () => {
-    console.log('🚪 Logout...');
-
     clearAuthData();
-
     setUser(null);
     setToken(null);
     setCurrentPage('login');
-
     queryClient.clear();
-
-    console.log('✅ Logout concluído');
   };
 
   // ============================================================
@@ -267,7 +225,7 @@ function App() {
   };
 
   // ============================================================
-  // Props compartilhadas
+  // PROPS COMPARTILHADAS
   // ============================================================
   const sharedProps = {
     user,
@@ -278,6 +236,7 @@ function App() {
     monitoringInterval,
     buyThreshold,
     sellThreshold,
+
     setMonitoringEmail,
     setMonitoringInterval,
     setBuyThreshold,
@@ -292,22 +251,13 @@ function App() {
 
     onNavigateToPortfolio: () => setCurrentPage('portfolio'),
     onNavigateToBots: () => setCurrentPage('bots'),
-
-    onNavigateToLogin: () => {
-      setCurrentPage('login');
-      setAuthError('');
-    },
-
-    onNavigateToRegister: () => {
-      setCurrentPage('register');
-      setAuthError('');
-    },
-
+    onNavigateToLogin: () => { setCurrentPage('login'); setAuthError(''); },
+    onNavigateToRegister: () => { setCurrentPage('register'); setAuthError(''); },
     onBack: () => setCurrentPage('dashboard'),
   };
 
   // ============================================================
-  // Render
+  // RENDER
   // ============================================================
   return (
     <ErrorBoundary>
@@ -315,6 +265,16 @@ function App() {
         <ThemeProvider>
           <TelegramProvider>
             <Suspense fallback={<PageLoader />}>
+
+              {/* PRELOAD NA NAVEGAÇÃO */}
+              <nav className="hidden">
+                <div onMouseEnter={() => preloadComponent(LoginPage)} />
+                <div onMouseEnter={() => preloadComponent(RegisterPage)} />
+                <div onMouseEnter={() => preloadComponent(DashboardPage)} />
+                <div onMouseEnter={() => preloadComponent(PortfolioPage)} />
+                <div onMouseEnter={() => preloadComponent(TradingBotsPage)} />
+              </nav>
+
               {currentPage === 'login' && <LoginPage {...sharedProps} />}
               {currentPage === 'register' && <RegisterPage {...sharedProps} />}
               {currentPage === 'dashboard' && <DashboardPage {...sharedProps} />}

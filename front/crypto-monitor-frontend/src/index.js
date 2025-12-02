@@ -1,7 +1,10 @@
-// front/crypto-monitor-frontend/src/index.js
+// src/index.js
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+
+// Loader global
+import GlobalLoader from './components/common/GlobalLoader';
 
 // Web Vitals
 import reportWebVitals from './reportWebVitals';
@@ -12,47 +15,31 @@ const App = React.lazy(() => import('./App'));
 // Criação do root
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-// Render com Suspense
 root.render(
   <React.StrictMode>
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        Carregando...
-      </div>
-    }>
+    <Suspense fallback={<GlobalLoader />}>
       <App />
     </Suspense>
   </React.StrictMode>
 );
 
 // =================================================================
-// ✅ Registro do Service Worker (não quebra nada, apenas otimiza)
+// ✅ Registro do Service Worker
+//    - Usamos SW SIMPLES (navegador + Vercel suportam tranquilo)
+//    - Garante cache básico e performance
 // =================================================================
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/service-worker.js')
-      .catch(err => console.warn('Service Worker falhou ao registrar:', err));
+      .then(() => console.log('[SW] Registrado com sucesso'))
+      .catch(err => console.warn('[SW] Falha ao registrar:', err));
   });
 }
 
 // =================================================================
-// ✅ Métricas de Performance (Web Vitals)
+// ✅ Web Vitals (Performance)
 // =================================================================
 reportWebVitals((metric) => {
   console.log('[Web Vital]', metric);
-
-  // ===============================================================
-  // ✅ Enviar métricas para Google Analytics (opcional)
-  // ===============================================================
-  /*
-  if (window.gtag) {
-    window.gtag('event', metric.name, {
-      value: metric.value,
-      event_category: 'Web Vitals',
-      event_label: metric.id,
-      non_interaction: true,
-    });
-  }
-  */
 });

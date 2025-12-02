@@ -1,6 +1,6 @@
 // front/crypto-monitor-frontend/src/hooks/useCryptoData.js
 // ============================================
-// ✅ VERSÃO FINAL — TOKEN PERSISTENTE + TIMEOUT
+// ⚡ VERSÃO FINAL — TIMEOUT + TOKEN PERSISTENTE
 // ============================================
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -8,7 +8,7 @@ import { API_BASE_URL } from '../utils/constants';
 import { loadAuthData } from '../utils/storage';
 
 // ============================================
-// ⚠️ FETCH COM TIMEOUT E TRATAMENTO DE REDE
+// 🌐 FETCH COM TIMEOUT + TRATAMENTO DE ERROS
 // ============================================
 const fetchWithTimeout = async (url, options, timeout = 10000) => {
   const controller = new AbortController();
@@ -19,8 +19,10 @@ const fetchWithTimeout = async (url, options, timeout = 10000) => {
       ...options,
       signal: controller.signal
     });
+
     clearTimeout(id);
     return response;
+
   } catch (error) {
     clearTimeout(id);
 
@@ -33,12 +35,10 @@ const fetchWithTimeout = async (url, options, timeout = 10000) => {
 };
 
 // ============================================
-// FETCH FUNCTIONS COM TOKEN AUTOMÁTICO
+// 🚀 FUNÇÕES FETCH — TODAS COM TIMEOUT
 // ============================================
 
 const fetchCryptos = async (token) => {
-  console.log('🔍 Buscando criptomoedas...');
-
   const authToken = token || loadAuthData()?.token;
   if (!authToken) throw new Error('Token não encontrado');
 
@@ -47,7 +47,7 @@ const fetchCryptos = async (token) => {
     {
       headers: { Authorization: `Bearer ${authToken}` }
     },
-    10000 // 10s timeout
+    10000
   );
 
   if (response.status === 401) {
@@ -59,18 +59,13 @@ const fetchCryptos = async (token) => {
 
   if (!response.ok) {
     const error = await response.text();
-    console.error("Erro ao buscar cryptos:", error);
-    throw new Error("Falha ao carregar dados das criptos");
+    throw new Error(error || "Falha ao carregar dados das criptos");
   }
 
-  const data = await response.json();
-  console.log("Cryptos recebidas:", data.length);
-  return data;
+  return await response.json();
 };
 
 const fetchMonitoringStatus = async (token) => {
-  console.log('🔍 Buscando status...');
-
   const authToken = token || loadAuthData()?.token;
   if (!authToken) throw new Error('Token não encontrado');
 
@@ -91,35 +86,35 @@ const fetchMonitoringStatus = async (token) => {
 
   if (!response.ok) {
     const error = await response.text();
-    console.error("Erro ao buscar status:", error);
-    throw new Error("Falha ao carregar status do monitoramento");
+    throw new Error(error || "Erro ao carregar status do monitoramento");
   }
 
   return await response.json();
 };
 
 // ============================================
-// HOOKS — TOKEN AUTOMÁTICO + TIMEOUT
+// 📊 HOOKS COM REACT QUERY
 // ============================================
 
 export const useCryptos = (token) => {
   return useQuery({
     queryKey: ['cryptos', token],
     queryFn: () => fetchCryptos(token),
-    staleTime: 60_000,
-    cacheTime: 300_000,
+    staleTime: 60000,
+    cacheTime: 300000,
     refetchOnWindowFocus: false,
     retry: 2,
     enabled: !!(token || loadAuthData()?.token),
 
-    select: (data) => data.map(crypto => ({
-      coinId: crypto.id || crypto.coinId || crypto.symbol?.toLowerCase(),
-      name: crypto.name,
-      symbol: crypto.symbol,
-      currentPrice: crypto.current_price || crypto.currentPrice || 0,
-      priceChange24h: crypto.price_change_percentage_24h || crypto.priceChange24h || 0,
-      marketCap: crypto.market_cap || crypto.marketCap || 0
-    }))
+    select: (data) =>
+      data.map((crypto) => ({
+        coinId: crypto.id || crypto.coinId || crypto.symbol?.toLowerCase(),
+        name: crypto.name,
+        symbol: crypto.symbol,
+        currentPrice: crypto.current_price || crypto.currentPrice || 0,
+        priceChange24h: crypto.price_change_percentage_24h || crypto.priceChange24h || 0,
+        marketCap: crypto.market_cap || crypto.marketCap || 0
+      }))
   });
 };
 
@@ -127,22 +122,31 @@ export const useMonitoringStatus = (token) => {
   return useQuery({
     queryKey: ['monitoring-status', token],
     queryFn: () => fetchMonitoringStatus(token),
-    staleTime: 30_000,
+    staleTime: 30000,
     retry: 1,
     enabled: !!(token || loadAuthData()?.token)
   });
 };
 
 // ============================================
-// MUTATIONS (start / stop monitoring)
+// 🔄 MUTATIONS — START / STOP MONITORING
 // ============================================
 
 export const useStartMonitoring = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ email, cryptocurrencies, interval, buyThreshold, sellThreshold, token, telegramConfig }) => {
+    mutationFn: async ({
+      email,
+      cryptocurrencies,
+      interval,
+      buyThreshold,
+      sellThreshold,
+      token,
+      telegramConfig
+    }) => {
       const authToken = token || loadAuthData()?.token;
+      if (!authToken) throw new Error("Token não encontrado");
 
       const payload = {
         email,
@@ -152,7 +156,7 @@ export const useStartMonitoring = () => {
         sellThreshold
       };
 
-      // TELEGRAM
+      // TELEGRAM — validação
       if (telegramConfig?.enabled) {
         const tokenRegex = /^\d+:[A-Za-z0-9_-]+$/;
         const chatIdRegex = /^-?\d+$/;
@@ -186,7 +190,6 @@ export const useStartMonitoring = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error("Erro no servidor:", errorText);
         throw new Error(errorText || "Erro ao iniciar monitoramento");
       }
 
