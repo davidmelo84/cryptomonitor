@@ -14,6 +14,7 @@
 @import './styles/components/dashboard.css';
 @import './styles/components/telegram.css';
 @import './styles/components/transactions.css';
+@import './styles/components/global-loader.css';
 
 /* 4. Componentes (existentes no projeto) */
 @import './styles/crypto-card.css';
