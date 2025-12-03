@@ -147,6 +147,7 @@ coingecko:
       enabled: true
       requests-per-minute: 30
       min-request-interval-ms: 500
+      request-timeout-ms: 30000
       retry-attempts: 2
       retry-backoff-seconds: 2
       max-backoff-seconds: 5
@@ -289,3 +290,5 @@ server:
     enabled: true
   http2:
     enabled: true
+
+

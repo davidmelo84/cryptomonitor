@@ -1,6 +1,7 @@
 package com.crypto.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -9,10 +10,20 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 @Slf4j
 @Service
 public class CoinGeckoRequestQueue {
+
+    // ======= CONFIGS VINDAS DO application.yml ========
+    @Value("${coingecko.api.rate-limit.min-request-interval-ms:500}")
+    private long MIN_INTERVAL_MS;
+
+    @Value("${coingecko.api.rate-limit.requests-per-minute:30}")
+    private int MAX_REQUESTS_PER_MINUTE;
+
+    @Value("${coingecko.api.rate-limit.request-timeout-ms:30000}")
+    private long REQUEST_TIMEOUT_MS;
+    // ===================================================
 
     private final PriorityBlockingQueue<QueuedRequest> requestQueue =
             new PriorityBlockingQueue<>(100);
@@ -25,7 +36,7 @@ public class CoinGeckoRequestQueue {
             });
 
     private final Map<String, CompletableFuture<?>> pendingRequests =
-            new ConcurrentHashMap<>(); //
+            new ConcurrentHashMap<>();
 
     private final ConcurrentLinkedQueue<Instant> recentRequests =
             new ConcurrentLinkedQueue<>();
@@ -33,19 +44,16 @@ public class CoinGeckoRequestQueue {
     private final AtomicInteger totalRequests = new AtomicInteger(0);
     private final AtomicInteger queuedRequests = new AtomicInteger(0);
 
-    private static final long MIN_INTERVAL_MS = 30000;
-    private static final int MAX_REQUESTS_PER_MINUTE = 3;
-    private static final long REQUEST_TIMEOUT_MS = 30000; // 30 segundos
-
     private volatile Instant lastRequestTime = Instant.now();
 
     public CoinGeckoRequestQueue() {
         queueProcessor.submit(this::processQueue);
         log.info("✅ CoinGecko Request Queue inicializada");
-        log.info("   Rate Limit: {} req/min, {} ms entre requests",
-                MAX_REQUESTS_PER_MINUTE, MIN_INTERVAL_MS);
-    }
 
+        log.info("   Rate Limit configurado: {} req/min, intervalo mínimo {} ms",
+                MAX_REQUESTS_PER_MINUTE,
+                MIN_INTERVAL_MS);
+    }
 
     @SuppressWarnings("unchecked")
     public <T> CompletableFuture<T> enqueue(
@@ -78,7 +86,6 @@ public class CoinGeckoRequestQueue {
     private String generateRequestKey(Callable<?> supplier) {
         return supplier.getClass().getName() + "@" + System.identityHashCode(supplier);
     }
-
 
     private void processQueue() {
         log.info("🔄 Queue processor iniciado");
@@ -145,7 +152,6 @@ public class CoinGeckoRequestQueue {
         }
     }
 
-
     private void waitForRateLimit() throws InterruptedException {
         cleanOldRequests();
 
@@ -165,19 +171,16 @@ public class CoinGeckoRequestQueue {
         if (elapsed < MIN_INTERVAL_MS) {
             long waitMs = MIN_INTERVAL_MS - elapsed;
             log.info("⏳ Respeitando intervalo mínimo entre requisições: {}ms", waitMs);
-            log.debug("⏳ Aguardando {}ms (intervalo mínimo)...", waitMs);
             Thread.sleep(waitMs);
         }
 
         recentRequests.offer(Instant.now());
     }
 
-
     private void cleanOldRequests() {
         Instant oneMinuteAgo = Instant.now().minus(Duration.ofMinutes(1));
         recentRequests.removeIf(instant -> instant.isBefore(oneMinuteAgo));
     }
-
 
     public QueueStats getStats() {
         return new QueueStats(
@@ -215,7 +218,6 @@ public class CoinGeckoRequestQueue {
         }
     }
 
-
     public enum RequestPriority {
         HIGH(0),
         NORMAL(1),
@@ -227,7 +229,6 @@ public class CoinGeckoRequestQueue {
             this.value = value;
         }
     }
-
 
     public record QueueStats(
             int queueSize,

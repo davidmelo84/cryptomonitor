@@ -1,10 +1,7 @@
 package com.crypto.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,6 +42,7 @@ public class TradingBot {
     @Column(name = "is_simulation", nullable = false)
     private Boolean isSimulation = true;
 
+    // ---------- GRID TRADING ----------
     @Column(name = "grid_lower_price", precision = 19, scale = 8)
     private BigDecimal gridLowerPrice;
 
@@ -57,6 +55,7 @@ public class TradingBot {
     @Column(name = "amount_per_grid", precision = 19, scale = 8)
     private BigDecimal amountPerGrid;
 
+    // ---------- DCA ----------
     @Column(name = "dca_amount", precision = 19, scale = 2)
     private BigDecimal dcaAmount;
 
@@ -66,6 +65,7 @@ public class TradingBot {
     @Column(name = "last_dca_execution")
     private LocalDateTime lastDcaExecution;
 
+    // ---------- STOP LOSS & TAKE PROFIT ----------
     @Column(name = "stop_loss_percent", precision = 5, scale = 2)
     private BigDecimal stopLossPercent;
 
@@ -75,6 +75,7 @@ public class TradingBot {
     @Column(name = "entry_price", precision = 19, scale = 8)
     private BigDecimal entryPrice;
 
+    // ---------- MÉTRICAS E ESTATÍSTICAS ----------
     @Builder.Default
     @Column(name = "total_profit_loss", precision = 19, scale = 2)
     private BigDecimal totalProfitLoss = BigDecimal.ZERO;
@@ -91,6 +92,7 @@ public class TradingBot {
     @Column(name = "losing_trades")
     private Integer losingTrades = 0;
 
+    // ---------- DATAS ----------
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -101,20 +103,22 @@ public class TradingBot {
     private LocalDateTime stoppedAt;
 
 
+    // ---------- EVENTOS DO JPA ----------
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-
         validateSimulation();
     }
-
 
     @PreUpdate
     protected void onUpdate() {
         validateSimulation();
     }
 
-
+    /**
+     * 🔒 VALIDAÇÃO DE SEGURANÇA
+     * Evita execução real caso alguém tente desativar o modo simulado.
+     */
     private void validateSimulation() {
         if (isSimulation == null) {
             isSimulation = true;
@@ -125,17 +129,15 @@ public class TradingBot {
                     "🚨 TRADING REAL DESABILITADO POR SEGURANÇA!\n\n" +
                             "Este sistema NÃO está conectado a exchanges reais.\n" +
                             "Apenas simulações são permitidas.\n\n" +
-                            "Para trading real, use plataformas oficiais:\n" +
+                            "Para trading real, utilize plataformas oficiais:\n" +
                             "- Binance API\n" +
                             "- Coinbase Pro\n" +
-                            "- FTX\n" +
                             "- Kraken"
             );
         }
     }
 
-
-
+    // ---------- ENUMS ----------
     public enum TradingStrategy {
         GRID_TRADING,
         DCA,

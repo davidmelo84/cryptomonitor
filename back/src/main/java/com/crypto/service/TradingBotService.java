@@ -1,10 +1,9 @@
-
-
 package com.crypto.service;
 
-import com.crypto.model.CryptoCurrency;
 import com.crypto.model.*;
-import com.crypto.repository.*;
+import com.crypto.repository.TradingBotRepository;
+import com.crypto.repository.BotTradeRepository;
+import com.crypto.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,7 +27,7 @@ public class TradingBotService {
     private final UserRepository userRepository;
     private final CryptoService cryptoService;
     private final NotificationService notificationService;
-
+    private final TradingBotAuditService auditService;
 
     private String mapSymbolToCoinId(String symbol) {
         Map<String, String> symbolMap = Map.ofEntries(
@@ -61,7 +60,18 @@ public class TradingBotService {
         bot.setStatus(TradingBot.BotStatus.STOPPED);
         bot.setCreatedAt(LocalDateTime.now());
 
-        return botRepository.save(bot);
+        TradingBot saved = botRepository.save(bot);
+
+        // ✅ AUDITORIA
+        auditService.logAction(
+                username,
+                saved,
+                TradingBotAuditLog.AuditAction.BOT_CREATED,
+                TradingBotAuditLog.Severity.INFO,
+                String.format("Bot '%s' criado para %s", saved.getName(), saved.getCoinSymbol())
+        );
+
+        return saved;
     }
 
 
@@ -80,6 +90,15 @@ public class TradingBotService {
                 .ifPresent(c -> bot.setEntryPrice(c.getCurrentPrice()));
 
         botRepository.save(bot);
+
+        // ✅ AUDITORIA
+        auditService.logAction(
+                username,
+                bot,
+                TradingBotAuditLog.AuditAction.BOT_STARTED,
+                TradingBotAuditLog.Severity.INFO,
+                String.format("Bot '%s' iniciado", bot.getName())
+        );
     }
 
 
