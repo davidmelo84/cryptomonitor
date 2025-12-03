@@ -1,5 +1,6 @@
 package com.crypto.controller;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker.State;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import lombok.RequiredArgsConstructor;
@@ -7,12 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.time.Instant;
 import java.util.*;
 
-/**
- * ✅ Dashboard para monitoramento de Circuit Breakers
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/circuit-breaker")
@@ -26,27 +25,27 @@ public class CircuitBreakerDashboardController {
         try {
             List<Map<String, Object>> circuitBreakers = new ArrayList<>();
 
-            for (CircuitBreaker cb : circuitBreakerRegistry.getAllCircuitBreakers()) {
-                Map<String, Object> cbInfo = buildCircuitBreakerInfo(cb);
-                circuitBreakers.add(cbInfo);
-            }
+            circuitBreakerRegistry.getAllCircuitBreakers().forEach(cb -> {
+                circuitBreakers.add(buildCircuitBreakerInfo(cb));
+            });
 
             Map<String, Object> response = new HashMap<>();
-            response.put("timestamp", Instant.now());
+            response.put("timestamp", Instant.now().toString());
             response.put("totalCircuitBreakers", circuitBreakers.size());
             response.put("circuitBreakers", circuitBreakers);
 
             long openCount = circuitBreakers.stream()
-                    .filter(cb -> "OPEN".equals(cb.get("state")) ||
-                            "FORCED_OPEN".equals(cb.get("state")))
+                    .filter(cb -> {
+                        String state = (String) cb.get("state");
+                        return "OPEN".equals(state) || "FORCED_OPEN".equals(state);
+                    })
                     .count();
 
             response.put("healthStatus", openCount > 0 ? "DEGRADED" : "HEALTHY");
-
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
-            log.error("Erro ao obter status dos Circuit Breakers: {}", e.getMessage());
+            log.error("Erro ao obter status: {}", e.getMessage());
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", e.getMessage()));
         }
@@ -55,22 +54,13 @@ public class CircuitBreakerDashboardController {
     @GetMapping("/{name}")
     public ResponseEntity<?> getCircuitBreakerByName(@PathVariable String name) {
         try {
-            Optional<CircuitBreaker> cbOpt = circuitBreakerRegistry
-                    .getAllCircuitBreakers()
-                    .stream()
-                    .filter(cb -> cb.getName().equals(name))
-                    .findFirst();
-
+            Optional<CircuitBreaker> cbOpt = findByName(name);
             if (cbOpt.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
-
-            Map<String, Object> cbInfo = buildCircuitBreakerInfo(cbOpt.get());
-
-            return ResponseEntity.ok(cbInfo);
-
+            return ResponseEntity.ok(buildCircuitBreakerInfo(cbOpt.get()));
         } catch (Exception e) {
-            log.error("Erro ao obter Circuit Breaker '{}': {}", name, e.getMessage());
+            log.error("Erro ao obter CB: {}", e.getMessage());
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", e.getMessage()));
         }
@@ -80,14 +70,8 @@ public class CircuitBreakerDashboardController {
     public ResponseEntity<?> transitionCircuitBreaker(
             @PathVariable String name,
             @PathVariable String state) {
-
         try {
-            Optional<CircuitBreaker> cbOpt = circuitBreakerRegistry
-                    .getAllCircuitBreakers()
-                    .stream()
-                    .filter(cb -> cb.getName().equals(name))
-                    .findFirst();
-
+            Optional<CircuitBreaker> cbOpt = findByName(name);
             if (cbOpt.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
@@ -95,41 +79,27 @@ public class CircuitBreakerDashboardController {
             CircuitBreaker cb = cbOpt.get();
 
             switch (state.toUpperCase()) {
-                case "CLOSE" -> {
-                    cb.transitionToClosedState();
-                    log.info("Circuit Breaker '{}' fechado manualmente", name);
-                }
-                case "OPEN" -> {
-                    cb.transitionToOpenState();
-                    log.warn("Circuit Breaker '{}' aberto manualmente", name);
-                }
-                case "HALF_OPEN" -> {
-                    cb.transitionToHalfOpenState();
-                    log.info("Circuit Breaker '{}' em half-open manualmente", name);
-                }
-                case "FORCE_OPEN" -> {
-                    cb.transitionToForcedOpenState();
-                    log.warn("Circuit Breaker '{}' forçado aberto manualmente", name);
-                }
-                case "DISABLE" -> {
-                    cb.transitionToDisabledState();
-                    log.warn("Circuit Breaker '{}' desabilitado manualmente", name);
-                }
+                case "CLOSE" -> cb.transitionToClosedState();
+                case "OPEN" -> cb.transitionToOpenState();
+                case "HALF_OPEN" -> cb.transitionToHalfOpenState();
+                case "FORCE_OPEN" -> cb.transitionToForcedOpenState();
+                case "DISABLE" -> cb.transitionToDisabledState();
                 default -> {
                     return ResponseEntity.badRequest()
                             .body(Map.of("error", "Estado inválido: " + state));
                 }
             }
 
+            log.info("CB '{}' -> {}", name, state);
+
             return ResponseEntity.ok(Map.of(
                     "success", true,
-                    "message", "Circuit Breaker transicionado para: " + state,
+                    "message", "Transicionado para: " + state,
                     "circuitBreaker", buildCircuitBreakerInfo(cb)
             ));
 
         } catch (Exception e) {
-            log.error("Erro ao transicionar Circuit Breaker '{}': {}",
-                    name, e.getMessage());
+            log.error("Erro ao transicionar: {}", e.getMessage());
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", e.getMessage()));
         }
@@ -138,20 +108,14 @@ public class CircuitBreakerDashboardController {
     @PostMapping("/{name}/reset")
     public ResponseEntity<?> resetCircuitBreaker(@PathVariable String name) {
         try {
-            Optional<CircuitBreaker> cbOpt = circuitBreakerRegistry
-                    .getAllCircuitBreakers()
-                    .stream()
-                    .filter(cb -> cb.getName().equals(name))
-                    .findFirst();
-
+            Optional<CircuitBreaker> cbOpt = findByName(name);
             if (cbOpt.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
 
             CircuitBreaker cb = cbOpt.get();
             cb.reset();
-
-            log.info("Circuit Breaker '{}' resetado", name);
+            log.info("CB '{}' resetado", name);
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
@@ -160,7 +124,7 @@ public class CircuitBreakerDashboardController {
             ));
 
         } catch (Exception e) {
-            log.error("Erro ao resetar Circuit Breaker '{}': {}", name, e.getMessage());
+            log.error("Erro ao resetar: {}", e.getMessage());
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", e.getMessage()));
         }
@@ -171,24 +135,21 @@ public class CircuitBreakerDashboardController {
         try {
             Map<String, Object> allMetrics = new HashMap<>();
 
-            for (CircuitBreaker cb : circuitBreakerRegistry.getAllCircuitBreakers()) {
-                CircuitBreaker.Metrics metrics = cb.getMetrics();
-
+            circuitBreakerRegistry.getAllCircuitBreakers().forEach(cb -> {
+                var metrics = cb.getMetrics();
                 Map<String, Object> cbMetrics = new HashMap<>();
-                cbMetrics.put("failureRate", metrics.getFailureRate());
-                cbMetrics.put("slowCallRate", metrics.getSlowCallRate());
+                cbMetrics.put("failureRate", String.format("%.2f%%", metrics.getFailureRate()));
+                cbMetrics.put("slowCallRate", String.format("%.2f%%", metrics.getSlowCallRate()));
                 cbMetrics.put("bufferedCalls", metrics.getNumberOfBufferedCalls());
                 cbMetrics.put("failedCalls", metrics.getNumberOfFailedCalls());
                 cbMetrics.put("successfulCalls", metrics.getNumberOfSuccessfulCalls());
                 cbMetrics.put("slowCalls", metrics.getNumberOfSlowCalls());
-                cbMetrics.put("notPermittedCalls",
-                        metrics.getNumberOfNotPermittedCalls());
-
+                cbMetrics.put("notPermittedCalls", metrics.getNumberOfNotPermittedCalls());
                 allMetrics.put(cb.getName(), cbMetrics);
-            }
+            });
 
             return ResponseEntity.ok(Map.of(
-                    "timestamp", Instant.now(),
+                    "timestamp", Instant.now().toString(),
                     "metrics", allMetrics
             ));
 
@@ -199,46 +160,68 @@ public class CircuitBreakerDashboardController {
         }
     }
 
+    // ========================================
+    // MÉTODOS AUXILIARES
+    // ========================================
+
+    private Optional<CircuitBreaker> findByName(String name) {
+        return circuitBreakerRegistry.getAllCircuitBreakers()
+                .stream()
+                .filter(cb -> cb.getName().equals(name))
+                .findFirst();
+    }
+
     private Map<String, Object> buildCircuitBreakerInfo(CircuitBreaker cb) {
-        CircuitBreaker.Metrics metrics = cb.getMetrics();
-
         Map<String, Object> info = new HashMap<>();
-        info.put("name", cb.getName());
-        info.put("state", cb.getState().name());
 
-        Map<String, Object> metricsMap = new HashMap<>();
-        metricsMap.put("failureRate", String.format("%.2f%%", metrics.getFailureRate()));
-        metricsMap.put("slowCallRate", String.format("%.2f%%", metrics.getSlowCallRate()));
-        metricsMap.put("bufferedCalls", metrics.getNumberOfBufferedCalls());
-        metricsMap.put("failedCalls", metrics.getNumberOfFailedCalls());
-        metricsMap.put("successfulCalls", metrics.getNumberOfSuccessfulCalls());
-        metricsMap.put("slowCalls", metrics.getNumberOfSlowCalls());
-        metricsMap.put("notPermittedCalls", metrics.getNumberOfNotPermittedCalls());
+        try {
+            info.put("name", cb.getName());
+            info.put("state", cb.getState().name());
 
-        info.put("metrics", metricsMap);
+            // Métricas
+            var metrics = cb.getMetrics();
+            Map<String, Object> metricsMap = new HashMap<>();
+            metricsMap.put("failureRate", String.format("%.2f%%", metrics.getFailureRate()));
+            metricsMap.put("slowCallRate", String.format("%.2f%%", metrics.getSlowCallRate()));
+            metricsMap.put("bufferedCalls", metrics.getNumberOfBufferedCalls());
+            metricsMap.put("failedCalls", metrics.getNumberOfFailedCalls());
+            metricsMap.put("successfulCalls", metrics.getNumberOfSuccessfulCalls());
+            metricsMap.put("slowCalls", metrics.getNumberOfSlowCalls());
+            metricsMap.put("notPermittedCalls", metrics.getNumberOfNotPermittedCalls());
+            info.put("metrics", metricsMap);
 
-        CircuitBreaker.Config config = cb.getCircuitBreakerConfig();
-        Map<String, Object> configMap = new HashMap<>();
-        configMap.put("failureRateThreshold", config.getFailureRateThreshold());
-        configMap.put("slowCallRateThreshold", config.getSlowCallRateThreshold());
-        configMap.put("slowCallDurationThreshold",
-                config.getSlowCallDurationThreshold().toMillis() + "ms");
-        configMap.put("permittedNumberOfCallsInHalfOpenState",
-                config.getPermittedNumberOfCallsInHalfOpenState());
-        configMap.put("minimumNumberOfCalls", config.getMinimumNumberOfCalls());
-        configMap.put("slidingWindowSize", config.getSlidingWindowSize());
-        configMap.put("waitDurationInOpenState",
-                config.getWaitDurationInOpenState().toMillis() + "ms");
+            // Configuração (usando var para evitar problemas com Config)
+            var cbConfig = cb.getCircuitBreakerConfig();
+            Map<String, Object> configMap = new HashMap<>();
+            configMap.put("failureRateThreshold",
+                    String.format("%.2f%%", cbConfig.getFailureRateThreshold()));
+            configMap.put("slowCallRateThreshold",
+                    String.format("%.2f%%", cbConfig.getSlowCallRateThreshold()));
+            configMap.put("slowCallDurationThreshold",
+                    cbConfig.getSlowCallDurationThreshold().toMillis() + "ms");
+            configMap.put("permittedNumberOfCallsInHalfOpenState",
+                    cbConfig.getPermittedNumberOfCallsInHalfOpenState());
+            configMap.put("minimumNumberOfCalls",
+                    cbConfig.getMinimumNumberOfCalls());
+            configMap.put("slidingWindowSize",
+                    cbConfig.getSlidingWindowSize());
+            configMap.put("waitDurationInOpenState",
+                    cbConfig.getMaxWaitDurationInHalfOpenState().toMillis() + "ms");
+            info.put("config", configMap);
 
-        info.put("config", configMap);
+            // Status de saúde
+            String healthStatus = switch (cb.getState()) {
+                case CLOSED, DISABLED -> "HEALTHY";
+                case HALF_OPEN -> "RECOVERING";
+                case OPEN, FORCED_OPEN -> "UNHEALTHY";
+                default -> "UNKNOWN";
+            };
+            info.put("healthStatus", healthStatus);
 
-        String healthStatus = switch (cb.getState()) {
-            case CLOSED, DISABLED -> "HEALTHY";
-            case HALF_OPEN -> "RECOVERING";
-            case OPEN, FORCED_OPEN -> "UNHEALTHY";
-        };
-
-        info.put("healthStatus", healthStatus);
+        } catch (Exception e) {
+            log.error("Erro ao construir info: {}", e.getMessage());
+            info.put("error", e.getMessage());
+        }
 
         return info;
     }
