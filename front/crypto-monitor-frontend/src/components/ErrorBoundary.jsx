@@ -1,6 +1,6 @@
 // src/components/ErrorBoundary.jsx
 import React from 'react';
-import { API_BASE_URL } from '../constants'; 
+import { API_BASE_URL } from '../utils/constants'; 
 // import * as Sentry from '@sentry/react';
 
 class ErrorBoundary extends React.Component {
