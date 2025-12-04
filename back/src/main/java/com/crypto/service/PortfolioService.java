@@ -14,9 +14,6 @@ import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * ✅ REFATORADO - Exceções específicas e tratamento robusto
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -169,20 +166,23 @@ public class PortfolioService {
         }
     }
 
+    /**
+     * 🔥 NOVA VERSÃO OTIMIZADA — SEM N+1 — SEM MÚLTIPLAS QUERIES
+     */
     public Map<String, Object> getPortfolio(String username) {
         try {
             List<PortfolioRepository.PortfolioProjection> portfolios =
                     portfolioRepository.findByUserUsernameOptimized(username);
 
-            List<String> coinIds = portfolios.stream()
-                    .map(p -> mapSymbolToCoinId(p.getCoinSymbol()))
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .toList();
+            if (portfolios.isEmpty()) {
+                return buildEmptyPortfolio();
+            }
 
-            List<CryptoCurrency> currentPrices = cryptoService.getPricesByIds(coinIds);
+            // 🔥 Agora pega TODOS os preços de uma vez só (cache)
+            List<CryptoCurrency> allPrices = cryptoService.getCurrentPrices();
 
-            Map<String, BigDecimal> priceMap = currentPrices.stream()
+            // Mapa O(1) para lookup rápido
+            Map<String, BigDecimal> priceMap = allPrices.stream()
                     .collect(Collectors.toMap(
                             c -> c.getSymbol().toUpperCase(),
                             CryptoCurrency::getCurrentPrice,
@@ -194,6 +194,7 @@ public class PortfolioService {
             BigDecimal totalCurrentValue = BigDecimal.ZERO;
 
             for (PortfolioRepository.PortfolioProjection p : portfolios) {
+
                 BigDecimal currentPrice = priceMap.getOrDefault(
                         p.getCoinSymbol().toUpperCase(),
                         p.getAverageBuyPrice()
@@ -250,6 +251,16 @@ public class PortfolioService {
                     e
             );
         }
+    }
+
+    private Map<String, Object> buildEmptyPortfolio() {
+        Map<String, Object> empty = new HashMap<>();
+        empty.put("portfolio", Collections.emptyList());
+        empty.put("totalInvested", BigDecimal.ZERO);
+        empty.put("totalCurrentValue", BigDecimal.ZERO);
+        empty.put("totalProfitLoss", BigDecimal.ZERO);
+        empty.put("totalProfitLossPercent", BigDecimal.ZERO);
+        return empty;
     }
 
     public List<Transaction> getTransactions(String username) {

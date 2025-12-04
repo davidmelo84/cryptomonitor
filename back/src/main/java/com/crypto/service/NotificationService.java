@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * ✅ REFATORADO - Logs otimizados por ambiente
+ * Serviço de envio de notificações assíncronas.
  */
 @Slf4j
 @Service
@@ -50,6 +50,10 @@ public class NotificationService {
 
     private final Map<String, LocalDateTime> notificationCache = new ConcurrentHashMap<>();
 
+
+    // ================================================
+    // 🔥 CLEANUP DO CACHE (executa a cada 1h)
+    // ================================================
     @Scheduled(fixedDelay = 3600000)
     public void cleanupNotificationCache() {
         LocalDateTime cutoff = LocalDateTime.now().minusHours(2);
@@ -65,11 +69,18 @@ public class NotificationService {
         }
     }
 
-    @Async
+
+    // ================================================
+    // 🔥 MÉTODO ASSÍNCRONO PRINCIPAL
+    // ================================================
+    @Async("taskExecutor")
     public CompletableFuture<Void> sendNotification(NotificationMessage message) {
+
+        final String masked = LogMasker.maskEmail(message.getRecipient());
+
         try {
             log.info("Enviando notificação para {} - Crypto: {} ({})",
-                    LogMasker.maskEmail(message.getRecipient()),
+                    masked,
                     message.getCoinSymbol(),
                     message.getAlertType());
 
@@ -82,6 +93,7 @@ public class NotificationService {
             updateNotificationCache(message);
 
             boolean emailSent = false;
+
             if (emailNotificationEnabled) {
                 emailSent = sendEmailNotification(message);
             }
@@ -93,7 +105,7 @@ public class NotificationService {
             if (emailSent) {
                 log.info("Notificação enviada com sucesso");
             } else {
-                log.error("Falha ao enviar notificação");
+                log.warn("Notificação enviada parcialmente (Telegram OK?)");
             }
 
         } catch (Exception e) {
@@ -103,9 +115,13 @@ public class NotificationService {
         return CompletableFuture.completedFuture(null);
     }
 
+
+    // ================================================
+    // 🔥 ENVIO DE EMAIL
+    // ================================================
     private boolean sendEmailNotification(NotificationMessage message) {
         try {
-            log.debug("Preparando email de notificação");
+            log.debug("Preparando email");
 
             String subject = String.format("🚨 Alerta Crypto: %s (%s)",
                     message.getCoinName(), message.getCoinSymbol());
@@ -123,6 +139,7 @@ public class NotificationService {
             return false;
         }
     }
+
 
     private String buildEmailBody(NotificationMessage message) {
         return String.format("""
@@ -148,38 +165,15 @@ public class NotificationService {
         );
     }
 
-    private boolean isInCooldown(NotificationMessage message) {
-        String key = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
-        LocalDateTime last = notificationCache.get(key);
 
-        if (last == null) return false;
-
-        LocalDateTime cooldownEnd = last.plusMinutes(notificationCooldownMinutes);
-        boolean inCooldown = LocalDateTime.now().isBefore(cooldownEnd);
-
-        if (inCooldown) {
-            long minutesLeft = java.time.Duration.between(
-                    LocalDateTime.now(), cooldownEnd).toMinutes();
-            log.debug("Cooldown ativo: {} (faltam {} minutos)", key, minutesLeft);
-        }
-
-        return inCooldown;
-    }
-
-    private void updateNotificationCache(NotificationMessage message) {
-        String key = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
-        notificationCache.put(key, LocalDateTime.now());
-        log.debug("Cooldown registrado: {}", key);
-    }
-
+    // ================================================
+    // 🔥 TELEGRAM
+    // ================================================
     private void sendTelegramNotification(NotificationMessage message) {
         try {
             String telegramMessage = buildTelegramMessage(message);
 
-            String url = String.format(
-                    "https://api.telegram.org/bot%s/sendMessage",
-                    telegramBotToken
-            );
+            String url = "https://api.telegram.org/bot" + telegramBotToken + "/sendMessage";
 
             Map<String, Object> requestBody = Map.of(
                     "chat_id", telegramChatId,
@@ -187,22 +181,21 @@ public class NotificationService {
                     "parse_mode", "Markdown"
             );
 
-            log.debug("Enviando notificação Telegram");
-
             webClient.post()
                     .uri(url)
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)
                     .subscribe(
-                            r -> log.debug("Telegram enviado com sucesso"),
+                            r -> log.debug("Telegram enviado"),
                             e -> log.error("Erro ao enviar Telegram: {}", e.getMessage())
                     );
 
         } catch (Exception e) {
-            log.error("Falha no Telegram: {}", e.getMessage());
+            log.error("Falha geral no Telegram: {}", e.getMessage());
         }
     }
+
 
     private String buildTelegramMessage(NotificationMessage message) {
         return String.format("""
@@ -223,6 +216,41 @@ public class NotificationService {
         );
     }
 
+
+    // ================================================
+    // 🔥 COOLDOWN
+    // ================================================
+    private boolean isInCooldown(NotificationMessage message) {
+        String key = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
+        LocalDateTime last = notificationCache.get(key);
+
+        if (last == null) return false;
+
+        LocalDateTime cooldownEnd = last.plusMinutes(notificationCooldownMinutes);
+        boolean inCooldown = LocalDateTime.now().isBefore(cooldownEnd);
+
+        if (inCooldown) {
+            long minutesLeft = java.time.Duration
+                    .between(LocalDateTime.now(), cooldownEnd)
+                    .toMinutes();
+
+            log.debug("Cooldown ativo: {} (faltam {} minutos)", key, minutesLeft);
+        }
+
+        return inCooldown;
+    }
+
+
+    private void updateNotificationCache(NotificationMessage message) {
+        String key = message.getCoinSymbol().toUpperCase() + "_" + message.getAlertType();
+        notificationCache.put(key, LocalDateTime.now());
+        log.debug("Cooldown registrado: {}", key);
+    }
+
+
+    // ================================================
+    // 🔥 UTILIDADES
+    // ================================================
     private String getAlertTypeDescription(com.crypto.model.AlertRule.AlertType type) {
         return switch (type) {
             case PRICE_INCREASE -> "Alta de Preço";
@@ -245,15 +273,10 @@ public class NotificationService {
         };
     }
 
-    public void sendEmailAlert(String to, String subject, String message) {
-        try {
-            log.info("Enviando alerta para: {}", LogMasker.maskEmail(to));
-            emailService.sendEmail(to, subject, message);
-        } catch (Exception e) {
-            log.error("Erro ao enviar email: {}", e.getMessage());
-        }
-    }
 
+    // ================================================
+    // 🔥 ADMIN
+    // ================================================
     public void clearCooldown(String coinSymbol, String alertType) {
         String key = coinSymbol.toUpperCase() + "_" + alertType;
         LocalDateTime removed = notificationCache.remove(key);

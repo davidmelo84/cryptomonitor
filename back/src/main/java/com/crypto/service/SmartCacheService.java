@@ -13,8 +13,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -23,20 +21,93 @@ public class SmartCacheService {
     private final CoinGeckoApiService coinGeckoService;
     private final CryptoCurrencyRepository repository;
 
+    // -------------------------
+    // MEMORY CACHE
+    // -------------------------
     private final Map<String, CachedCrypto> memoryCache = new ConcurrentHashMap<>();
     private volatile LocalDateTime lastFullUpdate = null;
 
-
+    // -------------------------
+    // RATE LIMIT CONTROL
+    // -------------------------
     private final AtomicInteger requestsThisMinute = new AtomicInteger(0);
     private volatile LocalDateTime minuteStart = LocalDateTime.now();
     private volatile boolean rateLimitActive = false;
 
-
+    // -------------------------
+    // CONFIG
+    // -------------------------
     private static final int MEMORY_CACHE_TTL_MINUTES = 30;
-    private static final int DB_CACHE_TTL_MINUTES = 120; // 2 horas
-    private static final int MAX_REQUESTS_PER_MINUTE = 25; // Buffer de segurança
-    private static final int FULL_UPDATE_INTERVAL_MINUTES = 60; // 1 hora
+    private static final int DB_CACHE_TTL_MINUTES = 120; // 2h
+    private static final int MAX_REQUESTS_PER_MINUTE = 25;
+    private static final int FULL_UPDATE_INTERVAL_MINUTES = 60; // 1h
 
+
+    /* =====================================================================================
+     *  NOVO MÉTODO — BUSCAR APENAS UMA MOEDA (Lazy Loading)
+     * ===================================================================================== */
+
+    public Optional<CryptoCurrency> getCryptoPrice(String coinId) {
+        log.debug("🔍 Buscando moeda individual: {}", coinId);
+
+        // 1. Tenta memória
+        CachedCrypto cached = memoryCache.get(coinId);
+        if (cached != null && !isCachedExpired(cached.cachedAt)) {
+            log.debug("✅ Cache HIT (memória) para {}", coinId);
+            return Optional.of(cached.crypto);
+        }
+
+        // 2. Tenta banco
+        Optional<CryptoCurrency> dbResult = repository.findByCoinId(coinId);
+        if (dbResult.isPresent() && isDbEntryValid(dbResult.get())) {
+            log.debug("📦 Cache HIT (banco) para {}", coinId);
+            updateMemoryCache(List.of(dbResult.get()));
+            return dbResult;
+        }
+
+        // 3. Se NÃO pode fazer request, devolve banco mesmo expirado
+        if (!canMakeApiRequest()) {
+            log.warn("⚠️ Sem request permitido — retornando valor do banco (mesmo expirado)");
+            return dbResult;
+        }
+
+        // 4. Buscar da API apenas esta moeda
+        try {
+            Optional<CryptoCurrency> apiResult = coinGeckoService.getPrice(coinId);
+            if (apiResult.isPresent()) {
+                log.info("🌐 API HIT para {}", coinId);
+
+                recordApiRequest();
+
+                CryptoCurrency crypto = apiResult.get();
+
+                updateMemoryCache(List.of(crypto));
+                saveToDatabase(List.of(crypto));
+
+                return Optional.of(crypto);
+            }
+        } catch (Exception e) {
+            log.error("❌ Erro API ao buscar {}: {}", coinId, e.getMessage());
+        }
+
+        // Fallback final
+        return dbResult;
+    }
+
+    private boolean isCachedExpired(LocalDateTime cachedAt) {
+        return Duration.between(cachedAt, LocalDateTime.now()).toMinutes() >= MEMORY_CACHE_TTL_MINUTES;
+    }
+
+    private boolean isDbEntryValid(CryptoCurrency crypto) {
+        if (crypto.getLastUpdated() == null) return false;
+        long minutes = Duration.between(crypto.getLastUpdated(), LocalDateTime.now()).toMinutes();
+        return minutes < DB_CACHE_TTL_MINUTES;
+    }
+
+
+    /* =====================================================================================
+     *  BUSCA COMPLETA (SEM ALTERAÇÕES)
+     * ===================================================================================== */
 
     public List<CryptoCurrency> getCurrentPrices() {
         log.debug("🔍 SmartCache: Buscando preços...");
@@ -48,7 +119,7 @@ public class SmartCacheService {
 
         List<CryptoCurrency> dbPrices = getFromDatabase();
         if (isDbCacheValid(dbPrices)) {
-            log.info("✅ SmartCache: Usando banco (aceitável)");
+            log.info("📦 SmartCache: Usando banco");
             updateMemoryCache(dbPrices);
             return dbPrices;
         }
@@ -57,7 +128,7 @@ public class SmartCacheService {
             return fetchFromApi();
         }
 
-        log.warn("⚠️ SmartCache: Usando fallback (rate limit ativo)");
+        log.warn("⚠️ SmartCache: Using fallback (rate limit)");
         return dbPrices.isEmpty() ? getCachedPrices() : dbPrices;
     }
 
@@ -71,7 +142,7 @@ public class SmartCacheService {
             List<CryptoCurrency> prices = coinGeckoService.getAllPrices();
 
             if (prices != null && !prices.isEmpty()) {
-                log.info("✅ SmartCache: {} moedas obtidas", prices.size());
+                log.info("✅ {} moedas obtidas", prices.size());
 
                 updateMemoryCache(prices);
                 saveToDatabase(prices);
@@ -81,7 +152,8 @@ public class SmartCacheService {
             }
 
         } catch (Exception e) {
-            log.error("❌ SmartCache: Erro na API: {}", e.getMessage());
+
+            log.error("❌ Erro API: {}", e.getMessage());
 
             if (e.getMessage().contains("429") || e.getMessage().contains("Rate limit")) {
                 activateRateLimitProtection();
@@ -92,28 +164,29 @@ public class SmartCacheService {
     }
 
 
+    /* =====================================================================================
+     *  RATE LIMIT
+     * ===================================================================================== */
+
     private boolean canMakeApiRequest() {
         if (Duration.between(minuteStart, LocalDateTime.now()).toSeconds() >= 60) {
             resetMinuteCounter();
         }
 
         if (requestsThisMinute.get() >= MAX_REQUESTS_PER_MINUTE) {
-            log.warn("⚠️ SmartCache: Limite de requests/minuto atingido ({}/{})",
+            log.warn("⚠️ Limite de requests atingido ({}/{})",
                     requestsThisMinute.get(), MAX_REQUESTS_PER_MINUTE);
             return false;
         }
 
         if (rateLimitActive) {
-            log.warn("⚠️ SmartCache: Proteção de rate limit ATIVA");
+            log.warn("🚨 Proteção Rate Limit ATIVA");
             return false;
         }
 
         if (lastFullUpdate != null) {
             long minutesSinceUpdate = Duration.between(lastFullUpdate, LocalDateTime.now()).toMinutes();
-
             if (minutesSinceUpdate < FULL_UPDATE_INTERVAL_MINUTES) {
-                log.debug("⏰ SmartCache: Update muito recente ({}min atrás), aguardando...",
-                        minutesSinceUpdate);
                 return false;
             }
         }
@@ -121,84 +194,59 @@ public class SmartCacheService {
         return true;
     }
 
-
     private void activateRateLimitProtection() {
         rateLimitActive = true;
-        log.error("🚨 PROTEÇÃO DE RATE LIMIT ATIVADA (5 minutos)");
+        log.error("🚨 RATE LIMIT: ativado por 5 min");
 
         new Thread(() -> {
             try {
-                Thread.sleep(5 * 60 * 1000); // 5 minutos
+                Thread.sleep(5 * 60 * 1000);
                 rateLimitActive = false;
-                log.info("✅ Proteção de rate limit DESATIVADA");
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+                log.info("🔓 Rate limit desativado");
+            } catch (InterruptedException ignored) {}
         }).start();
     }
 
+    private void resetMinuteCounter() {
+        requestsThisMinute.set(0);
+        minuteStart = LocalDateTime.now();
+    }
 
     private void recordApiRequest() {
         requestsThisMinute.incrementAndGet();
-        log.debug("📊 Requests este minuto: {}/{}",
-                requestsThisMinute.get(), MAX_REQUESTS_PER_MINUTE);
     }
 
 
-
-    private void resetMinuteCounter() {
-        int requests = requestsThisMinute.getAndSet(0);
-        minuteStart = LocalDateTime.now();
-
-        if (requests > 0) {
-            log.info("📊 Minuto anterior: {} requests (limite: {})",
-                    requests, MAX_REQUESTS_PER_MINUTE);
-        }
-    }
-
+    /* =====================================================================================
+     *  CACHE & DB
+     * ===================================================================================== */
 
     private boolean isMemoryCacheValid() {
-        if (memoryCache.isEmpty()) {
-            return false;
-        }
+        if (memoryCache.isEmpty()) return false;
 
         CachedCrypto sample = memoryCache.values().iterator().next();
-        long minutesOld = Duration.between(sample.cachedAt, LocalDateTime.now()).toMinutes();
+        long age = Duration.between(sample.cachedAt, LocalDateTime.now()).toMinutes();
 
-        return minutesOld < MEMORY_CACHE_TTL_MINUTES;
+        return age < MEMORY_CACHE_TTL_MINUTES;
     }
 
-    private boolean isDbCacheValid(List<CryptoCurrency> cryptos) {
-        if (cryptos.isEmpty()) {
-            return false;
-        }
-
-        LocalDateTime lastUpdate = cryptos.get(0).getLastUpdated();
-        if (lastUpdate == null) {
-            return false;
-        }
-
-        long minutesOld = Duration.between(lastUpdate, LocalDateTime.now()).toMinutes();
-        return minutesOld < DB_CACHE_TTL_MINUTES;
+    private boolean isDbCacheValid(List<CryptoCurrency> list) {
+        if (list.isEmpty()) return false;
+        CryptoCurrency first = list.get(0);
+        return isDbEntryValid(first);
     }
-
 
     private void updateMemoryCache(List<CryptoCurrency> cryptos) {
-        memoryCache.clear();
         LocalDateTime now = LocalDateTime.now();
-
-        for (CryptoCurrency crypto : cryptos) {
-            memoryCache.put(crypto.getCoinId(),
-                    new CachedCrypto(crypto, now));
+        for (CryptoCurrency c : cryptos) {
+            memoryCache.put(c.getCoinId(), new CachedCrypto(c, now));
         }
-
-        log.debug("💾 Memória cache atualizada: {} moedas", cryptos.size());
+        log.debug("💾 Memory cache atualizado: {} entries", memoryCache.size());
     }
-
 
     private List<CryptoCurrency> getCachedPrices() {
         return memoryCache.values().stream()
-                .map(cached -> cached.crypto)
+                .map(c -> c.crypto)
                 .toList();
     }
 
@@ -206,11 +254,10 @@ public class SmartCacheService {
         try {
             return repository.findAllByOrderByMarketCapDesc();
         } catch (Exception e) {
-            log.error("❌ Erro ao buscar do banco: {}", e.getMessage());
-            return new ArrayList<>();
+            log.error("❌ Erro DB: {}", e.getMessage());
+            return List.of();
         }
     }
-
 
     private void saveToDatabase(List<CryptoCurrency> cryptos) {
         try {
@@ -233,43 +280,48 @@ public class SmartCacheService {
                                 }
                         );
             }
-            log.info("💾 Banco atualizado: {} moedas", cryptos.size());
+
+            log.info("💾 DB atualizado: {} moedas", cryptos.size());
+
         } catch (Exception e) {
             log.error("❌ Erro ao salvar no banco: {}", e.getMessage());
         }
     }
 
 
-    @Scheduled(fixedDelay = 3600000, initialDelay = 60000) // 1 hora
+    /* =====================================================================================
+     *  SCHEDULER
+     * ===================================================================================== */
+
+    @Scheduled(fixedDelay = 3600000, initialDelay = 60000)
     public void scheduledUpdate() {
-        log.info("⏰ SmartCache: Scheduler iniciado (1x/hora)");
+        log.info("⏰ Scheduler executando update...");
 
         if (canMakeApiRequest()) {
             List<CryptoCurrency> prices = fetchFromApi();
-
             if (!prices.isEmpty()) {
-                log.info("✅ SmartCache: Update automático concluído");
-            } else {
-                log.warn("⚠️ SmartCache: Update falhou, usando cache existente");
+                log.info("✅ Update automático OK");
             }
         } else {
-            log.info("⏭️ SmartCache: Pulando update (proteção ativa)");
+            log.info("⏭️ Pulando update (proteção ativa)");
         }
     }
 
+
+    /* =====================================================================================
+     *  ADMIN
+     * ===================================================================================== */
 
     public void clearCache() {
         memoryCache.clear();
         lastFullUpdate = null;
         requestsThisMinute.set(0);
-        log.info("🗑️ SmartCache: Cache limpo");
+        log.info("🗑️ Cache limpo");
     }
 
-
     public void forceUpdate() {
-        log.warn("⚠️ SmartCache: FORCE UPDATE solicitado");
+        log.warn("⚠️ FORCE UPDATE solicitado");
 
-        // Temporariamente desativar proteção
         boolean wasActive = rateLimitActive;
         rateLimitActive = false;
 
@@ -279,7 +331,6 @@ public class SmartCacheService {
             rateLimitActive = wasActive;
         }
     }
-
 
     public Map<String, Object> getStats() {
         long minutesSinceUpdate = lastFullUpdate != null
@@ -299,5 +350,6 @@ public class SmartCacheService {
     }
 
 
+    // Registro interno do cache individual
     private record CachedCrypto(CryptoCurrency crypto, LocalDateTime cachedAt) {}
 }

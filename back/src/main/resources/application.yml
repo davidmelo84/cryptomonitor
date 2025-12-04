@@ -2,22 +2,25 @@ spring:
   application:
     name: crypto-monitor
 
-
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     driver-class-name: org.postgresql.Driver
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+
     hikari:
-      maximum-pool-size: 5
-      minimum-idle: 2
-      connection-timeout: 10000
+      maximum-pool-size: 3
+      minimum-idle: 1
+      connection-timeout: 20000
       idle-timeout: 300000
-      max-lifetime: 900000
+      max-lifetime: 600000
       pool-name: CryptoMonitorPool
       leak-detection-threshold: 60000
+      validation-timeout: 5000
+      connection-test-query: SELECT 1
+      auto-commit: true
+      register-mbeans: false
       initialization-fail-timeout: 1
-
 
   jpa:
     hibernate:
@@ -32,9 +35,12 @@ spring:
         jdbc.batch_size: 20
         default_batch_fetch_size: 50
         jdbc.use_streams_for_binary: true
+        enable_lazy_load_no_trans: false
+        bytecode.use_reflection_optimizer: true
+        query.in_clause_parameter_padding: true
+        query.fail_on_pagination_over_collection_fetch: true
         cache.use_second_level_cache: false
         cache.use_query_cache: false
-
 
   flyway:
     enabled: true
@@ -45,12 +51,10 @@ spring:
     connect-retries: 3
     connect-retries-interval: 2
 
-
   cache:
     type: caffeine
     caffeine:
       spec: maximumSize=500,expireAfterWrite=30m,recordStats
-
 
   task:
     scheduling:
@@ -71,7 +75,6 @@ spring:
       interval: 10000
     enabled: true
 
-
 management:
   endpoints:
     web:
@@ -80,7 +83,7 @@ management:
       base-path: /actuator
   endpoint:
     health:
-      show-details:  WHEN_AUTHORIZED
+      show-details: WHEN_AUTHORIZED
       show-components: NEVER
   health:
     defaults:
@@ -89,11 +92,12 @@ management:
     tags:
       application: ${spring.application.name}
 
-
 server:
   port: ${PORT:8080}
+
   http2:
     enabled: false
+
   servlet:
     context-path: /crypto-monitor
     session:
@@ -101,17 +105,30 @@ server:
         http-only: true
         secure: ${COOKIE_SECURE:false}
         same-site: lax
-  compression:
-    enabled: false
-  forward-headers-strategy: framework
 
+  # ===========================================================
+  # 🔥 HTTP COMPRESSION – FULLY ENABLED
+  # ===========================================================
+  compression:
+    enabled: true
+    mime-types:
+      - application/json
+      - application/xml
+      - application/javascript
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+    min-response-size: 1024
+  # ===========================================================
+
+  forward-headers-strategy: framework
 
 springdoc:
   api-docs:
     enabled: false
   swagger-ui:
     enabled: false
-
 
 sendgrid:
   api:
@@ -130,7 +147,6 @@ email:
     resend-cooldown-minutes: 2
   from: ${SENDGRID_FROM_EMAIL}
 
-
 jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000
@@ -138,7 +154,6 @@ jwt:
   validate-issuer: false
   validate-expiration: true
   refresh-token-expiration: 604800000
-
 
 coingecko:
   api:
@@ -166,7 +181,6 @@ coingecko:
     scheduler-interval-minutes: 30
     broadcast-interval-seconds: 60
 
-
 resilience4j:
   circuitbreaker:
     instances:
@@ -188,7 +202,6 @@ resilience4j:
     instances:
       coingecko:
         timeout-duration: 15s
-
 
 alert:
   buy:
@@ -213,7 +226,6 @@ monitoring:
   thread-pool-size: 5
   shutdown-timeout: 30
 
-
 rate-limit:
   coingecko:
     enabled: true
@@ -226,13 +238,11 @@ rate-limit:
   admin:
     requests-per-minute: 50
 
-
 websocket:
   enabled: true
   heartbeat-interval: 30000
   message-size-limit: 65536
   broadcast-interval: 60000
-
 
 logging:
   level:
@@ -247,7 +257,6 @@ logging:
   pattern:
     console: "%d{HH:mm:ss.SSS} %-5level %logger{20} - %msg%n"
 
-
 app:
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:3000,https://cryptomonitor-theta.vercel.app}
@@ -256,13 +265,23 @@ app:
     allow-credentials: true
     max-age: 3600
 
-
 api:
   timeout: 15000
   max-request-size: 5MB
   max-file-size: 2MB
 
+# ====================================================
+# 🚀 CONFIGURAÇÃO ASYNC EXTERNALIZÁVEL
+# ====================================================
+async:
+  core-pool-size: ${ASYNC_CORE_POOL_SIZE:2}
+  max-pool-size: ${ASYNC_MAX_POOL_SIZE:5}
+  queue-capacity: ${ASYNC_QUEUE_CAPACITY:100}
+  thread-prefix: ${ASYNC_THREAD_PREFIX:crypto-async-}
 
+# ------------------------------------------------------------------
+# 🔥 PROFILE: PRODUÇÃO
+# ------------------------------------------------------------------
 ---
 spring:
   config:
@@ -288,7 +307,14 @@ logging:
 server:
   compression:
     enabled: true
+    mime-types:
+      - application/json
+      - application/xml
+      - application/javascript
+      - text/html
+      - text/xml
+      - text/plain
+      - text/css
+    min-response-size: 1024
   http2:
     enabled: true
-
-

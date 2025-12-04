@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- back/src/main/resources/logback-spring.xml -->
 <configuration>
 
     <!-- ================================================ -->
-    <!-- ✅ SPRINT 1 - LOGS ESTRUTURADOS                 -->
+    <!-- PROPRIEDADES                                     -->
     <!-- ================================================ -->
-
-    <!-- Propriedades -->
     <property name="LOG_PATH" value="${LOG_PATH:-logs}" />
     <property name="APP_NAME" value="crypto-monitor" />
 
     <!-- ================================================ -->
-    <!-- CONSOLE APPENDER (Desenvolvimento)              -->
+    <!-- CONSOLE APPENDER (DEV)                           -->
     <!-- ================================================ -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>
-                %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n
-            </pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
     <!-- ================================================ -->
-    <!-- JSON APPENDER (Produção)                        -->
-    <!-- Logs estruturados para análise                  -->
+    <!-- JSON APPENDER (PRODUÇÃO) → OTIMIZADO             -->
     <!-- ================================================ -->
     <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <!-- Arquivo -->
         <file>${LOG_PATH}/${APP_NAME}.json</file>
+
+        <!-- 🔥 Otimização: não flush a cada linha -->
+        <immediateFlush>false</immediateFlush>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.json.gz</fileNamePattern>
@@ -34,41 +33,39 @@
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
 
+        <!-- Encoder otimizado com buffer -->
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+
             <!-- Campos customizados -->
             <customFields>{"app":"crypto-monitor","version":"2.0.1"}</customFields>
 
-            <!-- Incluir MDC (Mapped Diagnostic Context) -->
+            <!-- MDC -->
             <includeMdcKeyName>userId</includeMdcKeyName>
             <includeMdcKeyName>requestId</includeMdcKeyName>
             <includeMdcKeyName>clientIp</includeMdcKeyName>
 
-            <!-- Incluir contexto de erro -->
-            <includeContext>true</includeContext>
-            <includeCallerData>false</includeCallerData>
-
-            <!-- Stack trace apenas para erros -->
+            <!-- Menos bytes de stack trace -->
             <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                <maxDepthPerThrowable>30</maxDepthPerThrowable>
-                <maxLength>2048</maxLength>
-                <shortenedClassNameLength>20</shortenedClassNameLength>
+                <maxDepthPerThrowable>15</maxDepthPerThrowable> <!-- Era 30 -->
+                <maxLength>1024</maxLength>                    <!-- Era 2048 -->
+                <shortenedClassNameLength>15</shortenedClassNameLength>
                 <exclude>^sun\.reflect\..*</exclude>
                 <exclude>^net\.sf\.cglib\..*</exclude>
                 <exclude>^org\.springframework\..*</exclude>
             </throwableConverter>
+
         </encoder>
     </appender>
 
     <!-- ================================================ -->
-    <!-- ✅ AUDIT LOG (Segurança)                        -->
-    <!-- Logs de autenticação, autorizaçã e ações críticas -->
+    <!-- AUDIT LOG (Segurança)                            -->
     <!-- ================================================ -->
     <appender name="AUDIT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${APP_NAME}-audit.json</file>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/${APP_NAME}-audit.%d{yyyy-MM-dd}.json.gz</fileNamePattern>
-            <maxHistory>90</maxHistory> <!-- Manter 90 dias de audit logs -->
+            <maxHistory>90</maxHistory>
             <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
 
@@ -83,7 +80,7 @@
     </appender>
 
     <!-- ================================================ -->
-    <!-- ✅ ERROR LOG (Apenas erros)                     -->
+    <!-- ERROR LOG APPENDER                               -->
     <!-- ================================================ -->
     <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOG_PATH}/${APP_NAME}-error.log</file>
@@ -104,41 +101,37 @@
     </appender>
 
     <!-- ================================================ -->
-    <!-- LOGGERS POR PACOTE                              -->
+    <!-- LOGGERS POR PACOTE                               -->
     <!-- ================================================ -->
 
-    <!-- ✅ Aplicação -->
     <logger name="com.crypto" level="INFO" additivity="false">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="JSON_FILE" />
         <appender-ref ref="ERROR_FILE" />
     </logger>
 
-    <!-- ✅ Audit Logger (usado para ações de segurança) -->
     <logger name="com.crypto.security.audit" level="INFO" additivity="false">
         <appender-ref ref="AUDIT_FILE" />
         <appender-ref ref="ERROR_FILE" />
     </logger>
 
-    <!-- Spring Framework -->
+    <!-- Spring -->
     <logger name="org.springframework" level="WARN" />
     <logger name="org.springframework.security" level="INFO" />
     <logger name="org.springframework.web" level="WARN" />
 
     <!-- Hibernate -->
     <logger name="org.hibernate" level="WARN" />
-    <logger name="org.hibernate.SQL" level="DEBUG" /> <!-- SQL queries -->
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" /> <!-- Parameters -->
+    <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" />
 
     <!-- Flyway -->
     <logger name="org.flywaydb" level="INFO" />
 
-    <!-- ✅ Rate Limiting (DEBUG em dev) -->
+    <!-- Rate limit -->
     <logger name="com.crypto.security.RateLimitFilter" level="INFO" />
 
-    <!-- ================================================ -->
-    <!-- ROOT LOGGER                                     -->
-    <!-- ================================================ -->
+    <!-- ROOT LOGGER -->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
         <appender-ref ref="JSON_FILE" />
@@ -146,25 +139,25 @@
     </root>
 
     <!-- ================================================ -->
-    <!-- PROFILES (dev vs prod)                          -->
+    <!-- PROFILES                                         -->
     <!-- ================================================ -->
 
-    <!-- Desenvolvimento: Logs detalhados no console -->
     <springProfile name="dev">
         <logger name="com.crypto" level="DEBUG" />
         <logger name="org.springframework.security" level="DEBUG" />
     </springProfile>
 
-    <!-- Produção: Logs estruturados em JSON -->
     <springProfile name="prod">
+
         <logger name="com.crypto" level="INFO" />
         <logger name="org.springframework" level="WARN" />
 
-        <!-- Desabilitar console em produção (usa apenas arquivos) -->
+        <!-- 🔥 Em produção, console desabilitado -->
         <root level="INFO">
             <appender-ref ref="JSON_FILE" />
             <appender-ref ref="ERROR_FILE" />
         </root>
+
     </springProfile>
 
 </configuration>

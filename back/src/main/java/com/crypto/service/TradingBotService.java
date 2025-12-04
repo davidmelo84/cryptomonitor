@@ -50,7 +50,6 @@ public class TradingBotService {
         return symbolMap.getOrDefault(upperSymbol, symbol.toLowerCase());
     }
 
-
     @Transactional
     public TradingBot createBot(String username, TradingBot bot) {
         User user = userRepository.findByUsername(username)
@@ -62,7 +61,6 @@ public class TradingBotService {
 
         TradingBot saved = botRepository.save(bot);
 
-        // ✅ AUDITORIA
         auditService.logAction(
                 username,
                 saved,
@@ -73,7 +71,6 @@ public class TradingBotService {
 
         return saved;
     }
-
 
     @Transactional
     public void startBot(String username, Long botId) {
@@ -91,7 +88,6 @@ public class TradingBotService {
 
         botRepository.save(bot);
 
-        // ✅ AUDITORIA
         auditService.logAction(
                 username,
                 bot,
@@ -101,17 +97,13 @@ public class TradingBotService {
         );
     }
 
-
     @Transactional
     public void stopBot(String username, Long botId) {
         TradingBot bot = getBotByIdAndUser(botId, username);
-
         bot.setStatus(TradingBot.BotStatus.STOPPED);
         bot.setStoppedAt(LocalDateTime.now());
-
         botRepository.save(bot);
     }
-
 
     @Scheduled(fixedDelay = 60000)
     public void executeBots() {
@@ -136,7 +128,6 @@ public class TradingBotService {
         }
     }
 
-
     private void executeGridTrading(TradingBot bot) {
         String coinId = mapSymbolToCoinId(bot.getCoinSymbol());
         Optional<CryptoCurrency> cryptoOpt = cryptoService.getCryptoByCoinId(coinId);
@@ -157,12 +148,11 @@ public class TradingBotService {
         int currentGridLevel = priceFromLower.divide(gridSize, 0, RoundingMode.DOWN).intValue();
 
         if (currentGridLevel < bot.getGridLevels() / 3) {
-            executeTrade(bot, crypto, BotTrade.TradeSide.BBUY, "Grid Trading - Zona de compra");
+            executeTrade(bot, crypto, BotTrade.TradeSide.BUY, "Grid Trading - Zona de compra");
         } else if (currentGridLevel > (bot.getGridLevels() * 2 / 3)) {
             executeTrade(bot, crypto, BotTrade.TradeSide.SELL, "Grid Trading - Zona de venda");
         }
     }
-
 
     private void executeDCA(TradingBot bot) {
         LocalDateTime now = LocalDateTime.now();
@@ -198,7 +188,6 @@ public class TradingBotService {
         botRepository.save(bot);
     }
 
-
     private void executeStopLossTakeProfit(TradingBot bot) {
         if (bot.getEntryPrice() == null) return;
 
@@ -210,10 +199,10 @@ public class TradingBotService {
         CryptoCurrency crypto = cryptoOpt.get();
         BigDecimal currentPrice = crypto.getCurrentPrice();
 
-        BigDecimal pct =
-                currentPrice.subtract(bot.getEntryPrice())
-                        .divide(bot.getEntryPrice(), 4, RoundingMode.HALF_UP)
-                        .multiply(BigDecimal.valueOf(100));
+        BigDecimal pct = currentPrice
+                .subtract(bot.getEntryPrice())
+                .divide(bot.getEntryPrice(), 4, RoundingMode.HALF_UP)
+                .multiply(BigDecimal.valueOf(100));
 
         if (bot.getStopLossPercent() != null &&
                 pct.compareTo(bot.getStopLossPercent().negate()) <= 0) {
@@ -244,7 +233,6 @@ public class TradingBotService {
         else
             executeSell(bot, price, quantity, reason);
     }
-
 
     private void executeBuy(TradingBot bot, BigDecimal price, BigDecimal quantity, String reason) {
         BotTrade trade = BotTrade.builder()
@@ -282,7 +270,6 @@ public class TradingBotService {
         return totalBuy.subtract(totalSell);
     }
 
-
     @Transactional(isolation = Isolation.SERIALIZABLE)
     private void executeSell(TradingBot bot, BigDecimal price, BigDecimal quantity, String reason) {
 
@@ -299,6 +286,9 @@ public class TradingBotService {
         BigDecimal remaining = quantity;
         BigDecimal totalProfit = BigDecimal.ZERO;
 
+        // ====== NOVO: lista para batch update ======
+        List<BotTrade> toUpdate = new ArrayList<>();
+
         for (BotTrade buy : buys) {
 
             if (remaining.compareTo(BigDecimal.ZERO) <= 0) break;
@@ -314,11 +304,17 @@ public class TradingBotService {
             BigDecimal profit = price.subtract(buy.getPrice())
                     .multiply(sellQty);
 
+            // Atualiza somente em memória
             buy.setSoldQuantity(soldQty.add(sellQty));
-            tradeRepository.save(buy);
+            toUpdate.add(buy);  // ← acumula para batch update
 
             totalProfit = totalProfit.add(profit);
             remaining = remaining.subtract(sellQty);
+        }
+
+        // ====== NOVO: salva todas as atualizações de uma vez ======
+        if (!toUpdate.isEmpty()) {
+            tradeRepository.saveAll(toUpdate);
         }
 
         BigDecimal executedQty = quantity.subtract(remaining);
