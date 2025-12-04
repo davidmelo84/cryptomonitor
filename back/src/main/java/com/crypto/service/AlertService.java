@@ -3,7 +3,6 @@ package com.crypto.service;
 import com.crypto.model.AlertRule;
 import com.crypto.model.AlertRule.AlertType;
 import com.crypto.model.CryptoCurrency;
-import com.crypto.model.User;
 import com.crypto.model.dto.NotificationMessage;
 import com.crypto.repository.AlertRuleRepository;
 import com.crypto.repository.UserRepository;
@@ -15,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,8 +27,6 @@ public class AlertService {
     private final UserRepository userRepository;
 
     private final DecimalFormat df = new DecimalFormat("#,##0.00");
-
-
 
     @Transactional
     public AlertRule createAlertRule(AlertRule alertRule) {
@@ -120,8 +115,6 @@ public class AlertService {
         alertRuleRepository.save(rule);
     }
 
-
-
     public List<AlertRule> getActiveAlertRules() {
         return alertRuleRepository.findByActiveTrue();
     }
@@ -130,12 +123,24 @@ public class AlertService {
         return alertRuleRepository.findByNotificationEmailAndActiveTrue(email);
     }
 
-
-
-    @Transactional
+    // ==========================================================================================
+    // 🔥 NOVO MÉTODO OTIMIZADO COM IN QUERY + READONLY + ZERO N+1
+    // ==========================================================================================
+    @Transactional(readOnly = true)
     public void processAlertsForUser(List<CryptoCurrency> cryptos, String userEmail) {
+
+        // 🔥 Extrai apenas os símbolos relevantes
+        Set<String> symbols = cryptos.stream()
+                .map(c -> c.getSymbol().toUpperCase())
+                .collect(Collectors.toSet());
+
+        if (symbols.isEmpty()) return;
+
+        // 🔥 Single efficient query com IN
         List<AlertRule> rules = alertRuleRepository
-                .findByNotificationEmailAndActiveTrue(userEmail);
+                .findByNotificationEmailAndCoinSymbolInAndActiveTrue(
+                        userEmail, symbols
+                );
 
         if (rules.isEmpty()) return;
 
@@ -143,9 +148,8 @@ public class AlertService {
                 .collect(Collectors.groupingBy(r -> r.getCoinSymbol().toUpperCase()));
 
         for (CryptoCurrency crypto : cryptos) {
-            List<AlertRule> cryptoRules = rulesBySymbol.get(
-                    crypto.getSymbol().toUpperCase()
-            );
+            List<AlertRule> cryptoRules =
+                    rulesBySymbol.get(crypto.getSymbol().toUpperCase());
 
             if (cryptoRules == null) continue;
 
@@ -188,8 +192,6 @@ public class AlertService {
         }
     }
 
-
-
     private boolean shouldTriggerAlert(CryptoCurrency crypto, AlertRule rule) {
         if (crypto == null || rule == null || rule.getThresholdValue() == null) {
             return false;
@@ -226,7 +228,6 @@ public class AlertService {
                 return false;
         }
     }
-
 
     private void triggerAlert(CryptoCurrency crypto, AlertRule rule) {
         String msg = buildAlertMessage(crypto, rule);
@@ -268,8 +269,6 @@ public class AlertService {
                 return "🔔 Alerta ativado para " + crypto.getName();
         }
     }
-
-
 
     public long countActiveAlerts() {
         return alertRuleRepository.findByActiveTrue().size();

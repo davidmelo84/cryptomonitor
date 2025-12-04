@@ -36,6 +36,12 @@
         <!-- Encoder otimizado com buffer -->
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
 
+            <!-- 🔥 NOVO: não flush dentro do encoder -->
+            <immediateFlush>false</immediateFlush>
+
+            <!-- 🔥 NOVO: Buffer explícito (64KB) -->
+            <charset>UTF-8</charset>
+
             <!-- Campos customizados -->
             <customFields>{"app":"crypto-monitor","version":"2.0.1"}</customFields>
 
@@ -46,8 +52,8 @@
 
             <!-- Menos bytes de stack trace -->
             <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
-                <maxDepthPerThrowable>15</maxDepthPerThrowable> <!-- Era 30 -->
-                <maxLength>1024</maxLength>                    <!-- Era 2048 -->
+                <maxDepthPerThrowable>15</maxDepthPerThrowable>
+                <maxLength>1024</maxLength>
                 <shortenedClassNameLength>15</shortenedClassNameLength>
                 <exclude>^sun\.reflect\..*</exclude>
                 <exclude>^net\.sf\.cglib\..*</exclude>

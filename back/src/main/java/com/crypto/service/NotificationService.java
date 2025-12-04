@@ -273,7 +273,26 @@ public class NotificationService {
         };
     }
 
+    // ================================================
+// 🔥 MÉTODO PÚBLICO COMPATÍVEL COM O DebugController
+// ================================================
+    public void sendEmailAlert(String recipient, String subject, String body) {
+        try {
+            if (!emailNotificationEnabled) {
+                log.warn("Envio de email desabilitado. Ignorando sendEmailAlert().");
+                return;
+            }
 
+            log.info("Enviando email manual (DebugController) para {}", LogMasker.maskEmail(recipient));
+
+            emailService.sendEmail(recipient, subject, body);
+
+            log.info("Email manual enviado com sucesso para {}", LogMasker.maskEmail(recipient));
+
+        } catch (Exception e) {
+            log.error("Erro ao enviar email manual: {}", e.getMessage(), e);
+        }
+    }
     // ================================================
     // 🔥 ADMIN
     // ================================================

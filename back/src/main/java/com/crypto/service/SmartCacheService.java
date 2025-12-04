@@ -25,6 +25,10 @@ public class SmartCacheService {
     // MEMORY CACHE
     // -------------------------
     private final Map<String, CachedCrypto> memoryCache = new ConcurrentHashMap<>();
+
+    // 🔥 NOVO: índice símbolo → coinId para lookup instantâneo
+    private final Map<String, String> symbolToCoinId = new ConcurrentHashMap<>();
+
     private volatile LocalDateTime lastFullUpdate = null;
 
     // -------------------------
@@ -44,7 +48,7 @@ public class SmartCacheService {
 
 
     /* =====================================================================================
-     *  NOVO MÉTODO — BUSCAR APENAS UMA MOEDA (Lazy Loading)
+     *  NOVO — BUSCAR APENAS UMA MOEDA (Lazy Loading)
      * ===================================================================================== */
 
     public Optional<CryptoCurrency> getCryptoPrice(String coinId) {
@@ -65,13 +69,13 @@ public class SmartCacheService {
             return dbResult;
         }
 
-        // 3. Se NÃO pode fazer request, devolve banco mesmo expirado
+        // 3. Não pode request → devolve banco mesmo expirado
         if (!canMakeApiRequest()) {
             log.warn("⚠️ Sem request permitido — retornando valor do banco (mesmo expirado)");
             return dbResult;
         }
 
-        // 4. Buscar da API apenas esta moeda
+        // 4. Buscar pela API
         try {
             Optional<CryptoCurrency> apiResult = coinGeckoService.getPrice(coinId);
             if (apiResult.isPresent()) {
@@ -90,7 +94,6 @@ public class SmartCacheService {
             log.error("❌ Erro API ao buscar {}: {}", coinId, e.getMessage());
         }
 
-        // Fallback final
         return dbResult;
     }
 
@@ -106,7 +109,7 @@ public class SmartCacheService {
 
 
     /* =====================================================================================
-     *  BUSCA COMPLETA (SEM ALTERAÇÕES)
+     *  BUSCA COMPLETA (mantida)
      * ===================================================================================== */
 
     public List<CryptoCurrency> getCurrentPrices() {
@@ -165,6 +168,104 @@ public class SmartCacheService {
 
 
     /* =====================================================================================
+     *  🔥 NOVO — Busca otimizada por símbolo (O(1))
+     * ===================================================================================== */
+
+    public Optional<CryptoCurrency> getCryptoBySymbol(String symbol) {
+        String normalized = symbol.toUpperCase();
+
+        // Busca em O(1)
+        String coinId = symbolToCoinId.get(normalized);
+
+        if (coinId != null) {
+            CachedCrypto cached = memoryCache.get(coinId);
+            if (cached != null) return Optional.of(cached.crypto);
+        }
+
+        // Fallback: varre o cache (caso raro)
+        return getCachedPrices().stream()
+                .filter(c -> c.getSymbol().equalsIgnoreCase(symbol))
+                .findFirst();
+    }
+
+
+    /* =====================================================================================
+     *  CACHE & DB
+     * ===================================================================================== */
+
+    private boolean isMemoryCacheValid() {
+        if (memoryCache.isEmpty()) return false;
+
+        CachedCrypto sample = memoryCache.values().iterator().next();
+        long age = Duration.between(sample.cachedAt, LocalDateTime.now()).toMinutes();
+
+        return age < MEMORY_CACHE_TTL_MINUTES;
+    }
+
+    private boolean isDbCacheValid(List<CryptoCurrency> list) {
+        if (list.isEmpty()) return false;
+        CryptoCurrency first = list.get(0);
+        return isDbEntryValid(first);
+    }
+
+    // 🔥 MODIFICADO: atualiza índice símbolo → coinId
+    private void updateMemoryCache(List<CryptoCurrency> cryptos) {
+        LocalDateTime now = LocalDateTime.now();
+
+        for (CryptoCurrency c : cryptos) {
+            memoryCache.put(c.getCoinId(), new CachedCrypto(c, now));
+            symbolToCoinId.put(c.getSymbol().toUpperCase(), c.getCoinId()); // novo índice
+        }
+
+        log.debug("💾 Memory cache atualizado: {} entries", memoryCache.size());
+    }
+
+    private List<CryptoCurrency> getCachedPrices() {
+        return memoryCache.values().stream()
+                .map(c -> c.crypto)
+                .toList();
+    }
+
+    private List<CryptoCurrency> getFromDatabase() {
+        try {
+            return repository.findAllByOrderByMarketCapDesc();
+        } catch (Exception e) {
+            log.error("❌ Erro DB: {}", e.getMessage());
+            return List.of();
+        }
+    }
+
+    private void saveToDatabase(List<CryptoCurrency> cryptos) {
+        try {
+            for (CryptoCurrency crypto : cryptos) {
+                repository.findByCoinId(crypto.getCoinId())
+                        .ifPresentOrElse(
+                                existing -> {
+                                    existing.setCurrentPrice(crypto.getCurrentPrice());
+                                    existing.setPriceChange1h(crypto.getPriceChange1h());
+                                    existing.setPriceChange24h(crypto.getPriceChange24h());
+                                    existing.setPriceChange7d(crypto.getPriceChange7d());
+                                    existing.setMarketCap(crypto.getMarketCap());
+                                    existing.setTotalVolume(crypto.getTotalVolume());
+                                    existing.setLastUpdated(LocalDateTime.now());
+                                    repository.save(existing);
+                                },
+                                () -> {
+                                    crypto.setLastUpdated(LocalDateTime.now());
+                                    repository.save(crypto);
+                                }
+                        );
+            }
+
+            log.info("💾 DB atualizado: {} moedas", cryptos.size());
+
+        } catch (Exception e) {
+            log.error("❌ Erro ao salvar no banco: {}", e.getMessage());
+        }
+    }
+
+
+    /* =====================================================================================
      *  RATE LIMIT
      * ===================================================================================== */
 
@@ -218,78 +319,6 @@ public class SmartCacheService {
 
 
     /* =====================================================================================
-     *  CACHE & DB
-     * ===================================================================================== */
-
-    private boolean isMemoryCacheValid() {
-        if (memoryCache.isEmpty()) return false;
-
-        CachedCrypto sample = memoryCache.values().iterator().next();
-        long age = Duration.between(sample.cachedAt, LocalDateTime.now()).toMinutes();
-
-        return age < MEMORY_CACHE_TTL_MINUTES;
-    }
-
-    private boolean isDbCacheValid(List<CryptoCurrency> list) {
-        if (list.isEmpty()) return false;
-        CryptoCurrency first = list.get(0);
-        return isDbEntryValid(first);
-    }
-
-    private void updateMemoryCache(List<CryptoCurrency> cryptos) {
-        LocalDateTime now = LocalDateTime.now();
-        for (CryptoCurrency c : cryptos) {
-            memoryCache.put(c.getCoinId(), new CachedCrypto(c, now));
-        }
-        log.debug("💾 Memory cache atualizado: {} entries", memoryCache.size());
-    }
-
-    private List<CryptoCurrency> getCachedPrices() {
-        return memoryCache.values().stream()
-                .map(c -> c.crypto)
-                .toList();
-    }
-
-    private List<CryptoCurrency> getFromDatabase() {
-        try {
-            return repository.findAllByOrderByMarketCapDesc();
-        } catch (Exception e) {
-            log.error("❌ Erro DB: {}", e.getMessage());
-            return List.of();
-        }
-    }
-
-    private void saveToDatabase(List<CryptoCurrency> cryptos) {
-        try {
-            for (CryptoCurrency crypto : cryptos) {
-                repository.findByCoinId(crypto.getCoinId())
-                        .ifPresentOrElse(
-                                existing -> {
-                                    existing.setCurrentPrice(crypto.getCurrentPrice());
-                                    existing.setPriceChange1h(crypto.getPriceChange1h());
-                                    existing.setPriceChange24h(crypto.getPriceChange24h());
-                                    existing.setPriceChange7d(crypto.getPriceChange7d());
-                                    existing.setMarketCap(crypto.getMarketCap());
-                                    existing.setTotalVolume(crypto.getTotalVolume());
-                                    existing.setLastUpdated(LocalDateTime.now());
-                                    repository.save(existing);
-                                },
-                                () -> {
-                                    crypto.setLastUpdated(LocalDateTime.now());
-                                    repository.save(crypto);
-                                }
-                        );
-            }
-
-            log.info("💾 DB atualizado: {} moedas", cryptos.size());
-
-        } catch (Exception e) {
-            log.error("❌ Erro ao salvar no banco: {}", e.getMessage());
-        }
-    }
-
-
-    /* =====================================================================================
      *  SCHEDULER
      * ===================================================================================== */
 
@@ -312,8 +341,10 @@ public class SmartCacheService {
      *  ADMIN
      * ===================================================================================== */
 
+
     public void clearCache() {
         memoryCache.clear();
+        symbolToCoinId.clear();   // 🔥 limpa índice também
         lastFullUpdate = null;
         requestsThisMinute.set(0);
         log.info("🗑️ Cache limpo");

@@ -9,14 +9,19 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
 
     hikari:
-      maximum-pool-size: 3
+      # ⚡ Pool otimizado para produção leve
+      maximum-pool-size: 2
       minimum-idle: 1
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 600000
+
+      # ⚡ Timeouts mais eficientes
+      connection-timeout: 15000
+      idle-timeout: 240000
+      max-lifetime: 540000
+
+      # ⚡ Melhorias
       pool-name: CryptoMonitorPool
       leak-detection-threshold: 60000
-      validation-timeout: 5000
+      validation-timeout: 3000
       connection-test-query: SELECT 1
       auto-commit: true
       register-mbeans: false
@@ -106,9 +111,6 @@ server:
         secure: ${COOKIE_SECURE:false}
         same-site: lax
 
-  # ===========================================================
-  # 🔥 HTTP COMPRESSION – FULLY ENABLED
-  # ===========================================================
   compression:
     enabled: true
     mime-types:
@@ -120,7 +122,6 @@ server:
       - text/plain
       - text/css
     min-response-size: 1024
-  # ===========================================================
 
   forward-headers-strategy: framework
 
@@ -270,18 +271,15 @@ api:
   max-request-size: 5MB
   max-file-size: 2MB
 
-# ====================================================
-# 🚀 CONFIGURAÇÃO ASYNC EXTERNALIZÁVEL
-# ====================================================
 async:
   core-pool-size: ${ASYNC_CORE_POOL_SIZE:2}
   max-pool-size: ${ASYNC_MAX_POOL_SIZE:5}
   queue-capacity: ${ASYNC_QUEUE_CAPACITY:100}
   thread-prefix: ${ASYNC_THREAD_PREFIX:crypto-async-}
 
-# ------------------------------------------------------------------
+---
+
 # 🔥 PROFILE: PRODUÇÃO
-# ------------------------------------------------------------------
 ---
 spring:
   config:
