@@ -17,7 +17,8 @@ const AnimatedLogo = ({ variant = 'login' }) => {
   return (
     <div style={{
       textAlign: 'center',
-      marginBottom: '2rem'
+      marginBottom: '2rem',
+      position: 'relative'
     }}>
       {/* Logo Container */}
       <div style={{
@@ -50,7 +51,8 @@ const AnimatedLogo = ({ variant = 'login' }) => {
           animation: 'logoFloat 3s ease-in-out infinite',
           transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)'
         }}>
-          {/* Icon: Crypto Symbol */}
+
+          {/* Icon */}
           <svg
             width="60"
             height="60"
@@ -61,30 +63,11 @@ const AnimatedLogo = ({ variant = 'login' }) => {
               filter: 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3))'
             }}
           >
-            {/* Bitcoin/Crypto Icon */}
-            <path
-              d="M12 2L2 7L12 12L22 7L12 2Z"
-              fill="white"
-              fillOpacity="0.9"
-            />
-            <path
-              d="M2 17L12 22L22 17"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fillOpacity="0.7"
-            />
-            <path
-              d="M2 12L12 17L22 12"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fillOpacity="0.7"
-            />
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white" fillOpacity="0.9" />
+            <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          
+
           {/* Shine Effect */}
           <div style={{
             position: 'absolute',
@@ -159,175 +142,43 @@ const AnimatedLogo = ({ variant = 'login' }) => {
 
       <style>{`
         @keyframes logoFloat {
-          0%, 100% {
-            transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px);
-          }
-          25% {
-            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) translateY(-5px);
-          }
-          50% {
-            transform: perspective(1000px) rotateX(0deg) rotateY(5deg) translateY(-10px);
-          }
-          75% {
-            transform: perspective(1000px) rotateX(-5deg) rotateY(0deg) translateY(-5px);
-          }
-        }
-
-        @keyframes titleGlow {
-          0%, 100% {
-            filter: brightness(1);
-          }
-          50% {
-            filter: brightness(1.2);
-          }
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-10px); }
         }
 
         @keyframes pulse {
-          0%, 100% {
-            opacity: 0.4;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.6;
-            transform: scale(1.1);
-          }
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(1.1); }
         }
 
         @keyframes shine {
-          0%, 100% {
-            opacity: 0.3;
-          }
-          50% {
-            opacity: 0.6;
-          }
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
+        }
+
+        @keyframes titleGlow {
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(1.2); }
         }
 
         @keyframes particle1 {
-          0%, 100% {
-            transform: translate(0, 0);
-            opacity: 0;
-          }
-          25% {
-            opacity: 0.6;
-          }
-          50% {
-            transform: translate(40px, -40px);
-            opacity: 0.8;
-          }
-          75% {
-            opacity: 0.6;
-          }
+          0%, 100% { transform: translate(0, 0); opacity: 0; }
+          50% { transform: translate(40px, -40px); opacity: 0.8; }
         }
 
         @keyframes particle2 {
-          0%, 100% {
-            transform: translate(0, 0);
-            opacity: 0;
-          }
-          25% {
-            opacity: 0.6;
-          }
-          50% {
-            transform: translate(-40px, 40px);
-            opacity: 0.8;
-          }
-          75% {
-            opacity: 0.6;
-          }
+          0%, 100% { transform: translate(0, 0); opacity: 0; }
+          50% { transform: translate(-40px, 40px); opacity: 0.8; }
         }
 
         @keyframes particle3 {
-          0%, 100% {
-            transform: translate(0, 0);
-            opacity: 0;
-          }
-          25% {
-            opacity: 0.6;
-          }
-          50% {
-            transform: translate(40px, 40px);
-            opacity: 0.8;
-          }
-          75% {
-            opacity: 0.6;
-          }
+          0%, 100% { transform: translate(0, 0); opacity: 0; }
+          50% { transform: translate(40px, 40px); opacity: 0.8; }
         }
       `}</style>
     </div>
   );
 };
 
-// ============================================
-// EXEMPLO DE USO
-// ============================================
-export default function LogoDemo() {
-  const [variant, setVariant] = React.useState('login');
-
-  return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      position: 'relative'
-    }}>
-      {/* Grid Background */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundImage: 
-          'linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px)',
-        backgroundSize: '50px 50px',
-        animation: 'gridMove 20s linear infinite',
-        pointerEvents: 'none'
-      }} />
-
-      {/* Logo */}
-      <AnimatedLogo variant={variant} />
-
-      {/* Toggle Button */}
-      <button
-        onClick={() => setVariant(variant === 'login' ? 'register' : 'login')}
-        style={{
-          marginTop: '2rem',
-          padding: '0.75rem 1.5rem',
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(10px)',
-          border: '1px solid rgba(255, 255, 255, 0.2)',
-          borderRadius: '10px',
-          color: 'white',
-          fontWeight: '600',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease'
-        }}
-        onMouseEnter={(e) => {
-          e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-          e.target.style.transform = 'translateY(-2px)';
-        }}
-        onMouseLeave={(e) => {
-          e.target.style.background = 'rgba(255, 255, 255, 0.1)';
-          e.target.style.transform = 'translateY(0)';
-        }}
-      >
-        Alternar: {variant === 'login' ? 'Ver Registro' : 'Ver Login'}
-      </button>
-
-      <style>{`
-        @keyframes gridMove {
-          0% {
-            transform: translate(0, 0);
-          }
-          100% {
-            transform: translate(50px, 50px);
-          }
-        }
-      `}</style>
-    </div>
-  );
-}   
+// Agora o componente verdadeiro é exportado:
+export default AnimatedLogo;
