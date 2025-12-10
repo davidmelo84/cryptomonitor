@@ -1,5 +1,5 @@
 // front/crypto-monitor-frontend/src/components/pages/RegisterPage.jsx
-// ✅ VERSÃO COMPLETA — Com redirecionamento para verificação e visual verde
+// ✅ VERSÃO SEM TÍTULO/SUBTÍTULO DUPLICADOS — Mantém apenas o AnimatedLogo
 
 import React, { useState } from 'react';
 import { UserPlus, Mail, Lock, User } from 'lucide-react';
@@ -7,12 +7,12 @@ import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
 import PasswordStrength from '../auth/PasswordStrength';
 import VerifyEmailPage from '../auth/VerifyEmailPage';
-import AnimatedLogo from '../common/AnimatedLogo'; // ✅ IMPORT
+import AnimatedLogo from '../common/AnimatedLogo'; 
 import '../../styles/components/auth.css';
 
 function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
   const { isDark } = useTheme();
-  const variant = "register"; // ✅ DEFINE VARIANT
+  const variant = "register";
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -49,28 +49,30 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
 
   return (
     <div className={`auth-container register ${isDark ? 'dark' : ''}`}>
+      
       {/* Theme Toggle */}
       <div className="theme-toggle-wrapper">
         <ThemeToggle />
       </div>
 
-      {/* Círculos flutuantes */}
+      {/* Círculos decorativos */}
       <div className="floating-circle large"></div>
       <div className="floating-circle medium"></div>
 
       {/* Card */}
       <div className={`auth-card ${isDark ? 'dark' : ''}`}>
 
-        {/* 🔥 LOGO ATUALIZADO */}
+        {/* 🔥 Apenas o LOGO animado — SEM texto duplicado */}
         <div className="auth-logo-wrapper">
           <AnimatedLogo variant={variant} />
         </div>
 
-        {/* Título */}
+        {/* ❌ REMOVIDO: Título e subtítulo duplicados
         <h1 className="auth-title register">Criar Conta</h1>
         <p className="auth-subtitle">
           Cadastre-se para começar a monitorar criptomoedas
         </p>
+        */}
 
         {authError && (
           <div className="alert alert-error">
@@ -79,6 +81,7 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
         )}
 
         <form onSubmit={handleSubmit}>
+
           {/* Usuário */}
           <div className="auth-input-wrapper">
             <input
@@ -188,6 +191,7 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
         >
           Já tem uma conta? <span>Faça login</span>
         </div>
+
       </div>
     </div>
   );

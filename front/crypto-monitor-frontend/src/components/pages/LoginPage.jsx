@@ -1,28 +1,27 @@
 // front/crypto-monitor-frontend/src/components/pages/LoginPage.jsx
-// ✅ COM VALIDAÇÃO + REMEMBER ME IMPLEMENTADO
+// ✅ CORRIGIDO — sem título/subtítulo duplicados, apenas AnimatedLogo controla texto
 
 import React, { useState } from 'react';
-import { LogIn, TrendingUp, Mail, Lock } from 'lucide-react';
+import { LogIn, Mail, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useFormValidation, commonValidations } from '../../hooks/useFormValidation';
 import ThemeToggle from '../common/ThemeToggle';
-import AnimatedLogo from '../common/AnimatedLogo'; // ✅ IMPORT
+import AnimatedLogo from '../common/AnimatedLogo';
 import '../../styles/components/auth.css';
 
 function LoginPage({ onLogin, onNavigateToRegister, authError }) {
   const { isDark } = useTheme();
-
-  const variant = "login"; // ✅ DEFINE VARIANT
+  const variant = "login";
 
   // ======================================================
-  // ✅ 1) ADICIONAR STATE rememberMe (PASSO 3)
+  // Remember Me
   // ======================================================
   const [rememberMe, setRememberMe] = useState(() => {
     return localStorage.getItem('rememberMe') === 'true';
   });
 
   // ======================================================
-  // Validação com hook
+  // Hook de validação
   // ======================================================
   const {
     values,
@@ -40,38 +39,37 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
     }
   );
 
-  // ======================================================
-  // ✅ 2) Atualizar onSubmit (PASSO 3)
-  // ======================================================
   const onSubmit = async () => {
     await onLogin(values.username, values.password, rememberMe);
   };
 
   return (
     <div className={`auth-container ${isDark ? 'dark' : ''}`}>
+      
       {/* Theme Toggle */}
       <div className="theme-toggle-wrapper">
         <ThemeToggle />
       </div>
 
-      {/* Círculos flutuantes */}
+      {/* Círculos decorativos */}
       <div className="floating-circle large"></div>
       <div className="floating-circle medium"></div>
       <div className="floating-circle small"></div>
 
-      {/* Card de Login */}
+      {/* Card */}
       <div className={`auth-card ${isDark ? 'dark' : ''}`}>
         
-        {/* 🔥 LOGO ATUALIZADO */}
+        {/* 🔥 Apenas o LOGO animado */}
         <div className="auth-logo-wrapper">
           <AnimatedLogo variant={variant} />
         </div>
 
-        {/* Título */}
+        {/* ❌ REMOVIDO — texto duplicado
         <h1 className="auth-title">Crypto Monitor</h1>
         <p className="auth-subtitle">Monitore suas criptomoedas em tempo real</p>
+        */}
 
-        {/* Erro do servidor */}
+        {/* Mensagem de erro */}
         {authError && (
           <div className="alert alert-error">
             ⚠️ {authError}
@@ -79,10 +77,12 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
         )}
 
         {/* Formulário */}
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit(onSubmit);
-        }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit(onSubmit);
+          }}
+        >
 
           {/* Usuário */}
           <div className="auth-input-wrapper">
@@ -95,7 +95,8 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
               className="auth-input"
               disabled={isSubmitting}
               style={{
-                borderColor: touched.username && errors.username ? '#ef4444' : undefined
+                borderColor:
+                  touched.username && errors.username ? '#ef4444' : undefined
               }}
             />
             <button type="button" className="auth-icon" tabIndex="-1">
@@ -104,13 +105,15 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
           </div>
 
           {touched.username && errors.username && (
-            <p style={{
-              color: '#ef4444',
-              fontSize: '0.875rem',
-              marginTop: '-0.5rem',
-              marginBottom: '0.5rem',
-              marginLeft: '0.25rem'
-            }}>
+            <p
+              style={{
+                color: '#ef4444',
+                fontSize: '0.875rem',
+                marginTop: '-0.5rem',
+                marginBottom: '0.5rem',
+                marginLeft: '0.25rem'
+              }}
+            >
               ⚠️ {errors.username}
             </p>
           )}
@@ -126,7 +129,8 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
               className="auth-input"
               disabled={isSubmitting}
               style={{
-                borderColor: touched.password && errors.password ? '#ef4444' : undefined
+                borderColor:
+                  touched.password && errors.password ? '#ef4444' : undefined
               }}
             />
             <button type="button" className="auth-icon" tabIndex="-1">
@@ -135,20 +139,20 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
           </div>
 
           {touched.password && errors.password && (
-            <p style={{
-              color: '#ef4444',
-              fontSize: '0.875rem',
-              marginTop: '-0.5rem',
-              marginBottom: '0.5rem',
-              marginLeft: '0.25rem'
-            }}>
+            <p
+              style={{
+                color: '#ef4444',
+                fontSize: '0.875rem',
+                marginTop: '-0.5rem',
+                marginBottom: '0.5rem',
+                marginLeft: '0.25rem'
+              }}
+            >
               ⚠️ {errors.password}
             </p>
           )}
 
-          {/* ====================================================== */}
-          {/* ✅ CHECKBOX LEMBRAR DE MIM */}
-          {/* ====================================================== */}
+          {/* Remember Me */}
           <div
             style={{
               display: 'flex',
@@ -189,7 +193,11 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
           <button
             type="submit"
             className="auth-button"
-            disabled={isSubmitting || (touched.username && errors.username) || (touched.password && errors.password)}
+            disabled={
+              isSubmitting ||
+              (touched.username && errors.username) ||
+              (touched.password && errors.password)
+            }
           >
             {isSubmitting ? (
               <>
@@ -205,10 +213,11 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
           </button>
         </form>
 
-        {/* Registrar */}
+        {/* Link para Registro */}
         <div className="auth-link" onClick={onNavigateToRegister}>
           Não tem uma conta? <span>Cadastre-se agora</span>
         </div>
+
       </div>
     </div>
   );
