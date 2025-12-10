@@ -1,122 +1,40 @@
 /* ============================================
-   DASHBOARD - VERSÃO FUTURISTA 2.0
-   Design cyberpunk com gradientes animados
+   DASHBOARD - VERSÃO CORRIGIDA E ORGANIZADA
    ============================================ */
 
-/* ===== 1. PAGE CONTAINER (Fundo animado) ===== */
+/* ===== 1. PAGE CONTAINER (Fundo sutil) ===== */
 .page-container {
   min-height: 100vh;
-  background: linear-gradient(
-    135deg,
-    #0f0c29 0%,
-    #302b63 50%,
-    #24243e 100%
-  );
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-  position: relative;
-  overflow-x: hidden;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background-size: 200% 200%;
+  animation: gradientShift 20s ease infinite;
+  transition: background 0.5s ease;
 }
 
 @keyframes gradientShift {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* Partículas flutuantes */
-.page-container::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: 
-    radial-gradient(2px 2px at 20% 30%, rgba(102, 126, 234, 0.3), transparent),
-    radial-gradient(2px 2px at 60% 70%, rgba(167, 139, 250, 0.3), transparent),
-    radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.2), transparent),
-    radial-gradient(1px 1px at 80% 10%, rgba(102, 126, 234, 0.2), transparent);
-  background-size: 200% 200%;
-  animation: particlesFloat 20s linear infinite;
-  pointer-events: none;
-  z-index: 0;
-}
-
-@keyframes particlesFloat {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(10px, 10px);
-  }
-  50% {
-    transform: translate(5px, -5px);
-  }
-  75% {
-    transform: translate(-10px, 5px);
-  }
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 .page-container.dark {
-  background: linear-gradient(
-    135deg,
-    #0a0a0a 0%,
-    #1a1a2e 50%,
-    #16213e 100%
-  );
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
 }
 
 .content-wrapper {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
-  position: relative;
-  z-index: 1;
+  padding: 1.875rem 1.25rem;
 }
 
-/* ===== 2. DASHBOARD HEADER (Neon Style) ===== */
+/* ===== 2. DASHBOARD HEADER ===== */
 .dashboard-header {
-  background: rgba(31, 41, 55, 0.4);
+  background: rgba(31, 41, 55, 0.6);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 20px;
-  padding: 1.5rem;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 0 60px rgba(102, 126, 234, 0.1),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  margin-bottom: 2rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.dashboard-header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(102, 126, 234, 0.1) 50%,
-    transparent 100%
-  );
-  animation: scanline 3s ease-in-out infinite;
-}
-
-@keyframes scanline {
-  0%, 100% {
-    left: -100%;
-  }
-  50% {
-    left: 100%;
-  }
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1.5rem;
 }
 
 .header-content {
@@ -127,8 +45,6 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 1rem;
-  position: relative;
-  z-index: 1;
 }
 
 .header-logo {
@@ -139,45 +55,27 @@
 
 .logo-icon {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 12px;
-  border-radius: 16px;
+  padding: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 
-    0 0 30px rgba(102, 126, 234, 0.6),
-    inset 0 0 15px rgba(255, 255, 255, 0.2);
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    box-shadow: 
-      0 0 30px rgba(102, 126, 234, 0.6),
-      inset 0 0 15px rgba(255, 255, 255, 0.2);
-  }
-  50% {
-    box-shadow: 
-      0 0 50px rgba(102, 126, 234, 0.8),
-      inset 0 0 20px rgba(255, 255, 255, 0.3);
-  }
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
 }
 
 .header-title {
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 700;
   margin: 0;
   background: linear-gradient(135deg, #667eea 0%, #a78bfa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: -0.5px;
 }
 
 .header-subtitle {
   color: #9ca3af;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   margin: 0;
-  font-weight: 500;
 }
 
 .header-actions {
@@ -187,313 +85,297 @@
   flex-wrap: wrap;
 }
 
-/* ===== 3. BADGES E BUTTONS (Neon Glow) ===== */
 .user-badge {
   background: rgba(102, 126, 234, 0.15);
   backdrop-filter: blur(10px);
-  padding: 0.625rem 1.25rem;
-  border-radius: 12px;
-  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
   font-size: 0.875rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   color: #a78bfa;
   border: 1px solid rgba(102, 126, 234, 0.3);
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
-  transition: all 0.3s ease;
-}
-
-.user-badge:hover {
-  box-shadow: 0 0 30px rgba(102, 126, 234, 0.4);
-  transform: translateY(-2px);
 }
 
 .header-btn {
-  padding: 0.625rem 1.25rem;
-  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
   border: none;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.header-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%
-  );
-  transition: left 0.5s ease;
-}
-
-.header-btn:hover::before {
-  left: 100%;
+  transition: all 0.3s ease;
 }
 
 .header-btn:hover:not(:disabled) {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
 }
 
 .header-btn-refresh {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
 }
 
 .header-btn-portfolio {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
 }
 
 .header-btn-bots {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
 }
 
 .header-btn-telegram {
   background: linear-gradient(135deg, #229ED9 0%, #0088CC 100%);
   color: white;
-  box-shadow: 0 0 20px rgba(34, 158, 217, 0.4);
 }
 
 .header-btn-logout {
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
 }
 
-/* ===== 4. STATUS CARD (Holographic) ===== */
+/* ===== 3. STATUS CARD ===== */
 .status-card {
-  padding: 2.5rem;
-  border-radius: 24px;
-  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
   color: white;
-  box-shadow: 
-    0 20px 60px rgba(0, 0, 0, 0.3),
-    0 0 80px rgba(102, 126, 234, 0.3);
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.status-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent 70%
-  );
-  animation: holographicShine 3s linear infinite;
-}
-
-@keyframes holographicShine {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 .status-card.active {
-  background: linear-gradient(
-    135deg,
-    rgba(16, 185, 129, 0.8) 0%,
-    rgba(5, 150, 105, 0.8) 100%
-  );
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
 }
 
 .status-card.inactive {
-  background: linear-gradient(
-    135deg,
-    rgba(239, 68, 68, 0.8) 0%,
-    rgba(220, 38, 38, 0.8) 100%
-  );
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
 }
 
-.status-card-bg-circle {
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.15) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-  animation: float 6s ease-in-out infinite;
+.status-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(-20px, -20px);
-  }
+.status-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-/* ===== 5. STATS CARDS (Glassmorphism) ===== */
+.status-icon {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.875rem;
+  border-radius: 12px;
+}
+
+.status-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.status-description {
+  font-size: 0.9375rem;
+  margin: 0.5rem 0 0 0;
+  opacity: 0.9;
+}
+
+.status-button {
+  background: white;
+  color: inherit;
+  padding: 0.875rem 2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.status-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.status-button.active {
+  color: #ef4444;
+}
+
+.status-button.inactive {
+  color: #10b981;
+}
+
+/* ===== 4. STATS CARDS ===== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(31, 41, 55, 0.6);
   backdrop-filter: blur(20px);
-  padding: 1.5rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
+  padding: 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 
-    0 20px 60px rgba(102, 126, 234, 0.3),
-    0 0 60px rgba(102, 126, 234, 0.2);
-  border-color: rgba(102, 126, 234, 0.5);
-}
-
-.stat-card:hover::before {
-  opacity: 1;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.4);
 }
 
 .stat-icon {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  position: relative;
-  z-index: 1;
+  gap: 0.625rem;
+  margin-bottom: 0.75rem;
 }
 
 .stat-label {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: #9ca3af;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .stat-value {
   margin: 0;
-  font-size: 2.25rem;
-  font-weight: 900;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -1px;
-  position: relative;
-  z-index: 1;
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: #f3f4f6;
 }
 
 .stat-value.positive {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+  color: #10b981;
 }
 
 .stat-value.negative {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+  color: #ef4444;
 }
 
-/* ===== 6. SETTINGS CARD ===== */
+/* ===== 5. SETTINGS CARD ===== */
 .settings-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(31, 41, 55, 0.6);
   backdrop-filter: blur(20px);
-  padding: 2rem;
-  border-radius: 24px;
-  margin-bottom: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .settings-card-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #a78bfa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #a78bfa;
 }
 
-/* ===== 7. CRYPTOCURRENCIES CARD ===== */
-.cryptocurrencies-card {
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #e5e7eb;
+}
+
+.settings-input,
+.settings-select {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 8px;
+  font-size: 0.875rem;
   background: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+  transition: all 0.3s ease;
+}
+
+.settings-input:focus,
+.settings-select:focus {
+  border-color: #667eea;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.email-input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.copy-button {
+  padding: 0.625rem;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #667eea;
+}
+
+.copy-button:hover {
+  background: #5568d3;
+}
+
+.copy-button.copied {
+  background: #10b981;
+}
+
+/* ===== 6. CRYPTOCURRENCIES CARD ===== */
+.cryptocurrencies-card {
+  background: rgba(31, 41, 55, 0.6);
   backdrop-filter: blur(20px);
-  padding: 2rem;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .cryptocurrencies-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   flex-wrap: wrap;
   gap: 1rem;
 }
@@ -501,50 +383,141 @@
 .cryptocurrencies-title {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
   margin: 0;
-  font-size: 1.5rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #a78bfa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #a78bfa;
 }
 
-.search-input,
-.sort-select {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 0.75rem 1rem;
-  border-radius: 12px;
+.cryptocurrencies-subtitle {
+  margin: 0.5rem 0 0 0;
+  color: #9ca3af;
   font-size: 0.875rem;
+}
+
+.cryptocurrencies-actions {
+  display: flex;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  min-width: 200px;
+  background: rgba(255, 255, 255, 0.05);
   color: #f3f4f6;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+}
+
+.sort-select {
+  padding: 0.625rem 0.875rem;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+  transition: border-color 0.3s ease;
+}
+
+.sort-select:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.clear-button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.625rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.875rem;
   transition: all 0.3s ease;
 }
 
-.search-input:focus,
-.sort-select:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
-  outline: none;
+.clear-button:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.cryptocurrencies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cryptocurrencies-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #9ca3af;
+}
+
+/* ===== 7. DARK MODE AJUSTES ===== */
+.dark .stat-card {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+.dark .settings-card {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+.dark .cryptocurrencies-card {
+  background: rgba(31, 41, 55, 0.8);
 }
 
 /* ===== 8. RESPONSIVE ===== */
 @media (max-width: 768px) {
   .content-wrapper {
-    padding: 1.5rem 1rem;
+    padding: 1rem;
   }
-  
+
   .header-content {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }
-  
+
+  .cryptocurrencies-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
   .stat-value {
-    font-size: 1.875rem;
+    font-size: 1.5rem;
+  }
+
+  .status-card {
+    padding: 1.5rem;
+  }
+
+  .status-title {
+    font-size: 1.25rem;
   }
 }

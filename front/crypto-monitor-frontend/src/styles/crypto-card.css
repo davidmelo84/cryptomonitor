@@ -1,163 +1,69 @@
 /* ============================================
-   CRYPTO CARD - VERSÃO FUTURISTA 2.0
-   Design moderno com glassmorphism e neon
+   CRYPTO CARD - VERSÃO CORRIGIDA E LIMPA
    ============================================ */
 
-/* ===== 1. BASE CARD (Glassmorphism) ===== */
+/* ===== 1. BASE CARD ===== */
 .crypto-card {
-  padding: 24px;
-  border-radius: 20px;
+  padding: 20px;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   user-select: none;
   position: relative;
   overflow: hidden;
   
-  /* Glassmorphism Effect */
-  background: rgba(255, 255, 255, 0.05);
+  /* Glassmorphism sutil */
+  background: rgba(31, 41, 55, 0.6);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
-}
-
-/* Gradiente animado no fundo */
-.crypto-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(118, 75, 162, 0.1) 100%
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: 0;
-}
-
-.crypto-card:hover::before {
-  opacity: 1;
-}
-
-/* Brilho superior */
-.crypto-card::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-.crypto-card:hover::after {
-  opacity: 1;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .crypto-card:hover {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-5px);
   border-color: rgba(102, 126, 234, 0.5);
-  box-shadow: 
-    0 20px 60px rgba(102, 126, 234, 0.3),
-    0 0 40px rgba(102, 126, 234, 0.2),
-    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
 }
 
-/* ===== 2. ESTADO SELECIONADO (Neon Glow) ===== */
+/* ===== 2. ESTADO SELECIONADO ===== */
 .crypto-card.selected {
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.15) 0%,
-    rgba(118, 75, 162, 0.15) 100%
-  );
+  background: rgba(102, 126, 234, 0.15);
   border: 2px solid #667eea;
   box-shadow: 
-    0 0 30px rgba(102, 126, 234, 0.6),
-    0 0 60px rgba(102, 126, 234, 0.3),
-    inset 0 0 20px rgba(102, 126, 234, 0.1);
+    0 8px 25px rgba(102, 126, 234, 0.4),
+    0 0 40px rgba(102, 126, 234, 0.2);
 }
 
 .crypto-card.selected::before {
-  opacity: 1;
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2) 0%,
-    rgba(118, 75, 162, 0.2) 100%
-  );
-}
-
-/* Linha neon superior */
-.crypto-card.selected::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 3px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    #667eea 20%,
-    #a78bfa 50%,
-    #667eea 80%,
-    transparent 100%
-  );
-  opacity: 1;
-  animation: shimmerLine 2s ease-in-out infinite;
-}
-
-@keyframes shimmerLine {
-  0%, 100% {
-    transform: translateX(-100%);
-  }
-  50% {
-    transform: translateX(100%);
-  }
+  background: linear-gradient(90deg, #667eea 0%, #a78bfa 100%);
 }
 
 /* ===== 3. DARK MODE ===== */
 .crypto-card.dark {
-  background: rgba(31, 41, 55, 0.4);
-  border-color: rgba(255, 255, 255, 0.05);
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  background: rgba(31, 41, 55, 0.8);
+  border-color: rgba(102, 126, 234, 0.2);
 }
 
 .crypto-card.dark:hover {
   border-color: rgba(102, 126, 234, 0.6);
-  box-shadow: 
-    0 20px 60px rgba(102, 126, 234, 0.4),
-    0 0 50px rgba(102, 126, 234, 0.3);
 }
 
 .crypto-card.dark.selected {
-  background: linear-gradient(
-    135deg,
-    rgba(102, 126, 234, 0.2) 0%,
-    rgba(118, 75, 162, 0.2) 100%
-  );
-  box-shadow: 
-    0 0 40px rgba(102, 126, 234, 0.8),
-    0 0 80px rgba(102, 126, 234, 0.4),
-    inset 0 0 30px rgba(102, 126, 234, 0.15);
+  background: rgba(102, 126, 234, 0.2);
 }
 
-/* ===== 4. HEADER COM ANIMAÇÃO ===== */
+/* ===== 4. HEADER ===== */
 .crypto-card-header {
   display: flex;
   justify-content: space-between;
   align-items: start;
-  margin-bottom: 20px;
-  position: relative;
-  z-index: 1;
+  margin-bottom: 16px;
 }
 
 .crypto-card-info {
@@ -167,51 +73,32 @@
 
 .crypto-card-name {
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #a78bfa 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
-  transition: all 0.3s ease;
-}
-
-.crypto-card:hover .crypto-card-name {
-  letter-spacing: 0px;
-  filter: brightness(1.2);
-}
-
-.crypto-card.dark .crypto-card-name {
-  background: linear-gradient(135deg, #a78bfa 0%, #e0e7ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #f3f4f6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.3px;
 }
 
 .crypto-card-symbol {
-  margin: 6px 0 0 0;
-  font-size: 13px;
-  font-weight: 700;
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  font-weight: 600;
   color: #9ca3af;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  opacity: 0.8;
-  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
 }
 
-.crypto-card:hover .crypto-card-symbol {
-  color: #667eea;
-  opacity: 1;
-}
-
-/* ===== 5. CHECKBOX FUTURISTA ===== */
+/* ===== 5. CHECKBOX ===== */
 .crypto-card-checkbox {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 8px;
+  border: 2px solid rgba(156, 163, 175, 0.4);
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   display: flex;
@@ -219,190 +106,151 @@
   justify-content: center;
   color: white;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
   flex-shrink: 0;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-/* Efeito de brilho interno */
-.crypto-card-checkbox::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    transparent 100%
-  );
-  transition: left 0.5s ease;
-}
-
-.crypto-card:hover .crypto-card-checkbox::before {
-  left: 100%;
+.crypto-card:hover .crypto-card-checkbox {
+  border-color: #667eea;
+  transform: scale(1.1);
 }
 
 .crypto-card.selected .crypto-card-checkbox {
   border-color: #667eea;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 
-    0 0 20px rgba(102, 126, 234, 0.8),
-    inset 0 0 10px rgba(255, 255, 255, 0.2);
-  transform: scale(1.1) rotate(360deg);
+  box-shadow: 0 0 15px rgba(102, 126, 234, 0.6);
+  transform: scale(1.1);
 }
 
 .crypto-card-checkbox-icon {
   opacity: 0;
-  transform: scale(0) rotate(-180deg);
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  position: relative;
-  z-index: 1;
+  transform: scale(0);
+  transition: all 0.3s ease;
 }
 
 .crypto-card.selected .crypto-card-checkbox-icon {
   opacity: 1;
-  transform: scale(1) rotate(0deg);
+  transform: scale(1);
 }
 
-/* ===== 6. PREÇO COM EFEITO DIGITAL ===== */
+/* ===== 6. PREÇO (BRANCO E GRANDE) ===== */
 .crypto-card-price-section {
-  margin-bottom: 16px;
-  position: relative;
-  z-index: 1;
+  margin-bottom: 14px;
 }
 
 .crypto-card-price {
   margin: 0;
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 800;
-  background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #ffffff; /* ✅ BRANCO PURO */
   line-height: 1;
-  letter-spacing: -1px;
+  letter-spacing: -0.5px;
   font-variant-numeric: tabular-nums;
-  transition: all 0.3s ease;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .crypto-card:hover .crypto-card-price {
-  transform: scale(1.05);
-  filter: brightness(1.2);
+  color: #f3f4f6;
+  transform: scale(1.02);
 }
 
 .crypto-card.dark .crypto-card-price {
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #ffffff; /* ✅ BRANCO TAMBÉM NO DARK MODE */
 }
 
-/* ===== 7. FOOTER FUTURISTA ===== */
+/* ===== 7. FOOTER ===== */
 .crypto-card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative;
-  z-index: 1;
 }
 
 .crypto-card-change-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 12px;
-  font-size: 14px;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 700;
   backdrop-filter: blur(10px);
   border: 1px solid;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.crypto-card-change-badge::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.crypto-card:hover .crypto-card-change-badge::before {
-  opacity: 1;
+  transition: all 0.3s ease;
 }
 
 .crypto-card-change-badge.positive {
   background: rgba(16, 185, 129, 0.15);
   color: #10b981;
   border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
 }
 
 .crypto-card-change-badge.negative {
   background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
   border-color: rgba(239, 68, 68, 0.3);
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
 }
 
 .crypto-card:hover .crypto-card-change-badge {
-  transform: scale(1.08);
-  box-shadow: 
-    0 0 30px currentColor,
-    0 4px 15px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
 }
 
 .crypto-card-change-arrow {
-  font-size: 18px;
-  animation: pulse 2s ease-in-out infinite;
+  font-size: 16px;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.1);
-  }
-}
-
-/* Market Cap */
-.crypto-card-market-cap {
+.crypto-card-change-value {
   font-size: 13px;
-  font-weight: 700;
+}
+
+.crypto-card-market-cap {
+  font-size: 12px;
+  font-weight: 600;
   color: #9ca3af;
-  letter-spacing: 0.5px;
-  transition: color 0.3s ease;
+  letter-spacing: 0.3px;
 }
 
-.crypto-card:hover .crypto-card-market-cap {
-  color: #667eea;
+/* ===== 8. LOADING STATE ===== */
+.crypto-card.loading {
+  pointer-events: none;
+  opacity: 0.6;
 }
 
-/* ===== 8. ANIMAÇÃO DE ENTRADA ===== */
+/* ===== 9. DISABLED STATE ===== */
+.crypto-card.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== 10. COMPACT VARIANT ===== */
+.crypto-card.compact {
+  padding: 14px;
+}
+
+.crypto-card.compact .crypto-card-name {
+  font-size: 16px;
+}
+
+.crypto-card.compact .crypto-card-price {
+  font-size: 26px;
+}
+
+.crypto-card.compact .crypto-card-checkbox {
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+}
+
+/* ===== 11. ANIMAÇÃO DE ENTRADA ===== */
 .crypto-card {
-  animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.4s ease;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(15px);
   }
   to {
     opacity: 1;
@@ -410,47 +258,61 @@
   }
 }
 
-/* ===== 9. EFEITO HOLOGRÁFICO (Opcional) ===== */
-.crypto-card.selected::before {
-  animation: holographic 3s ease-in-out infinite;
+/* ===== 12. ACCESSIBILITY ===== */
+.crypto-card:focus-visible {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
 }
 
-@keyframes holographic {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* ===== 10. RESPONSIVE ===== */
-@media (max-width: 768px) {
+@media (prefers-contrast: high) {
   .crypto-card {
-    padding: 18px;
+    border-width: 2px;
   }
   
-  .crypto-card-price {
-    font-size: 30px;
-  }
-  
-  .crypto-card-name {
-    font-size: 18px;
+  .crypto-card.selected {
+    border-width: 3px;
   }
 }
 
-/* ===== 11. REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
   .crypto-card,
   .crypto-card-checkbox,
-  .crypto-card-change-badge,
-  .crypto-card::before,
-  .crypto-card::after {
+  .crypto-card-change-badge {
     transition: none;
     animation: none;
   }
   
   .crypto-card:hover {
     transform: none;
+  }
+}
+
+/* ===== 13. RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .crypto-card {
+    padding: 16px;
+  }
+  
+  .crypto-card-price {
+    font-size: 28px;
+  }
+  
+  .crypto-card-name {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .crypto-card {
+    padding: 14px;
+  }
+  
+  .crypto-card-price {
+    font-size: 24px;
+  }
+  
+  .crypto-card-change-badge {
+    font-size: 12px;
+    padding: 5px 10px;
   }
 }
