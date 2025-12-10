@@ -1,7 +1,7 @@
 /* ============================================
-   BASE STYLES
-   Reset, variáveis CSS, fontes globais
-   ============================================ */
+    BASE STYLES
+    Reset, variáveis CSS, fontes globais
+    ============================================ */
 
 /* ===== CSS RESET ===== */
 *,
@@ -19,8 +19,8 @@ html {
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  /* ATUALIZADO: Usando 'Inter' como fonte principal */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   line-height: 1.6;
   color: var(--text-primary);
   background: var(--bg-primary);
@@ -120,6 +120,8 @@ body {
 
 /* ===== TYPOGRAPHY ===== */
 h1, h2, h3, h4, h5, h6 {
+  /* ATUALIZADO: Usando 'Space Grotesk' para títulos */
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
   line-height: 1.2;
   font-weight: 700;
   color: var(--text-primary);
