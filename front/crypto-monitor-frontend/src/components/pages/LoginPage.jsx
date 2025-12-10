@@ -6,10 +6,13 @@ import { LogIn, TrendingUp, Mail, Lock } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useFormValidation, commonValidations } from '../../hooks/useFormValidation';
 import ThemeToggle from '../common/ThemeToggle';
+import AnimatedLogo from '../common/AnimatedLogo'; // ✅ IMPORT
 import '../../styles/components/auth.css';
 
 function LoginPage({ onLogin, onNavigateToRegister, authError }) {
   const { isDark } = useTheme();
+
+  const variant = "login"; // ✅ DEFINE VARIANT
 
   // ======================================================
   // ✅ 1) ADICIONAR STATE rememberMe (PASSO 3)
@@ -58,11 +61,10 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
 
       {/* Card de Login */}
       <div className={`auth-card ${isDark ? 'dark' : ''}`}>
-        {/* Logo */}
+        
+        {/* 🔥 LOGO ATUALIZADO */}
         <div className="auth-logo-wrapper">
-          <div className="auth-logo">
-            <TrendingUp size={40} color="white" />
-          </div>
+          <AnimatedLogo variant={variant} />
         </div>
 
         {/* Título */}
@@ -145,7 +147,7 @@ function LoginPage({ onLogin, onNavigateToRegister, authError }) {
           )}
 
           {/* ====================================================== */}
-          {/* ✅ 3) CHECKBOX LEMBRAR DE MIM (PASSO 3) */}
+          {/* ✅ CHECKBOX LEMBRAR DE MIM */}
           {/* ====================================================== */}
           <div
             style={{

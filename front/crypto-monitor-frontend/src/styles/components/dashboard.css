@@ -1,11 +1,11 @@
 /* ============================================
-   DASHBOARD - VERSÃO CORRIGIDA E ORGANIZADA
+   DASHBOARD - LIGHT MODE VIBRANTE + DARK MODE ESCURO
    ============================================ */
 
-/* ===== 1. PAGE CONTAINER (Fundo sutil) ===== */
+/* ===== 1. PAGE CONTAINER (Light Mode com Gradiente Claro) ===== */
 .page-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 50%, #f5f3ff 100%);
   background-size: 200% 200%;
   animation: gradientShift 20s ease infinite;
   transition: background 0.5s ease;
@@ -16,6 +16,7 @@
   50% { background-position: 100% 50%; }
 }
 
+/* Dark Mode: Mantém o fundo escuro */
 .page-container.dark {
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
 }
@@ -26,15 +27,23 @@
   padding: 1.875rem 1.25rem;
 }
 
-/* ===== 2. DASHBOARD HEADER ===== */
+/* ===== 2. DASHBOARD HEADER (Light Mode com Branco) ===== */
 .dashboard-header {
-  background: rgba(31, 41, 55, 0.6);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.15);
   border-radius: 16px;
   padding: 1.25rem 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.08),
+    0 0 40px rgba(102, 126, 234, 0.1);
   margin-bottom: 1.5rem;
+}
+
+.dashboard-header.dark {
+  background: rgba(31, 41, 55, 0.6);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .header-content {
@@ -67,15 +76,25 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
-  background: linear-gradient(135deg, #667eea 0%, #a78bfa 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.dark .header-title {
+  background: linear-gradient(135deg, #a78bfa 0%, #c7d2fe 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .header-subtitle {
-  color: #9ca3af;
+  color: #6b7280;
   font-size: 0.8125rem;
   margin: 0;
+}
+
+.dark .header-subtitle {
+  color: #9ca3af;
 }
 
 .header-actions {
@@ -86,7 +105,7 @@
 }
 
 .user-badge {
-  background: rgba(102, 126, 234, 0.15);
+  background: rgba(102, 126, 234, 0.1);
   backdrop-filter: blur(10px);
   padding: 0.5rem 1rem;
   border-radius: 10px;
@@ -95,8 +114,14 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: #a78bfa;
+  color: #667eea;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.dark .user-badge {
+  background: rgba(102, 126, 234, 0.15);
   border: 1px solid rgba(102, 126, 234, 0.3);
+  color: #a78bfa;
 }
 
 .header-btn {
@@ -141,25 +166,70 @@
   color: white;
 }
 
-/* ===== 3. STATUS CARD ===== */
+/* ===== 3. STATUS CARD MELHORADO (Compacto e Moderno) ===== */
 .status-card {
-  padding: 2rem;
+  padding: 1.5rem;
   border-radius: 16px;
   margin-bottom: 1.5rem;
-  color: white;
   position: relative;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
 }
 
+.status-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Status ATIVO: Verde com borda */
 .status-card.active {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.03) 100%);
 }
 
+.status-card.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+}
+
+/* Status INATIVO: Vermelho com borda */
 .status-card.inactive {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+  border-color: #ef4444;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.03) 100%);
+}
+
+.status-card.inactive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* Dark Mode */
+.dark .status-card {
+  background: rgba(31, 41, 55, 0.6);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.dark .status-card.active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border-color: #10b981;
+}
+
+.dark .status-card.inactive {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.05) 100%);
+  border-color: #ef4444;
 }
 
 .status-content {
@@ -179,53 +249,75 @@
 }
 
 .status-icon {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 0.875rem;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.75rem;
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-card.active .status-icon {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.status-card.inactive .status-icon {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
 .status-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   margin: 0;
+  color: #1f2937;
+}
+
+.dark .status-title {
+  color: #f3f4f6;
 }
 
 .status-description {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   margin: 0.5rem 0 0 0;
-  opacity: 0.9;
+  color: #6b7280;
+}
+
+.dark .status-description {
+  color: #9ca3af;
 }
 
 .status-button {
-  background: white;
-  color: inherit;
-  padding: 0.875rem 2rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   border: none;
   display: flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: 0.5rem;
 }
 
 .status-button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .status-button.active {
-  color: #ef4444;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
 }
 
 .status-button.inactive {
-  color: #10b981;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
 }
 
-/* ===== 4. STATS CARDS ===== */
+/* ===== 4. STATS CARDS (Light Mode Branco) ===== */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -234,17 +326,28 @@
 }
 
 .stat-card {
-  background: rgba(31, 41, 55, 0.6);
+  background: white;
   backdrop-filter: blur(20px);
   padding: 1.25rem;
   border-radius: 14px;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.dark .stat-card {
+  background: rgba(31, 41, 55, 0.6);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dark .stat-card:hover {
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
   border-color: rgba(102, 126, 234, 0.4);
 }
@@ -258,16 +361,24 @@
 
 .stat-label {
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: #6b7280;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+.dark .stat-label {
+  color: #9ca3af;
 }
 
 .stat-value {
   margin: 0;
   font-size: 1.875rem;
   font-weight: 800;
+  color: #1f2937;
+}
+
+.dark .stat-value {
   color: #f3f4f6;
 }
 
@@ -279,13 +390,19 @@
   color: #ef4444;
 }
 
-/* ===== 5. SETTINGS CARD ===== */
+/* ===== 5. SETTINGS CARD (Light Mode Branco) ===== */
 .settings-card {
-  background: rgba(31, 41, 55, 0.6);
+  background: white;
   backdrop-filter: blur(20px);
   padding: 1.5rem;
   border-radius: 16px;
   margin-bottom: 1.5rem;
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.dark .settings-card {
+  background: rgba(31, 41, 55, 0.6);
   border: 1px solid rgba(102, 126, 234, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
@@ -297,6 +414,10 @@
   margin-bottom: 1.25rem;
   font-size: 1.25rem;
   font-weight: 700;
+  color: #667eea;
+}
+
+.dark .settings-card-header {
   color: #a78bfa;
 }
 
@@ -316,6 +437,10 @@
   margin-bottom: 0.5rem;
   font-weight: 600;
   font-size: 0.875rem;
+  color: #374151;
+}
+
+.dark .settings-label {
   color: #e5e7eb;
 }
 
@@ -323,11 +448,11 @@
 .settings-select {
   width: 100%;
   padding: 0.625rem 0.875rem;
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  border: 1px solid rgba(102, 126, 234, 0.2);
   border-radius: 8px;
   font-size: 0.875rem;
-  background: rgba(255, 255, 255, 0.05);
-  color: #f3f4f6;
+  background: rgba(255, 255, 255, 0.8);
+  color: #1f2937;
   transition: all 0.3s ease;
 }
 
@@ -336,6 +461,13 @@
   border-color: #667eea;
   outline: none;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.dark .settings-input,
+.dark .settings-select {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+  border: 1px solid rgba(102, 126, 234, 0.3);
 }
 
 .email-input-wrapper {
@@ -361,12 +493,18 @@
   background: #10b981;
 }
 
-/* ===== 6. CRYPTOCURRENCIES CARD ===== */
+/* ===== 6. CRYPTOCURRENCIES CARD (Light Mode Branco) ===== */
 .cryptocurrencies-card {
-  background: rgba(31, 41, 55, 0.6);
+  background: white;
   backdrop-filter: blur(20px);
   padding: 1.5rem;
   border-radius: 16px;
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.dark .cryptocurrencies-card {
+  background: rgba(31, 41, 55, 0.6);
   border: 1px solid rgba(102, 126, 234, 0.2);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
@@ -387,13 +525,21 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
+  color: #667eea;
+}
+
+.dark .cryptocurrencies-title {
   color: #a78bfa;
 }
 
 .cryptocurrencies-subtitle {
   margin: 0.5rem 0 0 0;
-  color: #9ca3af;
+  color: #6b7280;
   font-size: 0.875rem;
+}
+
+.dark .cryptocurrencies-subtitle {
+  color: #9ca3af;
 }
 
 .cryptocurrencies-actions {
@@ -404,12 +550,12 @@
 
 .search-input {
   padding: 0.625rem 0.875rem;
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  border: 1px solid rgba(102, 126, 234, 0.2);
   border-radius: 8px;
   font-size: 0.875rem;
   min-width: 200px;
-  background: rgba(255, 255, 255, 0.05);
-  color: #f3f4f6;
+  background: rgba(255, 255, 255, 0.8);
+  color: #1f2937;
   transition: border-color 0.3s ease;
 }
 
@@ -422,20 +568,32 @@
   color: #9ca3af;
 }
 
+.dark .search-input {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+  border: 1px solid rgba(102, 126, 234, 0.3);
+}
+
 .sort-select {
   padding: 0.625rem 0.875rem;
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  border: 1px solid rgba(102, 126, 234, 0.2);
   border-radius: 8px;
   font-size: 0.875rem;
   cursor: pointer;
-  background: rgba(255, 255, 255, 0.05);
-  color: #f3f4f6;
+  background: rgba(255, 255, 255, 0.8);
+  color: #1f2937;
   transition: border-color 0.3s ease;
 }
 
 .sort-select:focus {
   border-color: #667eea;
   outline: none;
+}
+
+.dark .sort-select {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f3f4f6;
+  border: 1px solid rgba(102, 126, 234, 0.3);
 }
 
 .clear-button {
@@ -468,20 +626,7 @@
   color: #9ca3af;
 }
 
-/* ===== 7. DARK MODE AJUSTES ===== */
-.dark .stat-card {
-  background: rgba(31, 41, 55, 0.8);
-}
-
-.dark .settings-card {
-  background: rgba(31, 41, 55, 0.8);
-}
-
-.dark .cryptocurrencies-card {
-  background: rgba(31, 41, 55, 0.8);
-}
-
-/* ===== 8. RESPONSIVE ===== */
+/* ===== 7. RESPONSIVE ===== */
 @media (max-width: 768px) {
   .content-wrapper {
     padding: 1rem;
@@ -514,10 +659,10 @@
   }
 
   .status-card {
-    padding: 1.5rem;
+    padding: 1.25rem;
   }
 
   .status-title {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
 }

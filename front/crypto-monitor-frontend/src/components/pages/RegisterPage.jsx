@@ -2,23 +2,25 @@
 // ✅ VERSÃO COMPLETA — Com redirecionamento para verificação e visual verde
 
 import React, { useState } from 'react';
-import { UserPlus, Mail, Lock, User, TrendingUp } from 'lucide-react';
+import { UserPlus, Mail, Lock, User } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeToggle from '../common/ThemeToggle';
 import PasswordStrength from '../auth/PasswordStrength';
-import VerifyEmailPage from '../auth/VerifyEmailPage'; // ✅ Import da tela de verificação
+import VerifyEmailPage from '../auth/VerifyEmailPage';
+import AnimatedLogo from '../common/AnimatedLogo'; // ✅ IMPORT
 import '../../styles/components/auth.css';
 
 function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
   const { isDark } = useTheme();
+  const variant = "register"; // ✅ DEFINE VARIANT
+
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showVerification, setShowVerification] = useState(false); // ✅ novo estado
+  const [showVerification, setShowVerification] = useState(false);
 
-  // ✅ Lógica do formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -26,14 +28,12 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
     const success = await onRegister(username, email, password, confirmPassword);
 
     if (success) {
-      // ✅ Redirecionar para verificação de email
       setShowVerification(true);
     }
 
     setIsLoading(false);
   };
 
-  // ✅ Renderiza a tela de verificação caso necessário
   if (showVerification) {
     return (
       <VerifyEmailPage
@@ -47,7 +47,6 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
     );
   }
 
-  // ✅ Layout padrão do registro (idêntico ao anterior)
   return (
     <div className={`auth-container register ${isDark ? 'dark' : ''}`}>
       {/* Theme Toggle */}
@@ -55,17 +54,16 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
         <ThemeToggle />
       </div>
 
-      {/* Círculos flutuantes (verde) */}
+      {/* Círculos flutuantes */}
       <div className="floating-circle large"></div>
       <div className="floating-circle medium"></div>
 
-      {/* Card de Registro */}
+      {/* Card */}
       <div className={`auth-card ${isDark ? 'dark' : ''}`}>
-        {/* Logo Verde */}
+
+        {/* 🔥 LOGO ATUALIZADO */}
         <div className="auth-logo-wrapper">
-          <div className="auth-logo register">
-            <TrendingUp size={40} color="white" />
-          </div>
+          <AnimatedLogo variant={variant} />
         </div>
 
         {/* Título */}
@@ -74,14 +72,12 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
           Cadastre-se para começar a monitorar criptomoedas
         </p>
 
-        {/* Erro */}
         {authError && (
           <div className="alert alert-error">
             ⚠️ {authError}
           </div>
         )}
 
-        {/* Formulário */}
         <form onSubmit={handleSubmit}>
           {/* Usuário */}
           <div className="auth-input-wrapper">
@@ -133,7 +129,6 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
             </button>
           </div>
 
-          {/* Password Strength */}
           {password && <PasswordStrength password={password} />}
 
           {/* Confirmar Senha */}
@@ -152,7 +147,6 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
             </button>
           </div>
 
-          {/* Validação visual de senhas */}
           {confirmPassword && password !== confirmPassword && (
             <p
               style={{
@@ -166,7 +160,6 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
             </p>
           )}
 
-          {/* Botão Cadastrar (VERDE) */}
           <button
             type="submit"
             className="auth-button register"
@@ -189,7 +182,6 @@ function RegisterPage({ onRegister, onNavigateToLogin, authError }) {
           </button>
         </form>
 
-        {/* Link para Login */}
         <div
           className="auth-link"
           onClick={isLoading ? undefined : onNavigateToLogin}
