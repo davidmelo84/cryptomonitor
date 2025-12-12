@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   Send, Mail, CheckCircle, AlertCircle, Info, X, 
-  Copy, Check, HelpCircle, Zap
+  Copy, Check, HelpCircle, Zap, Settings
 } from 'lucide-react';
 
 function TelegramConfig({ userEmail, onClose }) {
