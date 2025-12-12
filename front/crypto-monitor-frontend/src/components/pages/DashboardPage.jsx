@@ -1,5 +1,5 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
-// ✅ VERSÃO CORRIGIDA - Monitoramento funcionando + Visual melhorado
+// ✅ VERSÃO CORRIGIDA - Botões Trading Bots e Telegram no Header
 
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -74,7 +74,6 @@ function DashboardPage({
     null
   );
 
-  // ✅ FUNÇÃO CORRIGIDA - Início do Monitoramento
   const handleStartStopMonitoring = async () => {
     if (isMonitoringActive) {
       try {
@@ -85,10 +84,9 @@ function DashboardPage({
         showToast('Erro ao parar monitoramento: ' + error.message, 'error');
       }
     } else {
-      // Validações
       if (!monitoringEmail || monitoringEmail.trim() === '') {
         showToast('Configure um email válido antes de iniciar!', 'error');
-        setShowSettings(true); // Abre configurações automaticamente
+        setShowSettings(true);
         return;
       }
 
@@ -232,6 +230,24 @@ function DashboardPage({
                   <span className="hidden sm:inline">Portfolio</span>
                 </button>
 
+                {/* ✅ Trading Bots Button */}
+                <button 
+                  onClick={onNavigateToBots}
+                  className="backdrop-blur-sm bg-gradient-to-r from-purple-500/80 to-pink-600/80 hover:from-purple-500 hover:to-pink-600 px-4 py-3 rounded-xl text-white font-medium flex items-center gap-2 transition-all"
+                >
+                  <Bot className="w-5 h-5" />
+                  <span className="hidden sm:inline">Trading Bots</span>
+                </button>
+
+                {/* ✅ Telegram Button */}
+                <button 
+                  onClick={() => setShowTelegramConfig(true)}
+                  className="backdrop-blur-sm bg-gradient-to-r from-blue-500/80 to-cyan-600/80 hover:from-blue-500 hover:to-cyan-600 px-4 py-3 rounded-xl text-white font-medium flex items-center gap-2 transition-all"
+                >
+                  <Send className="w-5 h-5" />
+                  <span className="hidden sm:inline">Telegram</span>
+                </button>
+
                 <button 
                   onClick={onLogout}
                   className="backdrop-blur-sm bg-red-500/20 hover:bg-red-500/30 p-3 rounded-xl border border-red-500/30 transition-all"
@@ -255,7 +271,7 @@ function DashboardPage({
             <>
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                {/* Status Card - CLICÁVEL */}
+                {/* Status Card */}
                 <div 
                   onClick={handleStartStopMonitoring}
                   className={`backdrop-blur-xl rounded-2xl p-6 border cursor-pointer transition-all hover:scale-[1.02] ${
@@ -323,7 +339,7 @@ function DashboardPage({
                 </div>
               </div>
 
-              {/* Settings Card (Collapsible) - VISUAL MELHORADO */}
+              {/* Settings Card */}
               {showSettings && (
                 <div className="mb-8" style={{ animation: 'slideDown 0.3s ease-out' }}>
                   <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
@@ -341,7 +357,6 @@ function DashboardPage({
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Email */}
                       <div>
                         <label className="flex items-center gap-2 text-sm font-semibold text-white/80 mb-2">
                           <Mail className="w-4 h-4 text-blue-400" />
@@ -356,7 +371,6 @@ function DashboardPage({
                         />
                       </div>
 
-                      {/* Intervalo */}
                       <div>
                         <label className="flex items-center gap-2 text-sm font-semibold text-white/80 mb-2">
                           <Clock className="w-4 h-4 text-purple-400" />
@@ -376,7 +390,6 @@ function DashboardPage({
                         </select>
                       </div>
 
-                      {/* Buy Threshold */}
                       <div>
                         <label className="flex items-center gap-2 text-sm font-semibold text-white/80 mb-2">
                           <DollarSign className="w-4 h-4 text-red-400" />
@@ -393,7 +406,6 @@ function DashboardPage({
                         />
                       </div>
 
-                      {/* Sell Threshold */}
                       <div>
                         <label className="flex items-center gap-2 text-sm font-semibold text-white/80 mb-2">
                           <DollarSign className="w-4 h-4 text-emerald-400" />
@@ -411,7 +423,6 @@ function DashboardPage({
                       </div>
                     </div>
 
-                    {/* Info Box */}
                     <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
                       <p className="text-blue-200 text-sm">
                         💡 <strong>Dica:</strong> Configure seu email e selecione as criptomoedas antes de iniciar o monitoramento.
@@ -431,7 +442,6 @@ function DashboardPage({
 
               {/* Crypto List */}
               <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
-                {/* Search Bar */}
                 <div className="p-6 border-b border-white/10">
                   <div className="flex items-center justify-between gap-4 flex-wrap">
                     <div>
@@ -445,7 +455,6 @@ function DashboardPage({
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {/* Search */}
                       <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
                         <input
@@ -457,7 +466,6 @@ function DashboardPage({
                         />
                       </div>
 
-                      {/* Clear */}
                       {selectedCryptos.length > 0 && (
                         <button
                           onClick={onClearSelection}
@@ -471,7 +479,6 @@ function DashboardPage({
                   </div>
                 </div>
 
-                {/* Grid */}
                 <div className="p-6">
                   {filteredCryptos.length === 0 ? (
                     <div className="text-center py-12">
@@ -539,24 +546,6 @@ function DashboardPage({
                     </div>
                   )}
                 </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="mt-6 flex gap-4 flex-wrap">
-                <button 
-                  onClick={onNavigateToBots}
-                  className="backdrop-blur-sm bg-white/5 hover:bg-white/10 px-6 py-3 rounded-xl text-white font-medium flex items-center gap-2 border border-white/10 transition-all"
-                >
-                  <Bot className="w-5 h-5" />
-                  Trading Bots
-                </button>
-                <button 
-                  onClick={() => setShowTelegramConfig(true)}
-                  className="backdrop-blur-sm bg-white/5 hover:bg-white/10 px-6 py-3 rounded-xl text-white font-medium flex items-center gap-2 border border-white/10 transition-all"
-                >
-                  <Send className="w-5 h-5" />
-                  Telegram
-                </button>
               </div>
             </>
           )}
