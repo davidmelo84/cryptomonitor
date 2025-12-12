@@ -1,4 +1,6 @@
 // front/crypto-monitor-frontend/src/components/pages/DashboardPage.jsx
+// ✅ VERSÃO CORRIGIDA - Monitoramento funcionando + Visual melhorado
+
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useTelegram } from '../../contexts/TelegramContext';
@@ -7,12 +9,12 @@ import { CryptoCardSkeleton } from '../common/Skeleton';
 
 import { 
   TrendingUp, LogOut, User, RefreshCw, Settings, Bell, 
-  Wallet, Bot, Send, Search, X, BarChart3 
+  Wallet, Bot, Send, Search, X, BarChart3, PlayCircle, 
+  StopCircle, Mail, Clock, DollarSign
 } from 'lucide-react';
 
 import TelegramConfig from '../telegram/TelegramConfig';
 import ChartTabs from '../dashboard/ChartTabs';
-import SettingsCard from '../dashboard/SettingsCard';
 
 import { 
   useCryptos, 
@@ -41,6 +43,7 @@ function DashboardPage({
   onNavigateToPortfolio,
   onNavigateToBots
 }) {
+  const { isDark } = useTheme();
   const { telegramConfig, isConfigured } = useTelegram();
   const { showToast, ToastContainer } = useToast({ maxToasts: 3 });
   
@@ -71,18 +74,21 @@ function DashboardPage({
     null
   );
 
+  // ✅ FUNÇÃO CORRIGIDA - Início do Monitoramento
   const handleStartStopMonitoring = async () => {
     if (isMonitoringActive) {
       try {
-        const result = await stopMonitoringMutation.mutateAsync(token);
+        await stopMonitoringMutation.mutateAsync(token);
         refetchMonitoringStatus();
         showToast('Monitoramento parado com sucesso!', 'info');
       } catch (error) {
         showToast('Erro ao parar monitoramento: ' + error.message, 'error');
       }
     } else {
+      // Validações
       if (!monitoringEmail || monitoringEmail.trim() === '') {
         showToast('Configure um email válido antes de iniciar!', 'error');
+        setShowSettings(true); // Abre configurações automaticamente
         return;
       }
 
@@ -113,16 +119,19 @@ function DashboardPage({
           };
         }
 
+        console.log('🚀 Iniciando monitoramento:', monitoringPayload);
+        
         await startMonitoringMutation.mutateAsync(monitoringPayload);
         refetchMonitoringStatus();
         
-        let message = `Monitoramento iniciado! ${cryptocurrencies.length} moeda(s) sendo monitorada(s).`;
+        let message = `✅ Monitoramento iniciado! ${cryptocurrencies.length} moeda(s) sendo monitorada(s).`;
         if (telegramConfig.enabled && isConfigured()) {
           message += ' Telegram ativo!';
         }
         showToast(message, 'success', 4000);
         
       } catch (error) {
+        console.error('❌ Erro ao iniciar:', error);
         showToast('Erro ao iniciar monitoramento: ' + error.message, 'error');
       }
     }
@@ -139,7 +148,6 @@ function DashboardPage({
     crypto.symbol?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalValue = selectedCryptos.reduce((sum, c) => sum + (c.currentPrice || 0), 0);
   const avgChange = selectedCryptos.length > 0 
     ? selectedCryptos.reduce((sum, c) => sum + (c.priceChange24h || 0), 0) / selectedCryptos.length 
     : 0;
@@ -247,7 +255,7 @@ function DashboardPage({
             <>
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                {/* Status Card */}
+                {/* Status Card - CLICÁVEL */}
                 <div 
                   onClick={handleStartStopMonitoring}
                   className={`backdrop-blur-xl rounded-2xl p-6 border cursor-pointer transition-all hover:scale-[1.02] ${
@@ -260,12 +268,19 @@ function DashboardPage({
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
                       isMonitoringActive ? 'bg-emerald-500/30' : 'bg-white/10'
                     }`}>
-                      <TrendingUp className={`w-6 h-6 ${isMonitoringActive ? 'text-emerald-400' : 'text-white/60'}`} />
+                      {isMonitoringActive ? (
+                        <StopCircle className="w-6 h-6 text-emerald-400" />
+                      ) : (
+                        <PlayCircle className="w-6 h-6 text-white/60" />
+                      )}
                     </div>
                   </div>
                   <p className="text-white/60 text-sm mb-1">Status</p>
                   <p className={`text-xl font-bold ${isMonitoringActive ? 'text-emerald-400' : 'text-white'}`}>
                     {isMonitoringActive ? '✓ Ativo' : '○ Inativo'}
+                  </p>
+                  <p className="text-white/40 text-xs mt-2">
+                    {isMonitoringActive ? 'Clique para parar' : 'Clique para iniciar'}
                   </p>
                 </div>
 
@@ -280,11 +295,11 @@ function DashboardPage({
                   <p className="text-3xl font-bold text-white">{selectedCryptos.length}</p>
                 </div>
 
-                {/* Valor Total */}
+                {/* Variação Média */}
                 <div className="backdrop-blur-xl bg-white/5 rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all">
                   <div className="flex items-center justify-between mb-4">
                     <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                      <Wallet className="w-6 h-6 text-purple-400" />
+                      <TrendingUp className="w-6 h-6 text-purple-400" />
                     </div>
                     <span className={`text-sm font-semibold flex items-center gap-1 ${
                       avgChange >= 0 ? 'text-emerald-400' : 'text-red-400'
@@ -308,20 +323,101 @@ function DashboardPage({
                 </div>
               </div>
 
-              {/* Settings Card (Collapsible) */}
+              {/* Settings Card (Collapsible) - VISUAL MELHORADO */}
               {showSettings && (
                 <div className="mb-8" style={{ animation: 'slideDown 0.3s ease-out' }}>
                   <div className="backdrop-blur-xl bg-white/5 rounded-2xl border border-white/10 p-6">
-                    <SettingsCard
-                      monitoringEmail={monitoringEmail}
-                      setMonitoringEmail={setMonitoringEmail}
-                      monitoringInterval={monitoringInterval}
-                      setMonitoringInterval={setMonitoringInterval}
-                      buyThreshold={buyThreshold}
-                      setBuyThreshold={setBuyThreshold}
-                      sellThreshold={sellThreshold}
-                      setSellThreshold={setSellThreshold}
-                    />
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                        <Settings className="w-7 h-7 text-blue-400" />
+                        Configurações de Monitoramento
+                      </h2>
+                      <button
+                        onClick={() => setShowSettings(false)}
+                        className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Email */}
+                      <div>
+                        <label className="flex items-center gap-2 text-sm font-semibold text-white/80 mb-2">
+                          <Mail className="w-4 h-4 text-blue-400" />
+                          Email para Alertas
+                        </label>
+                        <input
+                          type="email"
+                          value={monitoringEmail}
+                          onChange={(e) => setMonitoringEmail(e.target.value)}
+                          placeholder="seu@email.com"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      {/* Intervalo */}
+                      <div>
+                        <label className="flex items-center gap-2 text-sm font-semibold text-white/80 mb-2">
+                          <Clock className="w-4 h-4 text-purple-400" />
+                          Intervalo de Verificação
+                        </label>
+                        <select
+                          value={monitoringInterval}
+                          onChange={(e) => setMonitoringInterval(parseInt(e.target.value))}
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                          <option value={1}>1 minuto</option>
+                          <option value={5}>5 minutos ⭐ Recomendado</option>
+                          <option value={10}>10 minutos</option>
+                          <option value={15}>15 minutos</option>
+                          <option value={30}>30 minutos</option>
+                          <option value={60}>1 hora</option>
+                        </select>
+                      </div>
+
+                      {/* Buy Threshold */}
+                      <div>
+                        <label className="flex items-center gap-2 text-sm font-semibold text-white/80 mb-2">
+                          <DollarSign className="w-4 h-4 text-red-400" />
+                          Alerta de Compra (% queda)
+                        </label>
+                        <input
+                          type="number"
+                          value={buyThreshold}
+                          onChange={(e) => setBuyThreshold(parseFloat(e.target.value) || 0)}
+                          step="0.5"
+                          min="0"
+                          placeholder="5.0"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        />
+                      </div>
+
+                      {/* Sell Threshold */}
+                      <div>
+                        <label className="flex items-center gap-2 text-sm font-semibold text-white/80 mb-2">
+                          <DollarSign className="w-4 h-4 text-emerald-400" />
+                          Alerta de Venda (% alta)
+                        </label>
+                        <input
+                          type="number"
+                          value={sellThreshold}
+                          onChange={(e) => setSellThreshold(parseFloat(e.target.value) || 0)}
+                          step="0.5"
+                          min="0"
+                          placeholder="10.0"
+                          className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Info Box */}
+                    <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+                      <p className="text-blue-200 text-sm">
+                        💡 <strong>Dica:</strong> Configure seu email e selecione as criptomoedas antes de iniciar o monitoramento.
+                        Você receberá alertas quando os preços caírem {buyThreshold}% ou subirem {sellThreshold}%.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}
